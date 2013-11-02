@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Workflow>
+    <Scene Form="IDF_FORM" Id="TabScene1" Panel="IDC_PANEL1"/>
+    <Scene Form="IDF_FORM" Id="TabScene2" Panel="IDC_PANEL2"/>
+    <Scene Form="IDF_FORM" Id="TabScene3" Panel="IDC_PANEL3"/>
+    <Scene Form="IDF_LOGIN" Id="LoginScene"/>
+    <SceneTransition AnimationType="none" DestroyOption="keep" DirectionType="forward" HistoryOption="add" Id="ID_SCNT_START" Method="" SourceId="" SourceResourceType="" TargetId="LoginScene"/>
+    <SceneTransition AnimationType="none" DestroyOption="keep" DirectionType="forward" HistoryOption="no" Id="ID_SCNT_3" Method="OnActionPerformed" SourceId="TabScene1" SourceResourceType="IDF_FORM" TargetId="TabScene3"/>
+    <SceneTransition AnimationType="none" DestroyOption="keep" DirectionType="forward" HistoryOption="no" Id="ID_SCNT_1" Method="OnActionPerformed" SourceId="TabScene2" SourceResourceType="IDF_FORM" TargetId="TabScene1"/>
+    <SceneTransition AnimationType="none" DestroyOption="keep" DirectionType="forward" HistoryOption="no" Id="ID_SCNT_2" Method="OnActionPerformed" SourceId="TabScene3" SourceResourceType="IDF_FORM" TargetId="TabScene2"/>
+    <SceneTransition AnimationType="none" DestroyOption="keep" DirectionType="forward" HistoryOption="add" Id="ID_SCNT_4" Method="OnActionPerformed" SourceId="LoginScene" SourceResourceType="IDF_LOGIN" TargetId="TabScene1"/>
+    <!--UI Builder(Workflow Designer) only-->
+    <WorkflowDesigner>
+        <Position Name="TabScene1" X="209" Y="98"/>
+        <Position Name="TabScene2" X="408" Y="378"/>
+        <Position Name="TabScene3" X="10" Y="380"/>
+        <Position Name="LoginScene" X="462" Y="49"/>
+    </WorkflowDesigner>
+</Workflow>
