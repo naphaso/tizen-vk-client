@@ -13,7 +13,7 @@
         </Privileges>
         <UiApp HwAcceleration="On" LaunchingHistoryVisible="True" Main="True" MenuIconVisible="True" Name="VKU">
             <UiScalability BaseScreenSize="Normal" CoordinateSystem="Logical" LogicalCoordinate="720"/>
-            <UiTheme SystemTheme="White"/>
+            <UiTheme SystemTheme="Black"/>
             <DisplayNames>
                 <DisplayName Locale="eng-GB">VKU</DisplayName>
             </DisplayNames>
