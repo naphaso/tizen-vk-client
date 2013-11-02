@@ -7,6 +7,9 @@
 
 #include "VKU.h"
 #include "VKUFrame.h"
+#include "VKUAuthConfig.h"
+#include "SampleRequest.h"
+#include "api/VKUApi.h"
 
 using namespace Tizen::App;
 using namespace Tizen::Base;
@@ -36,6 +39,17 @@ bool VKUApp::OnAppInitialized(void) {
 	pVKUFrame->Construct();
 	pVKUFrame->SetName(L"VKU");
 	AddFrame(*pVKUFrame);
+
+	if(VKUAuthConfig::IsExists()) {
+		VKUAuthConfig::Read();
+
+		AppLog("logged!");
+
+		VKUApi *api = new VKUApi();
+		api->CreateRequest("messages.getDialogs", new SampleRequest())
+				->Put(L"count", L"1")
+				->Submit();
+	}
 
 	return true;
 }

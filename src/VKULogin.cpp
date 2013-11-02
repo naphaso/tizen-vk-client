@@ -1,11 +1,13 @@
 #include "AppResourceId.h"
 #include "VKULogin.h"
 #include "VKULoginPopup.h"
+#include "VKUAuthConfig.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Ui::Scenes;
+
 
 VKULogin::VKULogin(void) {
 }
@@ -39,8 +41,10 @@ result VKULogin::OnTerminating(void) {
 void VKULogin::OnActionPerformed(const Control& source, int actionId) {
 	SceneManager* pSceneManager = SceneManager::GetInstance();
 
+
 	switch(actionId) {
 	case ACTION_LOGIN: {
+		pSceneManager->GoForward(SceneTransitionId(ID_SCNT_4));
 		VKULoginPopup* pPopup = new (std::nothrow) VKULoginPopup();
 		pPopup->Construct();
 		pPopup->StartAuth(this); // FIXME: free memory
@@ -71,6 +75,7 @@ void VKULogin::OnSceneDeactivated(
 
 void VKULogin::OnSuccess(const String &accessToken, const String &expiresIn, const String &userId) {
 	AppLog("login success: authToken %ls, expiresIn %ls, userId %ls", accessToken.GetPointer(), expiresIn.GetPointer(), userId.GetPointer());
+	VKUAuthConfig::Replace(accessToken, expiresIn, userId);
 }
 
 void VKULogin::OnError(const String &error, const String &description) {
