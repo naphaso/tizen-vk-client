@@ -5,37 +5,26 @@
 
 using namespace Tizen::Ui::Scenes;
 
-
-VKUFormFactory::VKUFormFactory(void)
-{
+VKUFormFactory::VKUFormFactory(void) {
 }
 
-VKUFormFactory::~VKUFormFactory(void)
-{
+VKUFormFactory::~VKUFormFactory(void) {
 }
 
-Tizen::Ui::Controls::Form*
-VKUFormFactory::CreateFormN(const Tizen::Base::String& formId, const Tizen::Ui::Scenes::SceneId& sceneId)
-{
+Tizen::Ui::Controls::Form* VKUFormFactory::CreateFormN(const Tizen::Base::String& formId, const Tizen::Ui::Scenes::SceneId& sceneId) {
 	SceneManager* pSceneManager = SceneManager::GetInstance();
 	AppAssert(pSceneManager);
 	Tizen::Ui::Controls::Form* pNewForm = null;
 
-	if (formId == IDF_FORM)
-	{
+	if (formId == IDF_FORM) {
 		VKUMainForm* pForm = new VKUMainForm();
 		pForm->Initialize();
 		pNewForm = pForm;
-	}
-	else if (formId == IDF_LOGIN)
-	{
+	} else if (formId == IDF_LOGIN) {
 		VKULogin* pForm = new VKULogin();
 		pForm->Initialize();
 		pNewForm = pForm;
 	}
-
-	// TODO:
-	// Add your form creation code here
 
 	return pNewForm;
 }

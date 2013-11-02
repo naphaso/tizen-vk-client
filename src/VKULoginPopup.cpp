@@ -7,54 +7,62 @@
 
 #include "VKULoginPopup.h"
 #include "VKU.h"
+#include "VKUConfig.h"
+#include "VKUUtils.h"
 
 using namespace Tizen::Graphics;
 using namespace Tizen::Base;
+using namespace Tizen::Base::Collection;
 using namespace Tizen::Web::Controls;
 using namespace Tizen::Base::Utility;
 using namespace Tizen::Io;
 
-result VKULoginPopup::Construct()
-{
-    result r = E_SUCCESS;
+result VKULoginPopup::Construct() {
+	result r = E_SUCCESS;
+	Rectangle rect;
 
-    Popup::Construct(true, Dimension(600,800));
+	r = Popup::Construct(false, Dimension(600, 800));
+	TryCatch(r == E_SUCCESS, , "Failed Construct");
 
-    pWeb = new (std::nothrow) Web();
-    Rectangle rect = GetClientAreaBounds();
-    pWeb->Construct(rect);
-    pWeb->SetLoadingListener(this);
+	rect = GetClientAreaBounds();
 
-    AddControl(pWeb);
+	pWeb = new (std::nothrow) Web();
+	TryCatch(r == GetLastResult(), r = GetLastResult(), "Failed Construct");
 
+	r = pWeb->Construct(rect);
+	TryCatch(r == E_SUCCESS, , "Failed Construct");
 
-	SetTitleText(L"Popup Test");
+	pWeb->SetLoadingListener(this);
+	r = GetLastResult();
+	TryCatch(r == E_SUCCESS, , "Failed SetLoadingListener");
+
+	r = AddControl(pWeb);
+	TryCatch(r == E_SUCCESS, , "Failed AddControl");
+
 	return r;
 
-CATCH:
-    AppLogException("Construct is failed.", GetErrorMessage(r));
+	CATCH:
+	AppLogException("Construct is failed.", GetErrorMessage(r));
 	return r;
 }
 
-void VKULoginPopup::ShowPopup() {
-	SetShowState(true);
-	Show();
-	String url = L"https://oauth.vk.com/authorize?client_id=3966496&scope=notify"\
-		 ",friends,photos,audio,video,docs,notes,pages,status,wall,groups,messages,"\
-		 "notifications,stats,ads,offline,nohttps,questions,offers"\
-		 "&redirect_uri=https://oauth.vk.com/blank.html"\
-		 "&display=touch"\
-		 "&response_type=token";
-	pWeb->LoadUrl(url);
-}
+void VKULoginPopup::StartAuth(IAuthListener *listener) {
+	result r;
+	this->authListener = listener;
 
-void VKULoginPopup::HidePopup() {
-	SetShowState(false);
-}
+	r = SetShowState(true);
+	TryCatch(r == E_SUCCESS, , "Failed SetShowState");
+	r = Show();
+	TryCatch(r == E_SUCCESS, , "Failed Show");
 
-bool VKULoginPopup::OnLoadingRequested(const String& url, WebNavigationType type) {
-	AppLog("load url: %ls", url.GetPointer());
-	return false;
+	pWeb->LoadUrl(VKU_LOGIN_URL);
+	r = GetLastResult();
+	TryCatch(r == E_SUCCESS, , "Failed LoadUrl");
+
+	return;
+	CATCH:
+	AppLogException("StartAuth is failed.", GetErrorMessage(r));
+	return;
 }
 
 void VKULoginPopup::OnLoadingCompleted() {
@@ -63,6 +71,59 @@ void VKULoginPopup::OnLoadingCompleted() {
 	if (url.StartsWith(L"https://oauth.vk.com/blank.html", 0)) {
 		Uri uri;
 		uri.SetUri(url);
+
+		String query = uri.GetQuery();
+		String fragment = uri.GetFragment();
+
+		if(!fragment.IsEmpty()) {
+			IMap *params = ParseQueryStringN(fragment);
+			String accessToken(L"access_token");
+			String expiresIn(L"expires_in");
+			String userId(L"user_id");
+
+			if(params->ContainsKey(accessToken) && params->ContainsKey(expiresIn) && params->ContainsKey(userId)) {
+				String accessTokenValue(*static_cast<String*>(params->GetValue(accessToken)));
+				String expiresInValue(*static_cast<String*>(params->GetValue(expiresIn)));
+				String userIdValue(*static_cast<String*>(params->GetValue(userId)));
+
+				SetShowState(false);
+
+				authListener->OnSuccess(accessTokenValue, expiresInValue, userIdValue);
+			} else {
+				String errorValue(L"error_unknown");
+				String errorDescription(L"Unknown error");
+
+				SetShowState(false);
+
+				authListener->OnError(errorValue, errorDescription);
+			}
+
+			delete params;
+		} else if(!query.IsEmpty()) {
+			IMap *params = ParseQueryStringN(query);
+			String error(L"error");
+			String error_description(L"error_description");
+			if(params->ContainsKey(error) && params->ContainsKey(error_description)) {
+				String errorValue(*static_cast<String*>(params->GetValue(error)));
+				String errorDescriptionValue(*static_cast<String*>(params->GetValue(error_description)));
+
+				SetShowState(false);
+
+				authListener->OnError(errorValue, errorDescriptionValue);
+			} else {
+				String errorValue(L"error_unknown");
+				String errorDescription(L"Unknown error");
+
+				SetShowState(false);
+
+				authListener->OnError(errorValue, errorDescription);
+			}
+
+			delete params;
+		}
+
+		/*
+
 		String params = uri.GetFragment(), section(L"auth"), authToken;
 		StringTokenizer strTok(params, L"&");
 
@@ -86,7 +147,8 @@ void VKULoginPopup::OnLoadingCompleted() {
 				String name, value;
 				eqTok.GetNextToken(name);
 				eqTok.GetNextToken(value);
-				AppLog("name=%ls value=%ls", name.GetPointer(), value.GetPointer());
+				AppLog(
+						"name=%ls value=%ls", name.GetPointer(), value.GetPointer());
 				reg.AddValue(section, name, value);
 			}
 		}
@@ -98,8 +160,9 @@ void VKULoginPopup::OnLoadingCompleted() {
 
 		}
 
-		reg.Flush();
+		reg.Flush();*/
 	}
 
-	AppLog("completed url: %ls", pWeb->GetUrl().GetPointer());
+	//AppLog("completed url: %ls", pWeb->GetUrl().GetPointer());
 }
+
