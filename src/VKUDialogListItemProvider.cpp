@@ -11,8 +11,12 @@ using namespace Tizen::Ui::Controls;
 using namespace Tizen::Graphics;
 using namespace Tizen::Web::Json;
 using namespace Tizen::Base;
+using namespace Tizen::App;
 
 static const int LIST_HEIGHT = 100;
+
+static const int AVATAR_MARGIN = 10;
+static const int AVATAR_SIZE = 80;
 
 VKUDialogListItemProvider::VKUDialogListItemProvider() {
 	dialogsJson = null;
@@ -55,8 +59,13 @@ ListItemBase* VKUDialogListItemProvider::CreateItem(int index, int itemWidth) {
 		}
 	}
 
-	item->AddElement(Rectangle(0, 0, itemWidth, LIST_HEIGHT/2), 41, L"Ololo");
-	item->AddElement(Rectangle(0, 50, itemWidth, LIST_HEIGHT/2), 42, previewText);
+	AppResource *pAppResource = VKUApp::GetInstance()->GetAppResource();
+
+	avatarBm = pAppResource->GetBitmapN(L"no_photo_user.png", BITMAP_PIXEL_FORMAT_ARGB8888);
+
+	item->AddElement(Rectangle(AVATAR_MARGIN, AVATAR_MARGIN, AVATAR_SIZE, AVATAR_SIZE), 40, *avatarBm);
+	item->AddElement(Rectangle(AVATAR_SIZE + 2*AVATAR_MARGIN, 0, itemWidth, LIST_HEIGHT/2), 41, L"Unnamed User");
+	item->AddElement(Rectangle(AVATAR_SIZE + 2*AVATAR_MARGIN, 50, itemWidth, LIST_HEIGHT/2), 42, previewText);
 
 	return item;
 }

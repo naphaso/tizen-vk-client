@@ -27,9 +27,10 @@ public:
 	virtual void OnActionPerformed(const Tizen::Ui::Control& source, int actionId);
 
 protected:
-	static const int ID_HEADER_ITEM1 = 101;
-	static const int ID_HEADER_ITEM2 = 102;
-	static const int ID_HEADER_ITEM3 = 103;
+	static const int ID_HEADER_MESSAGES = 101;
+	static const int ID_HEADER_CONTACTS = 102;
+	static const int ID_HEADER_SEARCH = 103;
+	static const int ID_HEADER_SETTINGS = 104;
 
 	virtual void OnSceneActivatedN(const Tizen::Ui::Scenes::SceneId& previousSceneId,
 								   const Tizen::Ui::Scenes::SceneId& currentSceneId, Tizen::Base::Collection::IList* pArgs);
