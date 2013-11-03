@@ -10,13 +10,13 @@
 #include <gl.h>
 #include "VKUDialogListItemProvider.h"
 
-class VKUTab1
+class VKUDialogsPanel
 	: public Tizen::Ui::Controls::Panel
 	, public Tizen::Ui::Scenes::ISceneEventListener
 {
 public:
-	VKUTab1(void);
-	virtual ~VKUTab1(void);
+	VKUDialogsPanel(void);
+	virtual ~VKUDialogsPanel(void);
 	bool Initialize(void);
 
 public:

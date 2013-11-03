@@ -1,4 +1,4 @@
-#include "VKUTab1.h"
+#include "VKUDialogsPanel.h"
 #include "AppResourceId.h"
 
 using namespace Tizen::Graphics;
@@ -6,18 +6,18 @@ using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Ui::Scenes;
 
-VKUTab1::VKUTab1(void)
+VKUDialogsPanel::VKUDialogsPanel(void)
 {
 
 }
 
-VKUTab1::~VKUTab1(void)
+VKUDialogsPanel::~VKUDialogsPanel(void)
 {
 
 }
 
 bool
-VKUTab1::Initialize(void)
+VKUDialogsPanel::Initialize(void)
 {
 	result r = Construct(IDC_PANEL_DIALOGS);
 	if (IsFailed(r))
@@ -27,7 +27,7 @@ VKUTab1::Initialize(void)
 }
 
 result
-VKUTab1::OnInitializing(void)
+VKUDialogsPanel::OnInitializing(void)
 {
 	result r = E_SUCCESS;
 
@@ -49,7 +49,7 @@ VKUTab1::OnInitializing(void)
 }
 
 result
-VKUTab1::OnTerminating(void)
+VKUDialogsPanel::OnTerminating(void)
 {
 	result r = E_SUCCESS;
 
@@ -59,7 +59,7 @@ VKUTab1::OnTerminating(void)
 }
 
 void
-VKUTab1::OnSceneActivatedN(const Tizen::Ui::Scenes::SceneId& previousSceneId,
+VKUDialogsPanel::OnSceneActivatedN(const Tizen::Ui::Scenes::SceneId& previousSceneId,
 								const Tizen::Ui::Scenes::SceneId& currentSceneId, Tizen::Base::Collection::IList* pArgs)
 {
 	// TODO:
@@ -68,7 +68,7 @@ VKUTab1::OnSceneActivatedN(const Tizen::Ui::Scenes::SceneId& previousSceneId,
 }
 
 void
-VKUTab1::OnSceneDeactivated(const Tizen::Ui::Scenes::SceneId& currentSceneId,
+VKUDialogsPanel::OnSceneDeactivated(const Tizen::Ui::Scenes::SceneId& currentSceneId,
 								const Tizen::Ui::Scenes::SceneId& nextSceneId)
 {
 	// TODO:
