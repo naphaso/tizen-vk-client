@@ -51,7 +51,7 @@ VKUDialogsPanel::OnInitializing(void)
 
 	VKUApi *api = new VKUApi();
 	api->CreateRequest("messages.getDialogs", this)
-			->Put(L"count", L"3")
+			->Put(L"count", L"150")
 			->Submit();
 
 	return r;

@@ -9,6 +9,7 @@
 #include "VKUJson.h"
 #include "../VKUAuthConfig.h"
 #include "../VKUConfig.h"
+#include "VKURequestData.h"
 
 using namespace Tizen::App;
 using namespace Tizen::Base;
@@ -29,7 +30,7 @@ VKURequest::VKURequest(VKUApi *api, String method, IAPIRequestListener *listener
 	r = GetLastResult();
 	TryCatch(pTransaction != null, , "Failed to open the HttpTransaction.");
 
-	pTransaction->SetUserObject(listener);
+	pTransaction->SetUserObject(new VKURequestData(listener));
 
 	r = pTransaction->AddHttpTransactionListener(*this);
 	TryCatch(r == E_SUCCESS, , "Failed to add the HttpTransactionListener.");
@@ -78,11 +79,14 @@ void VKURequest::Submit() {
 
 
 void VKURequest::OnTransactionReadyToRead(HttpSession& httpSession, HttpTransaction& httpTransaction, int availableBodyLen) {
+	result r;
 	AppLog("OnTransactionReadyToRead");
 
 
 	HttpResponse* pHttpResponse = httpTransaction.GetResponse();
-	IAPIRequestListener *listener = static_cast<IAPIRequestListener *>(httpTransaction.GetUserObject());
+	//IAPIRequestListener *listener = static_cast<IAPIRequestListener *>(httpTransaction.GetUserObject());
+	VKURequestData *requestData = static_cast<VKURequestData *>(httpTransaction.GetUserObject());
+
 
 	if (pHttpResponse->GetHttpStatusCode() == HTTP_STATUS_OK)
 	{
@@ -95,11 +99,16 @@ void VKURequest::OnTransactionReadyToRead(HttpSession& httpSession, HttpTransact
 			String text(L"Read Body Length: ");
 			text.Append(availableBodyLen);
 
+			AppLog("len: %ls", text.GetPointer());
 
+			requestData->data.CopyFrom(*pBuffer);
+
+			/*
 			AppLog("response: %s", pBuffer->GetPointer());
 
 			if(listener != null) {
 				IJsonValue *pJson = JsonParser::ParseN(*pBuffer);
+				TryCatch(GetLastResult() == E_SUCCESS, r = GetLastResult(), "Failed ParseN");
 				if(pJson->GetType() == JSON_TYPE_OBJECT) {
 					JsonObject* pObject = static_cast< JsonObject* >(pJson);
 					listener->OnResponseN(pObject);
@@ -107,6 +116,9 @@ void VKURequest::OnTransactionReadyToRead(HttpSession& httpSession, HttpTransact
 					delete pJson;
 				}
 			}
+			*/
+
+
 			/*
 			AppLog("1");
 
@@ -163,6 +175,11 @@ void VKURequest::OnTransactionReadyToRead(HttpSession& httpSession, HttpTransact
 			delete pBuffer;
 		}
 	}
+	return;
+	CATCH:
+	AppLogException("OnTransactionReadyToRead constructor is failed.", GetErrorMessage(r));
+	return;
+
 }
 
 void VKURequest::OnTransactionAborted(HttpSession& httpSession, HttpTransaction& httpTransaction, result r) {
@@ -180,9 +197,31 @@ void VKURequest::OnTransactionHeaderCompleted(HttpSession& httpSession, HttpTran
 }
 
 void VKURequest::OnTransactionCompleted(HttpSession& httpSession, HttpTransaction& httpTransaction) {
+	result r;
 	AppLog("OnTransactionCompleted");
 
+	VKURequestData *requestData = static_cast<VKURequestData *>(httpTransaction.GetUserObject());
+
+	if(requestData != null) {
+		requestData->data.Flip();
+		IJsonValue *pJson = JsonParser::ParseN(requestData->data);
+		TryCatch(GetLastResult() == E_SUCCESS, r = GetLastResult(), "Failed ParseN");
+		if(pJson->GetType() == JSON_TYPE_OBJECT) {
+			JsonObject* pObject = static_cast< JsonObject* >(pJson);
+			requestData->listener->OnResponseN(pObject);
+		} else {
+			delete pJson;
+		}
+	}
+
+	delete requestData;
 	delete &httpTransaction;
+
+	return;
+
+	CATCH:
+	AppLogException("OnTransactionCompleted constructor is failed.", GetErrorMessage(r));
+	return;
 }
 
 void VKURequest::OnTransactionCertVerificationRequiredN(HttpSession& httpSession, HttpTransaction& httpTransaction, Tizen::Base::String* pCert) {
