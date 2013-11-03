@@ -8,6 +8,8 @@
 #include <FUiIme.h>
 #include <FGraphics.h>
 #include <gl.h>
+#include "VKUDialogListItemProvider.h"
+
 class VKUTab1
 	: public Tizen::Ui::Controls::Panel
 	, public Tizen::Ui::Scenes::ISceneEventListener
@@ -25,6 +27,8 @@ public:
 	virtual void OnSceneDeactivated(const Tizen::Ui::Scenes::SceneId& currentSceneId,
 									const Tizen::Ui::Scenes::SceneId& nextSceneId);
 
+private:
+	VKUDialogListItemProvider provider;
 };
 
 #endif // _VKU_TAB1_H_

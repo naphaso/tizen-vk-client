@@ -8,6 +8,7 @@
 #include "VKU.h"
 #include "VKUFrame.h"
 #include "VKUAuthConfig.h"
+#include "AppResourceId.h"
 #include "SampleRequest.h"
 #include "api/VKUApi.h"
 
@@ -45,10 +46,11 @@ bool VKUApp::OnAppInitialized(void) {
 
 		AppLog("logged!");
 
-		VKUApi *api = new VKUApi();
-		api->CreateRequest("messages.getDialogs", new SampleRequest())
-				->Put(L"count", L"1")
-				->Submit();
+//		VKUApi *api = new VKUApi();
+//		api->CreateRequest("messages.getDialogs", new SampleRequest())
+//				->Put(L"count", L"1")
+//				->Submit();
+		SceneManager::GetInstance()->GoForward(SceneTransitionId(ID_SCNT_LOGIN_SUCCESS));
 	}
 
 	return true;

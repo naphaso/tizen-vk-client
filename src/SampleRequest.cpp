@@ -22,4 +22,5 @@ void SampleRequest::OnResponseN(Tizen::Web::Json::JsonObject *json) {
 	char data[10000];
 	JsonWriter::Compose(json, data, 10000);
 	AppLog("response received!: %s", data);
+	delete json;
 }

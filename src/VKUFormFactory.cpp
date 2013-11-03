@@ -16,7 +16,7 @@ Tizen::Ui::Controls::Form* VKUFormFactory::CreateFormN(const Tizen::Base::String
 	AppAssert(pSceneManager);
 	Tizen::Ui::Controls::Form* pNewForm = null;
 
-	if (formId == IDF_FORM) {
+	if (formId == IDF_MAIN) {
 		VKUMainForm* pForm = new VKUMainForm();
 		pForm->Initialize();
 		pNewForm = pForm;

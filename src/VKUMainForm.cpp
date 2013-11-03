@@ -20,7 +20,7 @@ VKUMainForm::~VKUMainForm(void)
 bool
 VKUMainForm::Initialize(void)
 {
-	Construct(IDF_FORM);
+	Construct(IDF_MAIN);
 
 	return true;
 }
@@ -58,18 +58,20 @@ void
 VKUMainForm::OnActionPerformed(const Tizen::Ui::Control& source, int actionId)
 {
 	SceneManager* pSceneManager = SceneManager::GetInstance();
+	pSceneManager->GoForward(SceneTransitionId(ID_SCNT_1));
+	
 	AppAssert(pSceneManager);
 
 	switch(actionId)
 	{
 	case ID_HEADER_ITEM1:
-		pSceneManager->GoForward(SceneTransitionId(ID_SCNT_1));
+		
 		break;
 	case ID_HEADER_ITEM2:
-		pSceneManager->GoForward(SceneTransitionId(ID_SCNT_2));
+		
 		break;
 	case ID_HEADER_ITEM3:
-		pSceneManager->GoForward(SceneTransitionId(ID_SCNT_3));
+		
 		break;
 	default:
 		break;

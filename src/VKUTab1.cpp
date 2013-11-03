@@ -19,7 +19,7 @@ VKUTab1::~VKUTab1(void)
 bool
 VKUTab1::Initialize(void)
 {
-	result r = Construct(IDC_PANEL1);
+	result r = Construct(IDC_PANEL_DIALOGS);
 	if (IsFailed(r))
 		return false;
 
@@ -41,6 +41,9 @@ VKUTab1::OnInitializing(void)
 	pRelativeLayout->SetHorizontalFitPolicy(*this, FIT_POLICY_PARENT);
 	pRelativeLayout->SetVerticalFitPolicy(*this, FIT_POLICY_PARENT);
 	delete pRelativeLayout;
+
+	ListView* pDialogListView = static_cast<ListView*>(GetControl(IDC_LISTVIEW_DIALOGS));
+	pDialogListView->SetItemProvider(provider);
 
 	return r;
 }

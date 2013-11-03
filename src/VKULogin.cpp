@@ -44,7 +44,7 @@ void VKULogin::OnActionPerformed(const Control& source, int actionId) {
 
 	switch(actionId) {
 	case ACTION_LOGIN: {
-		pSceneManager->GoForward(SceneTransitionId(ID_SCNT_4));
+		
 		VKULoginPopup* pPopup = new (std::nothrow) VKULoginPopup();
 		pPopup->Construct();
 		pPopup->StartAuth(this); // FIXME: free memory
@@ -76,6 +76,9 @@ void VKULogin::OnSceneDeactivated(
 void VKULogin::OnSuccess(const String &accessToken, const String &expiresIn, const String &userId) {
 	AppLog("login success: authToken %ls, expiresIn %ls, userId %ls", accessToken.GetPointer(), expiresIn.GetPointer(), userId.GetPointer());
 	VKUAuthConfig::Replace(accessToken, expiresIn, userId);
+
+	SceneManager* pSceneManager = SceneManager::GetInstance();
+	pSceneManager->GoForward(SceneTransitionId(ID_SCNT_LOGIN_SUCCESS));
 }
 
 void VKULogin::OnError(const String &error, const String &description) {
