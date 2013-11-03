@@ -8,7 +8,7 @@
 #ifndef SAMPLEREQUEST_H_
 #define SAMPLEREQUEST_H_
 
-#include "api/IAPIRequestListener.h"
+#include "IAPIRequestListener.h"
 
 
 class SampleRequest : public IAPIRequestListener {

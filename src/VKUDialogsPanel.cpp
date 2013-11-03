@@ -1,10 +1,14 @@
 #include "VKUDialogsPanel.h"
 #include "AppResourceId.h"
 
+#include "api/VKUApi.h"
+
 using namespace Tizen::Graphics;
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Ui::Scenes;
+using namespace Tizen::Web::Json;
+using namespace Tizen::Base;
 
 VKUDialogsPanel::VKUDialogsPanel(void)
 {
@@ -45,6 +49,11 @@ VKUDialogsPanel::OnInitializing(void)
 	ListView* pDialogListView = static_cast<ListView*>(GetControl(IDC_LISTVIEW_DIALOGS));
 	pDialogListView->SetItemProvider(provider);
 
+	VKUApi *api = new VKUApi();
+	api->CreateRequest("messages.getDialogs", this)
+			->Put(L"count", L"3")
+			->Submit();
+
 	return r;
 }
 
@@ -74,4 +83,15 @@ VKUDialogsPanel::OnSceneDeactivated(const Tizen::Ui::Scenes::SceneId& currentSce
 	// TODO:
 	// Add your scene deactivate code here
 	AppLog("OnSceneDeactivated");
+}
+
+
+void VKUDialogsPanel::OnResponseN(Tizen::Web::Json::JsonObject *object) {
+
+	provider.SetDialogsJson(object);
+
+	ListView* pDialogListView = static_cast<ListView*>(GetControl(IDC_LISTVIEW_DIALOGS));
+
+	pDialogListView->UpdateList();
+	pDialogListView->RequestRedraw(true);
 }
