@@ -5,7 +5,7 @@
 <!DOCTYPE Scene SYSTEM "UIForm.dtd">
 <Scene Bversion="2.0.0.201307161753" Dversion="20120315">
     <LogicalCoordinate>720</LogicalCoordinate>
-    <Form id="IDF_LOGIN">
+    <Form id="VKUDialogList">
         <property backgroundColor="" backgroundColorOpacity="100" notificationTrayOpenEnabled="false" orientation="Portrait" softKey0NormalIcon="" softKey0PressedIcon="" softKey0Text="" softKey1NormalIcon="" softKey1PressedIcon="" softKey1Text="" title="" titleAlign="ALIGN_CENTER" titleIcon="" translucentFooter="false" translucentHeader="false" translucentIndicator="false"/>
         <layout mode="Portrait" style="FORM_STYLE_PORTRAIT_INDICATOR|FORM_STYLE_HEADER|FORM_STYLE_FOOTER" type="NONE"/>
         <layout mode="Landscape" style="FORM_STYLE_PORTRAIT_INDICATOR|FORM_STYLE_HEADER|FORM_STYLE_FOOTER" type="NONE"/>
@@ -18,9 +18,4 @@
         <property accessibilityHint="" backgroundBitmapPath="" color="" colorOpacity="100" descriptionText="" descriptionTextColor="" disabledButtonColor="" disabledButtonColorOpacity="100" disabledButtonTextColor="" disabledItemColor="" disabledItemColorOpacity="100" disabledItemTextColor="" headerStyle="HEADER_STYLE_TITLE" highlightedButtonColor="" highlightedButtonColorOpacity="100" highlightedButtonTextColor="" highlightedItemColor="" highlightedItemColorOpacity="100" highlightedItemTextColor="" normalButtonColor="" normalButtonColorOpacity="100" normalButtonTextColor="" normalItemColor="" normalItemColorOpacity="100" normalItemTextColor="" pressedButtonColor="" pressedButtonColorOpacity="100" pressedButtonTextColor="" pressedItemColor="" pressedItemColorOpacity="100" pressedItemTextColor="" selectedItemColor="" selectedItemColorOpacity="100" selectedItemTextColor="" showBackButton="false" titleIconPath="" titleText="" titleTextColor=""/>
         <itemSet/>
     </Header>
-    <Button id="IDC_BUTTON_LOGIN" parent="IDF_LOGIN">
-        <property DisabledBitmapX="0.0" DisabledBitmapY="0.0" NormalBitmapX="0.0" NormalBitmapY="0.0" PressedBitmapX="0.0" PressedBitmapY="0.0" accessibilityHint="" disableTextColor="" disabledBGBitmapPath="" disabledBitmapPath="" disabledColor="" disabledColorOpacity="100" highlightedBGBitmapPath="" highlightedBitmapPath="" highlightedBitmapX="0.0" highlightedBitmapY="0.0" highlightedColor="" highlightedColorOpacity="100" highlightedTextColor="" horizontalAlign="ALIGN_CENTER" normalBGBitmapPath="" normalBitmapPath="" normalColor="" normalColorOpacity="100" normalTextColor="" pressedBGBitmapPath="" pressedBitmapPath="" pressedColor="" pressedColorOpacity="100" pressedTextColor="" text="Login via VK (i)" textSize="32.0" verticalAlign="ALIGN_MIDDLE"/>
-        <layout height="74.0" mode="Portrait" width="381.0" x="185.0" y="343.0"/>
-        <layout height="74.0" mode="Landscape" width="136.0" x="327.0" y="470.0"/>
-    </Button>
 </Scene>
