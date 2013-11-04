@@ -50,8 +50,8 @@ VKUDialogsPanel::OnInitializing(void)
 	pDialogListView->SetItemProvider(provider);
 	pDialogListView->AddListViewItemEventListener(provider);
 
-	VKUApi *api = new VKUApi();
-	api->CreateRequest("messages.getDialogs", this)
+
+	VKUApi::GetInstance().CreateRequest("messages.getDialogs", this)
 			->Put(L"count", L"150")
 			->Submit();
 
