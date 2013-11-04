@@ -22,6 +22,7 @@ bool VKUMainForm::Initialize(void) {
 result VKUMainForm::OnInitializing(void) {
 	result r = E_SUCCESS;
 
+
 	// TODO:
 	// Add your initialization code here
 	Header* pHeader = GetHeader();

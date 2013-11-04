@@ -112,9 +112,31 @@ void VKUDialogListItemProvider::OnListViewItemStateChanged(ListView& listView,
 		SceneManager* pSceneManager = SceneManager::GetInstance();
 		AppAssert(pSceneManager);
 
-		ArrayList* pList = new (std::nothrow) ArrayList();
+		IJsonValue *itemValue;
+
+		dialogsJson->GetAt(index, itemValue);
+
+		JsonObject *itemObject = static_cast<JsonObject *>(itemValue);
+//		String jsonPath(L"/tmp/itemObject.txt");
+//		JsonWriter::Compose(itemValue, jsonPath);
+
+		IJsonValue *userIdValue;
+		static const String userIdConst(L"user_id");
+
+		itemObject->GetValue(&userIdConst, userIdValue);
+
+		JsonNumber *userIdNumber = static_cast<JsonNumber *>(userIdValue);
+		ArrayList* pList = new (std::nothrow) ArrayList(SingleObjectDeleter);
+
+		String userIdString;
+		userIdString.Append(userIdNumber->ToInt());
+
+		AppLog("userIdString %ls", userIdString.GetPointer());
+
 		pList->Construct();
-		pList->Add(*new (std::nothrow) Integer(index));
+		pList->Add(new (std::nothrow) String(userIdString));
+
+		AppLog("pList item 0: %ls", static_cast<String *>(pList->GetAt(0))->GetPointer());
 
 		pSceneManager->GoForward(ForwardSceneTransition(SCENE_DIALOG), pList);
 	}

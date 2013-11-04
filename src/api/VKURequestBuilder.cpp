@@ -64,6 +64,7 @@ VKURequestBuilder::~VKURequestBuilder() {
 
 VKURequestBuilder *VKURequestBuilder::Put(const String &arg, const String &value) {
 	pHttpUrlEncodedEntity->AddParameter(arg, value);
+	AppLog("key: %ls, val: %ls", arg.GetPointer(), value.GetPointer());
 	return this;
 }
 

@@ -3,10 +3,14 @@
 
 extern const wchar_t* IDC_BUTTON1;
 extern const wchar_t* IDC_BUTTON_LOGIN;
+extern const wchar_t* IDC_DIALOGTEXT_EDITFIELD;
+extern const wchar_t* IDC_DIALOG_ATTACH_BUTTON;
+extern const wchar_t* IDC_DIALOG_EDITFIELD;
 extern const wchar_t* IDC_DIALOG_ITEM;
 extern const wchar_t* IDC_DIALOG_ITEM_PREVIEW;
 extern const wchar_t* IDC_DIALOG_ITEM_SENDER;
 extern const wchar_t* IDC_DIALOG_LIST_ITEM;
+extern const wchar_t* IDC_DIALOG_MESSAGES_LISTVIEW;
 extern const wchar_t* IDC_EDITFIELD1;
 extern const wchar_t* IDC_LABEL2;
 extern const wchar_t* IDC_LISTVIEW1;
@@ -16,6 +20,7 @@ extern const wchar_t* IDC_PANEL_DIALOG;
 extern const wchar_t* IDC_PANEL_DIALOGS;
 extern const wchar_t* IDC_PANEL_SEARCH;
 extern const wchar_t* IDC_PANEL_SETTINGS;
+extern const wchar_t* IDC_SEARCHBAR1;
 extern const wchar_t* IDF_DIALOG;
 extern const wchar_t* IDF_FORM;
 extern const wchar_t* IDC_PANEL1;

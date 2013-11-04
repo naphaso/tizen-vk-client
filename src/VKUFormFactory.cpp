@@ -12,7 +12,9 @@ VKUFormFactory::VKUFormFactory(void) {
 VKUFormFactory::~VKUFormFactory(void) {
 }
 
-Tizen::Ui::Controls::Form* VKUFormFactory::CreateFormN(const Tizen::Base::String& formId, const Tizen::Ui::Scenes::SceneId& sceneId) {
+Tizen::Ui::Controls::Form* VKUFormFactory::CreateFormN(
+		const Tizen::Base::String& formId,
+		const Tizen::Ui::Scenes::SceneId& sceneId) {
 	SceneManager* pSceneManager = SceneManager::GetInstance();
 	AppAssert(pSceneManager);
 	Tizen::Ui::Controls::Form* pNewForm = null;
@@ -25,14 +27,11 @@ Tizen::Ui::Controls::Form* VKUFormFactory::CreateFormN(const Tizen::Base::String
 		VKULogin* pForm = new VKULogin();
 		pForm->Initialize();
 		pNewForm = pForm;
-	}
-	else if (formId == IDF_DIALOG)
-	{
+	} else if (formId == IDF_DIALOG) {
 		VKUDialog* pForm = new VKUDialog();
 		pForm->Initialize();
 		pNewForm = pForm;
 	}
-
 
 	return pNewForm;
 }

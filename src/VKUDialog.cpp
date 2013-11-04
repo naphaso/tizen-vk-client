@@ -1,4 +1,5 @@
 #include "AppResourceId.h"
+#include "SceneRegister.h"
 #include "VKUDialog.h"
 
 using namespace Tizen::Base;
@@ -25,11 +26,17 @@ result VKUDialog::OnInitializing(void) {
 //	AddKeyEventListener(*this);
 	SetFormBackEventListener(this);
 
+	SceneManager* pSceneManager = SceneManager::GetInstance();
+	pSceneManager->AddSceneEventListener(SCENE_DIALOG, *this);
+
 	return r;
 }
 
 result VKUDialog::OnTerminating(void) {
 	result r = E_SUCCESS;
+
+	SceneManager* pSceneManager = SceneManager::GetInstance();
+	pSceneManager->RemoveSceneEventListener(SCENE_DIALOG, *this);
 
 	// TODO: Add your termination code here
 
@@ -40,8 +47,10 @@ void VKUDialog::OnSceneActivatedN(
 		const Tizen::Ui::Scenes::SceneId& previousSceneId,
 		const Tizen::Ui::Scenes::SceneId& currentSceneId,
 		Tizen::Base::Collection::IList* pArgs) {
-	// TODO: Add your implementation codes here
-
+	if (pArgs != null) {
+		userId = String(*static_cast< String* > (pArgs->GetAt(0)));
+		AppLog("Received arg %ls", userId.GetPointer());
+	}
 }
 
 void VKUDialog::OnSceneDeactivated(
