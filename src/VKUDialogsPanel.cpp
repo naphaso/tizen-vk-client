@@ -48,6 +48,7 @@ VKUDialogsPanel::OnInitializing(void)
 
 	ListView* pDialogListView = static_cast<ListView*>(GetControl(IDC_LISTVIEW_DIALOGS));
 	pDialogListView->SetItemProvider(provider);
+	pDialogListView->AddListViewItemEventListener(provider);
 
 	VKUApi *api = new VKUApi();
 	api->CreateRequest("messages.getDialogs", this)

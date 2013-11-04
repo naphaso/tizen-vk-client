@@ -6,12 +6,15 @@
  */
 
 #include "VKUDialogListItemProvider.h"
+#include "SceneRegister.h"
 
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Graphics;
 using namespace Tizen::Web::Json;
 using namespace Tizen::Base;
 using namespace Tizen::App;
+using namespace Tizen::Base::Collection;
+using namespace Tizen::Ui::Scenes;
 
 static const int LIST_HEIGHT = 100;
 
@@ -27,7 +30,8 @@ VKUDialogListItemProvider::~VKUDialogListItemProvider() {
 	// TODO Auto-generated destructor stub
 }
 
-bool VKUDialogListItemProvider::DeleteItem(int index, ListItemBase* pItem, int itemWidth) {
+bool VKUDialogListItemProvider::DeleteItem(int index, ListItemBase* pItem,
+		int itemWidth) {
 	delete pItem;
 	return true;
 }
@@ -53,25 +57,32 @@ ListItemBase* VKUDialogListItemProvider::CreateItem(int index, int itemWidth) {
 
 	IJsonValue *bodyValue;
 	static const String bodyConst(L"body");
-	if(itemObject->GetValue(&bodyConst, bodyValue) == E_SUCCESS) {
-		if(bodyValue->GetType() == JSON_TYPE_STRING) {
+	if (itemObject->GetValue(&bodyConst, bodyValue) == E_SUCCESS) {
+		if (bodyValue->GetType() == JSON_TYPE_STRING) {
 			previewText = *static_cast<JsonString *>(bodyValue);
 		}
 	}
 
 	AppResource *pAppResource = VKUApp::GetInstance()->GetAppResource();
 
-	avatarBm = pAppResource->GetBitmapN(L"no_photo_user.png", BITMAP_PIXEL_FORMAT_ARGB8888);
+	avatarBm = pAppResource->GetBitmapN(L"no_photo_user.png",
+			BITMAP_PIXEL_FORMAT_ARGB8888);
 
-	item->AddElement(Rectangle(AVATAR_MARGIN, AVATAR_MARGIN, AVATAR_SIZE, AVATAR_SIZE), 40, *avatarBm);
-	item->AddElement(Rectangle(AVATAR_SIZE + 2*AVATAR_MARGIN, 0, itemWidth, LIST_HEIGHT/2), 41, L"Unnamed User");
-	item->AddElement(Rectangle(AVATAR_SIZE + 2*AVATAR_MARGIN, 50, itemWidth, LIST_HEIGHT/2), 42, previewText);
+	item->AddElement(
+			Rectangle(AVATAR_MARGIN, AVATAR_MARGIN, AVATAR_SIZE, AVATAR_SIZE),
+			40, *avatarBm);
+	item->AddElement(
+			Rectangle(AVATAR_SIZE + 2 * AVATAR_MARGIN, 0, itemWidth,
+					LIST_HEIGHT / 2), 41, L"Unnamed User");
+	item->AddElement(
+			Rectangle(AVATAR_SIZE + 2 * AVATAR_MARGIN, 50, itemWidth,
+					LIST_HEIGHT / 2), 42, previewText);
 
 	return item;
 }
 
 int VKUDialogListItemProvider::GetItemCount() {
-	if(dialogsJson == null) {
+	if (dialogsJson == null) {
 		return 0;
 	} else {
 		return dialogsJson->GetCount();
@@ -90,4 +101,37 @@ void VKUDialogListItemProvider::SetDialogsJson(JsonObject *json) {
 	(static_cast<JsonObject *>(response))->GetValue(&itemsConst, items);
 
 	dialogsJson = static_cast<JsonArray *>(items);
+}
+
+// view item events
+
+void VKUDialogListItemProvider::OnListViewItemStateChanged(ListView& listView,
+		int index, int elementId, ListItemStatus status) {
+	AppLog("status changed for item: %d", index);
+	if (status == LIST_ITEM_STATUS_SELECTED) {
+		SceneManager* pSceneManager = SceneManager::GetInstance();
+		AppAssert(pSceneManager);
+
+		ArrayList* pList = new (std::nothrow) ArrayList();
+		pList->Construct();
+		pList->Add(*new (std::nothrow) Integer(index));
+
+		pSceneManager->GoForward(ForwardSceneTransition(SCENE_DIALOG), pList);
+	}
+}
+
+void VKUDialogListItemProvider::OnListViewItemSwept(ListView& listView,
+		int index, SweepDirection direction) {
+
+}
+
+void VKUDialogListItemProvider::OnListViewContextItemStateChanged(
+		ListView& listView, int index, int elementId,
+		ListContextItemStatus state) {
+
+}
+
+void VKUDialogListItemProvider::OnItemReordered(ListView& view, int oldIndex,
+		int newIndex) {
+
 }

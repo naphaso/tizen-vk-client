@@ -2,6 +2,7 @@
 #include "VKUMainForm.h"
 #include "AppResourceId.h"
 #include "VKULogin.h"
+#include "VKUDialog.h"
 
 using namespace Tizen::Ui::Scenes;
 
@@ -25,6 +26,13 @@ Tizen::Ui::Controls::Form* VKUFormFactory::CreateFormN(const Tizen::Base::String
 		pForm->Initialize();
 		pNewForm = pForm;
 	}
+	else if (formId == IDF_DIALOG)
+	{
+		VKUDialog* pForm = new VKUDialog();
+		pForm->Initialize();
+		pNewForm = pForm;
+	}
+
 
 	return pNewForm;
 }

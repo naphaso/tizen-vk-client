@@ -10,6 +10,7 @@
 #include "VKUAuthConfig.h"
 #include "AppResourceId.h"
 #include "SampleRequest.h"
+#include "SceneRegister.h"
 #include "api/VKUApi.h"
 
 using namespace Tizen::App;
@@ -41,16 +42,13 @@ bool VKUApp::OnAppInitialized(void) {
 	pVKUFrame->SetName(L"VKU");
 	AddFrame(*pVKUFrame);
 
-	if(VKUAuthConfig::IsExists()) {
+	SceneRegister::RegisterAllScenes();
+
+	if (VKUAuthConfig::IsExists()) {
 		VKUAuthConfig::Read();
 
-		AppLog("logged!");
-
-//		VKUApi *api = new VKUApi();
-//		api->CreateRequest("messages.getDialogs", new SampleRequest())
-//				->Put(L"count", L"1")
-//				->Submit();
-		SceneManager::GetInstance()->GoForward(SceneTransitionId(ID_SCNT_LOGIN_SUCCESS));
+		SceneManager::GetInstance()->GoForward(
+				SceneTransitionId(ID_SCNT_LOGIN_SUCCESS));
 	}
 
 	return true;
@@ -60,7 +58,8 @@ bool VKUApp::OnAppWillTerminate(void) {
 	return true;
 }
 
-bool VKUApp::OnAppTerminating(AppRegistry& appRegistry, bool forcedTermination) {
+bool VKUApp::OnAppTerminating(AppRegistry& appRegistry,
+		bool forcedTermination) {
 	// TODO:
 	// Deallocate resources allocated by this App for termination.
 	// The App's permanent data and context can be saved via appRegistry.

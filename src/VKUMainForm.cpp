@@ -46,6 +46,7 @@ result VKUMainForm::OnTerminating(void) {
 void VKUMainForm::OnActionPerformed(const Tizen::Ui::Control& source,
 		int actionId) {
 	SceneManager* pSceneManager = SceneManager::GetInstance();
+	pSceneManager->GoForward(SceneTransitionId(ID_SCNT_5));
 
 	AppAssert(pSceneManager);
 

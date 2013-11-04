@@ -5,13 +5,16 @@
 #include "VKUContactsPanel.h"
 #include "VKSettingsPanel.h"
 #include "VKUSearchPanel.h"
+#include "VKUDialogPanel.h"
 
 using namespace Tizen::Ui::Scenes;
 
 VKUPanelFactory::VKUPanelFactory(void) {
+
 }
 
 VKUPanelFactory::~VKUPanelFactory(void) {
+
 }
 
 Tizen::Ui::Controls::Panel*
@@ -36,6 +39,10 @@ VKUPanelFactory::CreatePanelN(const Tizen::Base::String& panelId,
 		pNewPanel = pPanel;
 	} else if (panelId == IDC_PANEL_SEARCH) {
 		VKUSearchPanel* pPanel = new VKUSearchPanel();
+		pPanel->Initialize();
+		pNewPanel = pPanel;
+	} else if (panelId == IDC_PANEL_DIALOG) {
+		VKUDialogPanel* pPanel = new VKUDialogPanel();
 		pPanel->Initialize();
 		pNewPanel = pPanel;
 	}
