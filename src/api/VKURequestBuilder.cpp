@@ -7,8 +7,8 @@
 
 #include "VKURequestBuilder.h"
 #include "VKUJson.h"
-#include "../VKUAuthConfig.h"
-#include "../VKUConfig.h"
+#include "VKUAuthConfig.h"
+#include "VKUConfig.h"
 
 using namespace Tizen::App;
 using namespace Tizen::Base;

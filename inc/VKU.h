@@ -8,6 +8,7 @@
 #include <FUiIme.h>
 #include <FGraphics.h>
 #include <gl.h>
+#include "VKUServiceProxy.h"
 
 /**
  * [VKUApp] UiApp must inherit from UiApp class
@@ -57,6 +58,8 @@ public:
 
 	// Called when the screen turns off.
 	virtual void OnScreenOff(void);
+private:
+	VKUServiceProxy *pService;
 };
 
 #endif // _VKU_H_

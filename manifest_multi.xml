@@ -3,9 +3,7 @@
     <Id>iEl2RaVlnG</Id>
     <Version>1.0.0</Version>
     <Type>C++App</Type>
-    <Requirements>
-        <Feature Name="http://tizen.org/feature/screen.size.normal">true</Feature>
-    </Requirements>
+    <Requirements/>
     <Apps>
         <ApiVersion>2.2</ApiVersion>
         <Privileges>
@@ -24,5 +22,14 @@
             </Icons>
             <LaunchConditions/>
         </UiApp>
+        <ServiceApp AutoRestart="True" LaunchOnBoot="True" LaunchingHistoryVisible="True" Main="False" Name="vkservice">
+            <DisplayNames>
+                <DisplayName Locale="eng-GB">vkservice</DisplayName>
+            </DisplayNames>
+            <Icons>
+                <Icon Section="MainMenu">mainmenu.png</Icon>
+            </Icons>
+            <LaunchConditions/>
+        </ServiceApp>
     </Apps>
 </Manifest>

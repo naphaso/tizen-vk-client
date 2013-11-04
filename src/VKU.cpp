@@ -7,10 +7,10 @@
 
 #include "VKU.h"
 #include "VKUFrame.h"
-#include "VKUAuthConfig.h"
 #include "AppResourceId.h"
 #include "SampleRequest.h"
 #include "SceneRegister.h"
+#include "api/VKUAuthConfig.h"
 #include "api/VKUApi.h"
 
 using namespace Tizen::App;
@@ -19,6 +19,8 @@ using namespace Tizen::System;
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Ui::Scenes;
+
+static const wchar_t* REMOTE_PORT_NAME = L"SERVICE_PORT";
 
 VKUApp::VKUApp(void) {
 }
@@ -50,6 +52,29 @@ bool VKUApp::OnAppInitialized(void) {
 		SceneManager::GetInstance()->GoForward(
 				SceneTransitionId(ID_SCNT_LOGIN_SUCCESS));
 	}
+
+	// SERVICE INIT CODE
+
+	String serviceName(L".vkservice");
+	String repAppId(15);
+	GetAppId().SubString(0, 10, repAppId);
+	AppId serviceId(repAppId+serviceName);
+	AppLog("VKU : Service Id is %ls", serviceId.GetPointer());
+
+	// Initialize ServiceProxy.
+	result r = E_SUCCESS;
+	pService = new (std::nothrow) VKUServiceProxy();
+	TryReturn(pService != null, false, "VKU : [%s] SeviceProxy creation is failed.", GetErrorMessage(r));
+	r = pService->Construct(serviceId, REMOTE_PORT_NAME);
+
+	if (IsFailed(r)) {
+		AppLog("VKU : [%s] SeviceProxy creation is failed.", GetErrorMessage(r));
+		//__pForm->SendUserEvent(STATE_FAIL, null);
+	} else {
+		//__isReady = true;
+	}
+
+	// SERIVCE INIT CODE END
 
 	return true;
 }
