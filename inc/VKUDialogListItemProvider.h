@@ -9,6 +9,7 @@
 #define VKUDIALOGLISTITEMPROVIDER_H_
 #include <FUi.h>
 #include <FWebJson.h>
+#include "VKU.h"
 #include <FUiCtrlIListViewItemProvider.h>
 
 class VKUDialogListItemProvider: public Tizen::Ui::Controls::IListViewItemProvider {
@@ -24,6 +25,8 @@ public:
 private:
 	Tizen::Web::Json::JsonObject *responseJson;
 	Tizen::Web::Json::JsonArray *dialogsJson;
+
+	Tizen::Graphics::Bitmap* avatarBm;
 };
 
 #endif /* VKUDIALOGLISTITEMPROVIDER_H_ */
