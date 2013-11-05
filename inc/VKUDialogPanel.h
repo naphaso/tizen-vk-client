@@ -5,6 +5,7 @@
 #include <FBase.h>
 #include <FUi.h>
 #include "IAPIRequestListener.h"
+#include "VKUMessagesListItemProvider.h"
 
 
 class VKUDialogPanel :
@@ -33,6 +34,9 @@ public:
 	// IAPIRequestListener
 	virtual void OnResponseN(Tizen::Web::Json::JsonObject *object);
 
+	// custom methods
+	void LoadMessages(Tizen::Base::String userId);
+
 // Implementation
 protected:
 
@@ -41,6 +45,7 @@ public:
 
 private:
 	Tizen::Ui::Controls::EditField* pEditField;
+	VKUMessagesListItemProvider provider;
 
 };
 

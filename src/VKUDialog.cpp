@@ -1,6 +1,7 @@
 #include "AppResourceId.h"
 #include "SceneRegister.h"
 #include "VKUDialog.h"
+#include "VKUDialogPanel.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
@@ -22,6 +23,7 @@ bool VKUDialog::Initialize() {
 result VKUDialog::OnInitializing(void) {
 	result r = E_SUCCESS;
 
+	AppLog("Form init");
 	// TODO: Add your initialization code here
 //	AddKeyEventListener(*this);
 	SetFormBackEventListener(this);
@@ -47,9 +49,14 @@ void VKUDialog::OnSceneActivatedN(
 		const Tizen::Ui::Scenes::SceneId& previousSceneId,
 		const Tizen::Ui::Scenes::SceneId& currentSceneId,
 		Tizen::Base::Collection::IList* pArgs) {
+	AppLog("Scene activated");
+
 	if (pArgs != null) {
 		userId = String(*static_cast< String* > (pArgs->GetAt(0)));
 		AppLog("Received arg %ls", userId.GetPointer());
+
+		VKUDialogPanel* pDialogPanel = static_cast<VKUDialogPanel*>(GetControl(IDC_PANEL_DIALOG));
+		pDialogPanel->LoadMessages(userId);
 	}
 }
 

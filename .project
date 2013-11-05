@@ -3,7 +3,6 @@
 	<name>VKU</name>
 	<comment></comment>
 	<projects>
-		<project>vkservice</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -88,7 +87,7 @@
 	</natures>
 	<filteredResources>
 		<filter>
-			<id>1383381971948</id>
+			<id>1383670190641</id>
 			<name></name>
 			<type>26</type>
 			<matcher>

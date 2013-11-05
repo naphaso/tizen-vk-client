@@ -30,6 +30,7 @@ result
 VKUDialogPanel::OnInitializing(void)
 {
 	result r = E_SUCCESS;
+	AppLog("Panel init");
 
 	// TODO: Add your initialization code here
 	FitToScreen();
@@ -37,12 +38,17 @@ VKUDialogPanel::OnInitializing(void)
 	pEditField = static_cast<EditField*>(GetControl(IDC_DIALOGTEXT_EDITFIELD));
 	pEditField->AddKeypadEventListener(*this);
 
-//	Panel* pPanel = static_cast<Panel*>(GetControl(IDC_PANEL1));
-//
-//	pEditField = static_cast<EditField*>(pPanel->GetControl(IDC_DIALOG_EDITFIELD));
-//	pEditField->AddKeypadEventListener(*this);
+	ListView* pMessagesListView = static_cast<ListView*>(GetControl(IDC_DIALOG_MESSAGES_LISTVIEW));
+	pMessagesListView->SetItemProvider(provider);
 
 	return r;
+}
+
+void VKUDialogPanel::LoadMessages(String userId) {
+	VKUApi::GetInstance().CreateRequest("messages.getHistory", this)
+			->Put(L"count", L"20")
+			->Put(L"user_id", userId)
+			->Submit();
 }
 
 result
@@ -102,5 +108,13 @@ void VKUDialogPanel::OnKeypadWillOpen (Control &source) {
 }
 
 void VKUDialogPanel::OnResponseN(JsonObject *object) {
+	AppLog("Response received");
+	provider.SetMessagesJson(object);
+
+	ListView* pMessagesListView = static_cast<ListView*>(GetControl(IDC_DIALOG_MESSAGES_LISTVIEW));
+
+	pMessagesListView->UpdateList();
+	pMessagesListView->RequestRedraw(true);
+	pMessagesListView->ScrollToItem(pMessagesListView->GetItemCount()-1);
 	delete object;
 }
