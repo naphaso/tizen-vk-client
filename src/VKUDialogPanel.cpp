@@ -23,6 +23,7 @@ VKUDialogPanel::Initialize()
 {
 	Panel::Construct(IDC_PANEL_DIALOG);
 
+
 	return true;
 }
 

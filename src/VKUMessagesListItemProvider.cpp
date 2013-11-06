@@ -19,7 +19,7 @@ static const int LIST_HEIGHT = 100;
 
 VKUMessagesListItemProvider::VKUMessagesListItemProvider() {
 	// TODO Auto-generated constructor stub
-
+	messagesJson = null;
 }
 
 VKUMessagesListItemProvider::~VKUMessagesListItemProvider() {
