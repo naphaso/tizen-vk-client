@@ -45,7 +45,7 @@ public:
 
 private:
 	Tizen::Ui::Controls::EditField* pEditField;
-	VKUMessagesListItemProvider provider;
+	VKUMessagesListItemProvider* provider;
 
 };
 

@@ -15,39 +15,49 @@ using namespace Tizen::App;
 using namespace Tizen::Base::Collection;
 using namespace Tizen::Ui::Scenes;
 
-static const int LIST_HEIGHT = 100;
+static const int LIST_HEIGHT = 200;
 
 VKUMessagesListItemProvider::VKUMessagesListItemProvider() {
-	// TODO Auto-generated constructor stub
 	messagesJson = null;
 }
 
 VKUMessagesListItemProvider::~VKUMessagesListItemProvider() {
-	// TODO Auto-generated destructor stub
+	AppLog("Destruction of VKUMessagesListItemProvider");
+
+	delete messagesJson;
+	delete responseJson;
 }
 
 // IListViewItemProvider
 int VKUMessagesListItemProvider::GetItemCount() {
+	AppLog("GetItemCount call");
 	if (messagesJson == null)
 		return 0;
 
 	return messagesJson->GetCount();
 }
 
-// FIXME: trycatch posible errors
-ListItemBase* VKUMessagesListItemProvider::CreateItem(int index, int itemWidth) {
-	CustomItem* item = new CustomItem();
-	item->Construct(Dimension(itemWidth, LIST_HEIGHT), LIST_ANNEX_STYLE_NORMAL);
+TableViewItem* VKUMessagesListItemProvider::CreateItem(int index, int itemWidth) {
+	result r;
+	AppLog("Create item");
 
-	AppLog("Getting item %d", index);
+	RichTextPanel* pRtPanel;
+	JsonObject *itemObject;
 	IJsonValue *itemValue;
-	messagesJson->GetAt(index, itemValue);
-	JsonObject *itemObject = static_cast<JsonObject *>(itemValue);
+	IJsonValue *bodyValue;
+	TableViewItem* pItem;
 
 	String messageText(L"no text????");
 
-	AppLog("Getting content of item %d", index);
-	IJsonValue *bodyValue;
+	// reverse list
+	int reversedIndex = GetItemCount()-1 - index;
+	AppLog("Item %d of %d", reversedIndex, GetItemCount());
+
+	// get message string
+	r = messagesJson->GetAt(reversedIndex, itemValue);
+	TryCatch(r == E_SUCCESS, , "Failed GetAt");
+	itemObject = static_cast<JsonObject *>(itemValue);
+
 	static const String bodyConst(L"body");
 	if (itemObject->GetValue(&bodyConst, bodyValue) == E_SUCCESS) {
 		if (bodyValue->GetType() == JSON_TYPE_STRING) {
@@ -55,31 +65,99 @@ ListItemBase* VKUMessagesListItemProvider::CreateItem(int index, int itemWidth) 
 		}
 	}
 
-	item->AddElement(
-			Rectangle(0, 0, itemWidth,
-					LIST_HEIGHT / 2), 4242, messageText);
+	// create rich text panel
+	AppLog("RTPanel");
+	pRtPanel = new RichTextPanel();
+	r = pRtPanel->Construct(Dimension(itemWidth, 200), messageText);
+	TryCatch(r == E_SUCCESS, , "Failed Construct RichTextPanel");
+	AppLog("RTPanel created and constructed");
 
-	return item;
+	// create table item
+	pItem = new TableViewItem();
+	r = pItem->Construct(Dimension(itemWidth, pRtPanel->GetHeight()));
+	TryCatch(r == E_SUCCESS, , "Failed GetAt");
+
+	// add rich text panel to table item
+	r = pItem->AddControl(pRtPanel);
+	TryCatch(r == E_SUCCESS, , "Failed AddControl");
+
+	AppLog("Returning item");
+	return pItem;
+
+	CATCH:
+	    AppLogException("$${Function:CreateItem} is failed.", GetErrorMessage(r));
+	    return null;
 }
 
-bool VKUMessagesListItemProvider::DeleteItem(int index, ListItemBase* pItem, int itemWidth) {
+bool VKUMessagesListItemProvider::DeleteItem(int index, TableViewItem* pItem) {
 	delete pItem;
 	return true;
 }
 
+void VKUMessagesListItemProvider::UpdateItem(int itemIndex, TableViewItem* pItem) {
+	result r = E_SUCCESS;
+
+//	RichTextPanel * pRtPanel = new RichTextPanel();
+//
+//	int reversedIndex = GetItemCount()-1 - itemIndex;
+//	IJsonValue *itemValue;
+//	r = messagesJson->GetAt(reversedIndex, itemValue);
+//	TryCatch(r == E_SUCCESS, , "Failed GetAt");
+//
+//	JsonObject *itemObject = static_cast<JsonObject *>(itemValue);
+//
+//	String messageText(L"no text????");
+//
+//	IJsonValue *bodyValue;
+//	static const String bodyConst(L"body");
+//	if (itemObject->GetValue(&bodyConst, bodyValue) == E_SUCCESS) {
+//		if (bodyValue->GetType() == JSON_TYPE_STRING) {
+//			messageText = *static_cast<JsonString *>(bodyValue);
+//		}
+//	}
+//
+//	r = pRtPanel->Construct(Dimension(200, 200), Construct);
+//	TryCatch(r == E_SUCCESS, , "Failed Construct RichTextPanel");
+//
+//	r = pItem->AddControl(pRtPanel);
+//	TryCatch(r == E_SUCCESS, , "Failed AddControl");
+
+	SetLastResult(r);
+	return;
+
+	CATCH:
+	    AppLogException("$${Function:UpdateItem} is failed.", GetErrorMessage(r));
+	    SetLastResult(r);
+}
+
+int VKUMessagesListItemProvider::GetDefaultItemHeight() {
+	return LIST_HEIGHT;
+}
+
 void VKUMessagesListItemProvider::SetMessagesJson(JsonObject *json) {
+	result r = E_SUCCESS;
+
 	responseJson = json;
 	AppLog("Setting messaging json");
 
 	IJsonValue *response;
 	static const String responseConst(L"response");
-	responseJson->GetValue(&responseConst, response);
+	r = responseJson->GetValue(&responseConst, response);
+	TryCatch(r == E_SUCCESS, , "Failed GetValue");
 
 
 	IJsonValue *items;
 	static const String itemsConst(L"items");
-	(static_cast<JsonObject *>(response))->GetValue(&itemsConst, items);
+	r = (static_cast<JsonObject *>(response))->GetValue(&itemsConst, items);
+	TryCatch(r == E_SUCCESS, , "Failed GetValue");
 
 	messagesJson = static_cast<JsonArray *>(items);
 	AppLog("Assigned %d items", messagesJson->GetCount());
+
+	SetLastResult(r);
+	return;
+
+	CATCH:
+	    AppLogException("$${Function:UpdateItem} is failed.", GetErrorMessage(r));
+	    SetLastResult(r);
 }
