@@ -14,8 +14,9 @@ using namespace Tizen::Base;
 using namespace Tizen::App;
 using namespace Tizen::Base::Collection;
 using namespace Tizen::Ui::Scenes;
+using namespace Tizen::Ui;
 
-static const int LIST_HEIGHT = 200;
+static const int LIST_HEIGHT = 10000;
 
 VKUMessagesListItemProvider::VKUMessagesListItemProvider() {
 	messagesJson = null;
@@ -41,13 +42,19 @@ TableViewItem* VKUMessagesListItemProvider::CreateItem(int index, int itemWidth)
 	result r;
 	AppLog("Create item");
 
-	RichTextPanel* pRtPanel;
+	MessageBubble* pMessageBubble;
+	Panel* placeholder;
+	VerticalBoxLayout placeholderLayout;
+
 	JsonObject *itemObject;
 	IJsonValue *itemValue;
 	IJsonValue *bodyValue;
+	IJsonValue *outValue;
 	TableViewItem* pItem;
+	JsonNumber outNumber;
 
 	String messageText(L"no text????");
+	int out = 0;
 
 	// reverse list
 	int reversedIndex = GetItemCount()-1 - index;
@@ -65,20 +72,42 @@ TableViewItem* VKUMessagesListItemProvider::CreateItem(int index, int itemWidth)
 		}
 	}
 
+	static const String outConst(L"out");
+	if (itemObject->GetValue(&outConst, outValue) == E_SUCCESS) {
+		if (outValue->GetType() == JSON_TYPE_NUMBER) {
+			outNumber = *static_cast<JsonNumber *>(outValue);
+			out = outNumber.ToInt();
+		}
+	}
+
+
 	// create rich text panel
-	AppLog("RTPanel");
-	pRtPanel = new RichTextPanel();
-	r = pRtPanel->Construct(Dimension(itemWidth, 200), messageText);
+	AppLog("Message is %d == out", out);
+	pMessageBubble = new MessageBubble();
+	pMessageBubble->SetMessage(messageText, out);
+	r = pMessageBubble->Construct(Dimension(itemWidth, LIST_HEIGHT));
 	TryCatch(r == E_SUCCESS, , "Failed Construct RichTextPanel");
 	AppLog("RTPanel created and constructed");
 
+	placeholderLayout.Construct(VERTICAL_DIRECTION_UPWARD);
+	// create placeholder
+	placeholder = new Panel();
+	r = placeholder->Construct(placeholderLayout, Rectangle(0, 0, itemWidth, pMessageBubble->GetHeight()));
+	TryCatch(r == E_SUCCESS, , "Failed Construct RichTextPanel");
+
+	// add bubble to placeholder
+	placeholder->AddControl(pMessageBubble);
+	if (out == 1) {
+		placeholderLayout.SetHorizontalAlignment(*pMessageBubble, LAYOUT_HORIZONTAL_ALIGN_RIGHT);
+	}
+
 	// create table item
 	pItem = new TableViewItem();
-	r = pItem->Construct(Dimension(itemWidth, pRtPanel->GetHeight()));
+	r = pItem->Construct(Dimension(itemWidth, pMessageBubble->GetHeight() + 2*BUBBLE_VERTICAL_MARGIN));
 	TryCatch(r == E_SUCCESS, , "Failed GetAt");
 
 	// add rich text panel to table item
-	r = pItem->AddControl(pRtPanel);
+	r = pItem->AddControl(placeholder);
 	TryCatch(r == E_SUCCESS, , "Failed AddControl");
 
 	AppLog("Returning item");

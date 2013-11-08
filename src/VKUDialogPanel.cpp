@@ -14,7 +14,7 @@ VKUDialogPanel::VKUDialogPanel(void) {
 }
 
 VKUDialogPanel::~VKUDialogPanel(void) {
-	delete provider;
+//	delete provider;
 }
 
 bool VKUDialogPanel::Initialize() {

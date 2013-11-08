@@ -12,7 +12,7 @@
 #include <FWebJson.h>
 #include "VKU.h"
 #include "AppResourceId.h"
-#include "RichTextPanel.h"
+#include "MessageBubble.h"
 #include <FUiCtrlIListViewItemProvider.h>
 
 

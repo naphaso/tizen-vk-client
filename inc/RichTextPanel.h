@@ -11,6 +11,9 @@
 #include <FUi.h>
 #include <FUiCtrlPanel.h>
 #include <FBase.h>
+#include "BubbleConstants.h"
+
+static const int TEXT_FONT_SIZE = 35;
 
 class RichTextPanel: public Tizen::Ui::Controls::Panel {
 public:

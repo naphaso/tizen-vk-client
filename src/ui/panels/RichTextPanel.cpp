@@ -26,7 +26,8 @@ result RichTextPanel::Construct(const Dimension& dim, const String & text) {
 	result r = E_SUCCESS;
 	TextElement* textElement;
 	int width, height;
-//	Color color = Color::GetColor(COLOR_ID_BLUE);
+	Color color = Color::GetColor(COLOR_ID_WHITE);
+	Font font;
 
 	Dimension textDim;
 	int textActualLen;
@@ -35,9 +36,16 @@ result RichTextPanel::Construct(const Dimension& dim, const String & text) {
 	r = enrichedText->Construct(dim);
 	TryCatch(r == E_SUCCESS, , "Failed Construct EnrichedText");
 
+	r = font.Construct(FONT_STYLE_PLAIN, TEXT_FONT_SIZE);
+	TryCatch(r == E_SUCCESS, , "Failed Construct Font");
+
 	textElement = new TextElement();
 	r = textElement->Construct(text);
-	TryCatch(r == E_SUCCESS, , "Failed Construct TextElement");
+	TryCatch(r == E_SUCCESS, , "Failed TextElement");
+	r = textElement->SetTextColor(color);
+	TryCatch(r == E_SUCCESS, , "Failed SetTextColor");
+	r = textElement->SetFont(font);
+	TryCatch(r == E_SUCCESS, , "Failed SetFont");
 
 	r = enrichedText->Add(*textElement);
 	TryCatch(r == E_SUCCESS, , "Failed Add textElement");
