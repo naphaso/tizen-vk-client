@@ -31,6 +31,9 @@ TableViewGroupItem* ContactsTableProvider::CreateGroupItem(int groupIndex,
 	result r = E_SUCCESS;
 
 	TableViewGroupItem* pItem;
+
+	pItem = new TableViewGroupItem();
+	pItem->Construct(Dimension())
 }
 
 bool ContactsTableProvider::DeleteGroupItem(int groupIndex,
