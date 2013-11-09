@@ -10,6 +10,7 @@
 
 #include <FUiCtrlPanel.h>
 #include <FUi.h>
+#include <FBase.h>
 #include "VKU.h"
 
 enum AvatarType {
@@ -22,7 +23,7 @@ public:
 	RoundedAvatar(const AvatarType & type);
 	virtual ~RoundedAvatar();
 
-	result Construct(Tizen::Graphics::Rectangle & rect, Tizen::Base::String & avatarPath);
+	result Construct(const Tizen::Graphics::Rectangle & rect, const Tizen::Base::String avatarPath);
 
 	// Panel
 	virtual result OnDraw(void);

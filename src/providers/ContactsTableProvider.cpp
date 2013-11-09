@@ -9,12 +9,13 @@
 
 using namespace Tizen::Ui;
 using namespace Tizen::Base;
-using namespace Tizen::Web;
 using namespace Tizen::Web::Json;
+using namespace Tizen::Web;
 using namespace Tizen::Ui::Controls;
+using namespace Tizen::Graphics;
 
 ContactsTableProvider::ContactsTableProvider() {
-	// TODO Auto-generated constructor stub
+	contactsArray = null;
 
 }
 
@@ -22,8 +23,15 @@ ContactsTableProvider::~ContactsTableProvider() {
 	// TODO Auto-generated destructor stub
 }
 
-int ContactsTableProvider::GetItemCount(int groupIndex) {
+int ContactsTableProvider::GetGroupCount(void) {
+	return 1;
+}
 
+int ContactsTableProvider::GetItemCount(int groupIndex) {
+	if (contactsArray == null)
+		return 0;
+
+	return contactsArray->GetCount();
 }
 
 TableViewGroupItem* ContactsTableProvider::CreateGroupItem(int groupIndex,
@@ -31,9 +39,25 @@ TableViewGroupItem* ContactsTableProvider::CreateGroupItem(int groupIndex,
 	result r = E_SUCCESS;
 
 	TableViewGroupItem* pItem;
+	Label * label;
+	Integer groupNum = Integer(groupIndex);
 
 	pItem = new TableViewGroupItem();
-	pItem->Construct(Dimension())
+	r = pItem->Construct(Dimension(50, itemWidth));
+	TryCatch(r == E_SUCCESS, , "Failed pItem->Construct");
+
+	label = new Label();
+	r = label->Construct(Rectangle(0, 0, 50, itemWidth), groupNum.ToString());
+	TryCatch(r == E_SUCCESS, , "Failed pItem->Construct");
+
+	r = pItem->AddControl(label);
+	TryCatch(r == E_SUCCESS, , "Failed pItem->AddControl");
+
+	return pItem;
+CATCH:
+	AppLogException("$${Function:CreateItem} is failed.", GetErrorMessage(r));
+	SetLastResult(r);
+	return pItem;
 }
 
 bool ContactsTableProvider::DeleteGroupItem(int groupIndex,
@@ -53,22 +77,50 @@ TableViewItem* ContactsTableProvider::CreateItem(int groupIndex, int itemIndex,
 
 	TableViewItem* pTableItem;
 	Panel* placeholder;
+	Label* pUserLabel;
 	RoundedAvatar* pRoundedAvatar;
 	HorizontalBoxLayout layout;
 
+	// JSON stuff
+	IJsonValue *itemValue;
+	IJsonValue *nameValue;
+	JsonObject *itemObject;
+
+	static const String bodyConst(L"first_name");
+	static const String avatarHardcode(L"no_photo_user.png");
+	String userName(L"That Guy");
+
 	pTableItem = new TableViewItem();
-	r = pTableItem->Construct(Dimension(itemWidth, GetDefaultItemHeight()), LIST_ANNEX_STYLE_NORMAL);
+	r = pTableItem->Construct(Dimension(itemWidth, GetDefaultItemHeight()), TABLE_VIEW_ANNEX_STYLE_NORMAL);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->Construct");
 
 	placeholder = new Panel();
-	r = placeholder->Construct(layout, Rectangle(0, 0, GetDefaultItemHeight(), itemWidth), GROUP_STYLE_NONE);
+	r = placeholder->Construct(layout, Rectangle(0, 0, itemWidth, GetDefaultItemHeight()), GROUP_STYLE_NONE);
 	TryCatch(r == E_SUCCESS, , "Failed placeholder->Construct");
 
 	pRoundedAvatar = new RoundedAvatar(LIST_BLACK);
-	r = pRoundedAvatar->Construct(Rectangle(0, 0, 108, 108), L"no_photo_user.png");
+	r = pRoundedAvatar->Construct(Rectangle(0, 0, 108, 108), avatarHardcode);
 	TryCatch(r == E_SUCCESS, , "Failed pRoundedAvatar->Construct");
 
 	r = placeholder->AddControl(pRoundedAvatar);
+	TryCatch(r == E_SUCCESS, , "Failed placeholder->AddControl");
+
+	r = contactsArray->GetAt(itemIndex, itemValue);
+	TryCatch(r == E_SUCCESS, , "Failed GetAt");
+	itemObject = static_cast<JsonObject *>(itemValue);
+
+
+	if (itemObject->GetValue(&bodyConst, nameValue) == E_SUCCESS) {
+		if (nameValue->GetType() == JSON_TYPE_STRING) {
+			userName = *static_cast<JsonString *>(nameValue);
+		}
+	}
+
+	pUserLabel = new Label();
+	r = pUserLabel->Construct(Rectangle(0, 0, itemWidth - pRoundedAvatar->GetWidth(), GetDefaultItemHeight()), userName);
+	TryCatch(r == E_SUCCESS, , "Failed pUserLabel->Construct");
+
+	r = placeholder->AddControl(pUserLabel);
 	TryCatch(r == E_SUCCESS, , "Failed placeholder->AddControl");
 
 	r = pTableItem->AddControl(placeholder);
@@ -98,4 +150,32 @@ int ContactsTableProvider::GetDefaultGroupItemHeight(void) {
 
 int ContactsTableProvider::GetDefaultItemHeight(void) {
 	return 100;
+}
+
+void ContactsTableProvider::SetUsersJson(Tizen::Web::Json::JsonObject *json) {
+	result r = E_SUCCESS;
+
+	contactsObject = json;
+	AppLog("Setting messaging json");
+
+	IJsonValue *response;
+	static const String responseConst(L"response");
+	r = contactsObject->GetValue(&responseConst, response);
+	TryCatch(r == E_SUCCESS, , "Failed GetValue");
+
+
+	IJsonValue *items;
+	static const String itemsConst(L"items");
+	r = (static_cast<JsonObject *>(response))->GetValue(&itemsConst, items);
+	TryCatch(r == E_SUCCESS, , "Failed GetValue");
+
+	contactsArray = static_cast<JsonArray *>(items);
+	AppLog("Assigned %d items", contactsArray->GetCount());
+
+	SetLastResult(r);
+	return;
+
+CATCH:
+	AppLogException("$${Function:SetUsersJson} is failed.", GetErrorMessage(r));
+	SetLastResult(r);
 }

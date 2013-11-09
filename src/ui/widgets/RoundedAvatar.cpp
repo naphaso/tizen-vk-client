@@ -14,7 +14,7 @@ using namespace Tizen::Graphics;
 using namespace Tizen::Ui::Controls;
 
 RoundedAvatar::RoundedAvatar(const AvatarType & type) {
-	r = E_SUCCESS;
+	result r = E_SUCCESS;
 
 	AppResource* pAppResource = VKUApp::GetInstance()->GetAppResource();
 	String bitmapName;
@@ -38,12 +38,11 @@ CATCH:
 	return;
 }
 
-result RoundedAvatar::Construct(Tizen::Graphics::Rectangle & rect, Tizen::Base::String & avatarPath) {
-	r = E_SUCCESS;
-	rect.width = 108;
-	rect.height = 108;
+result RoundedAvatar::Construct(const Tizen::Graphics::Rectangle & rect, const Tizen::Base::String avatarPath) {
+	result r = E_SUCCESS;
+	Rectangle newRect(0, 0, 108, 108);
 
-	Panel::Construct(rect, GROUP_STYLE_NONE);
+	Panel::Construct(newRect, GROUP_STYLE_NONE);
 
 	delete pAvatarRounding;
 	return r;
@@ -54,7 +53,7 @@ RoundedAvatar::~RoundedAvatar() {
 }
 
 result RoundedAvatar::OnDraw(void) {
-	r = E_SUCCESS;
+	result r = E_SUCCESS;
 	Canvas * pCanvas = GetCanvasN();
 
 	r = pCanvas->DrawBitmap(Point(0, 0), *pAvatarRounding);

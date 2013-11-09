@@ -1,5 +1,6 @@
 #include "AppResourceId.h"
 #include "VKUContactsPanel.h"
+#include "../../api/VKUApi.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
@@ -24,8 +25,9 @@ result VKUContactsPanel::OnInitializing(void) {
 
 	Integer userIdInt = Integer(VKUAuthConfig::GetUserId());
 
-	GroupedTableView pTable = static_cast<GroupedTableView*>(GetControl(
+	GroupedTableView* pTable = static_cast<GroupedTableView*>(GetControl(
 			IDC_GROUPEDTABLEVIEW1));
+	pTable->SetItemProvider(pProvider);
 
 	pContactsRetrieveListener = new ContactsRetrieveListener(pTable, pProvider);
 

@@ -4,7 +4,7 @@
 -->
 <!DOCTYPE Scene SYSTEM "UIForm.dtd">
 
-<Scene Bversion="2.0.0.201307161756" Dversion="20120315">
+<Scene Bversion="2.0.0.201311071819" Dversion="20120315">
     <LogicalCoordinate>720</LogicalCoordinate>
     <Form id="IDF_LOGIN">
         <property backgroundColor="" backgroundColorOpacity="100" notificationTrayOpenEnabled="false" orientation="Portrait" softKey0NormalIcon="" softKey0PressedIcon="" softKey0Text="" softKey1NormalIcon="" softKey1PressedIcon="" softKey1Text="" title="" titleAlign="ALIGN_CENTER" titleIcon="" translucentFooter="false" translucentHeader="true" translucentIndicator="false"/>
@@ -16,7 +16,7 @@
         <layout height="1220.0" mode="Portrait" width="720.0" x="0.0" y="0.0"/>
         <layout height="112.0" mode="Landscape" width="688.0" x="32.0" y="523.0"/>
     </TextBox>
-    <Button id="IDC_BUTTON1" parent="IDF_LOGIN">
+    <Button id="IDC_BUTTON_LOGIN" parent="IDF_LOGIN">
         <property DisabledBitmapX="0.0" DisabledBitmapY="0.0" NormalBitmapX="0.0" NormalBitmapY="0.0" PressedBitmapX="0.0" PressedBitmapY="0.0" accessibilityHint="" disableTextColor="" disabledBGBitmapPath="" disabledBitmapPath="" disabledColor="" disabledColorOpacity="100" highlightedBGBitmapPath="" highlightedBitmapPath="" highlightedBitmapX="0.0" highlightedBitmapY="0.0" highlightedColor="" highlightedColorOpacity="100" highlightedTextColor="" horizontalAlign="ALIGN_CENTER" normalBGBitmapPath="" normalBitmapPath="" normalColor="#335774" normalColorOpacity="100" normalTextColor="" pressedBGBitmapPath="" pressedBitmapPath="" pressedColor="" pressedColorOpacity="100" pressedTextColor="" text="Login" textSize="32.0" verticalAlign="ALIGN_MIDDLE"/>
         <layout height="74.0" mode="Portrait" width="381.0" x="169.0" y="540.0"/>
         <layout height="74.0" mode="Landscape" width="136.0" x="337.0" y="571.0"/>
