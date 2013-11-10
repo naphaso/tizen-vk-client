@@ -22,6 +22,8 @@ ContactsRetrieveListener::~ContactsRetrieveListener() {
 void ContactsRetrieveListener::OnResponseN(JsonObject *object) {
 	result r = E_SUCCESS;
 	AppLog("ContactsRetrieveListener::OnResponseN");
+	pProvider->SetUsersJson(object);
+
 	pGroupedTableView->UpdateTableView();
 	TryCatch(GetLastResult() == E_SUCCESS, r = GetLastResult() , "Failed pGroupedTableView->UpdateTableView");
 

@@ -24,6 +24,9 @@ ContactsTableProvider::~ContactsTableProvider() {
 }
 
 int ContactsTableProvider::GetGroupCount(void) {
+	if (contactsArray == null)
+		return 0;
+
 	return 1;
 }
 
@@ -37,17 +40,18 @@ int ContactsTableProvider::GetItemCount(int groupIndex) {
 TableViewGroupItem* ContactsTableProvider::CreateGroupItem(int groupIndex,
 		int itemWidth) {
 	result r = E_SUCCESS;
+	AppLog("CreateGroupItem %d with %d px", groupIndex, itemWidth);
 
 	TableViewGroupItem* pItem;
 	Label * label;
 	Integer groupNum = Integer(groupIndex);
 
 	pItem = new TableViewGroupItem();
-	r = pItem->Construct(Dimension(50, itemWidth));
+	r = pItem->Construct(Dimension(itemWidth, GetDefaultGroupItemHeight()));
 	TryCatch(r == E_SUCCESS, , "Failed pItem->Construct");
 
 	label = new Label();
-	r = label->Construct(Rectangle(0, 0, 50, itemWidth), groupNum.ToString());
+	r = label->Construct(Rectangle(0, 0, itemWidth, GetDefaultGroupItemHeight()), groupNum.ToString());
 	TryCatch(r == E_SUCCESS, , "Failed pItem->Construct");
 
 	r = pItem->AddControl(label);
@@ -55,7 +59,7 @@ TableViewGroupItem* ContactsTableProvider::CreateGroupItem(int groupIndex,
 
 	return pItem;
 CATCH:
-	AppLogException("$${Function:CreateItem} is failed.", GetErrorMessage(r));
+	AppLogException("CreateItem is failed.", GetErrorMessage(r));
 	SetLastResult(r);
 	return pItem;
 }
@@ -74,12 +78,15 @@ void ContactsTableProvider::UpdateGroupItem(int groupIndex,
 TableViewItem* ContactsTableProvider::CreateItem(int groupIndex, int itemIndex,
 		int itemWidth) {
 	result r = E_SUCCESS;
+	AppLog("CreateItem %d in group %d with %d px", itemIndex, groupIndex, itemWidth);
 
 	TableViewItem* pTableItem;
 	Panel* placeholder;
 	Label* pUserLabel;
 	RoundedAvatar* pRoundedAvatar;
 	HorizontalBoxLayout layout;
+
+	layout.Construct(HORIZONTAL_DIRECTION_RIGHTWARD);
 
 	// JSON stuff
 	IJsonValue *itemValue;
@@ -117,7 +124,7 @@ TableViewItem* ContactsTableProvider::CreateItem(int groupIndex, int itemIndex,
 	}
 
 	pUserLabel = new Label();
-	r = pUserLabel->Construct(Rectangle(0, 0, itemWidth - pRoundedAvatar->GetWidth(), GetDefaultItemHeight()), userName);
+	r = pUserLabel->Construct(Rectangle(0, 0, itemWidth, GetDefaultItemHeight()), userName);
 	TryCatch(r == E_SUCCESS, , "Failed pUserLabel->Construct");
 
 	r = placeholder->AddControl(pUserLabel);
@@ -145,11 +152,11 @@ void ContactsTableProvider::UpdateItem(int groupIndex, int itemIndex,
 }
 
 int ContactsTableProvider::GetDefaultGroupItemHeight(void) {
-	return 200;
+	return 50;
 }
 
 int ContactsTableProvider::GetDefaultItemHeight(void) {
-	return 100;
+	return 120;
 }
 
 void ContactsTableProvider::SetUsersJson(Tizen::Web::Json::JsonObject *json) {

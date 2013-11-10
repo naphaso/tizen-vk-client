@@ -28,12 +28,13 @@ RoundedAvatar::RoundedAvatar(const AvatarType & type) {
 		break;
 	}
 
-	pAvatarRounding = pAppResource->GetBitmapN(bitmapName);
+	pAvatarRounding = pAppResource->GetBitmapN(bitmapName, BITMAP_PIXEL_FORMAT_ARGB8888);
 	TryCatch(GetLastResult() == E_SUCCESS, r = GetLastResult(), "Failed GetBitmapN thumbnail_grouped_list");
 
 	SetLastResult(r);
 	return;
 CATCH:
+	AppLogException("RoundedAvatar is failed.", GetErrorMessage(r));
 	SetLastResult(r);
 	return;
 }
@@ -44,22 +45,31 @@ result RoundedAvatar::Construct(const Tizen::Graphics::Rectangle & rect, const T
 
 	Panel::Construct(newRect, GROUP_STYLE_NONE);
 
-	delete pAvatarRounding;
 	return r;
 }
 
 RoundedAvatar::~RoundedAvatar() {
-	// TODO Auto-generated destructor stub
+	delete pAvatarRounding;
 }
 
 result RoundedAvatar::OnDraw(void) {
 	result r = E_SUCCESS;
+	AppLog("RoundedAvatar::OnDraw start");
 	Canvas * pCanvas = GetCanvasN();
 
-	r = pCanvas->DrawBitmap(Point(0, 0), *pAvatarRounding);
-	TryCatch(r == E_SUCCESS, , "Failed DrawBitmap pAvatarRounding");
+	if (pCanvas != null) {
+		AppLog("RoundedAvatar::OnDraw do");
+		AppLog("Canvas bounds %d.%d %dx%d", pCanvas->GetBounds().x, pCanvas->GetBounds().y, pCanvas->GetBounds().width, pCanvas->GetBounds().height);
 
-	delete pCanvas;
+		AppLog("Bitmap size %dx%d", pAvatarRounding->GetWidth(), pAvatarRounding->GetHeight());
+
+		r = pCanvas->DrawBitmap(pCanvas->GetBounds(), *pAvatarRounding);
+		TryCatch(r == E_SUCCESS, , "Failed DrawBitmap pAvatarRounding");
+
+		AppLog("RoundedAvatar::OnDraw end");
+		delete pCanvas;
+	}
+
 	return r;
 
 CATCH:
