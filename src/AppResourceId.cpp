@@ -50,3 +50,4 @@ const wchar_t* LoginScene = L"LoginScene";
 const wchar_t* MAIN_SCENE = L"MAIN_SCENE";
 const wchar_t* MainScene = L"MainScene";
 const wchar_t* VKUDialogList = L"VKUDialogList";
+const wchar_t* FRAME_NAME = L"VKU";

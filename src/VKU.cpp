@@ -41,7 +41,7 @@ bool VKUApp::OnAppInitializing(AppRegistry& appRegistry) {
 bool VKUApp::OnAppInitialized(void) {
 	VKUFrame* pVKUFrame = new VKUFrame();
 	pVKUFrame->Construct();
-	pVKUFrame->SetName(L"VKU");
+	pVKUFrame->SetName(FRAME_NAME);
 	AddFrame(*pVKUFrame);
 
 	SceneRegister::RegisterAllScenes();

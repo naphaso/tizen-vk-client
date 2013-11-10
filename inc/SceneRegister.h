@@ -9,6 +9,8 @@
 #define SCENEREGISTER_H_
 
 extern const wchar_t* SCENE_DIALOG;
+extern const wchar_t* SCENE_MAIN;
+extern const wchar_t* SCENE_LOGIN;
 
 class SceneRegister {
 public:

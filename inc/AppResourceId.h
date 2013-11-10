@@ -51,5 +51,5 @@ extern const wchar_t* LoginScene;
 extern const wchar_t* MAIN_SCENE;
 extern const wchar_t* MainScene;
 extern const wchar_t* VKUDialogList;
-
+extern const wchar_t* FRAME_NAME;
 #endif // _APP_RESOURCE_ID_H_

@@ -6,12 +6,17 @@
  */
 
 #include "VKUServiceProxy.h"
+#include "VKU.h"
+#include "AppResourceId.h"
+#include "VKUDialogPanel.h"
 
 using namespace Tizen::App;
 using namespace Tizen::Base;
 using namespace Tizen::Base::Runtime;
 using namespace Tizen::Base::Collection;
 using namespace Tizen::Io;
+using namespace Tizen::Ui;
+using namespace Tizen::Ui::Controls;
 
 static const int CHECK_INTERVAL = 1000; // Checking interval in sec.
 
@@ -80,6 +85,22 @@ result VKUServiceProxy::SendMessage(const IMap* pMessage) {
 
 void VKUServiceProxy::OnMessageReceivedN(RemoteMessagePort* pRemoteMessagePort, IMap* pMessage) {
 	AppLog("VKU : A response message is Received.");
+
+	VKUApp* pApp = static_cast<VKUApp*>(App::GetInstance());
+
+	if (pApp != null) {
+		String* event = static_cast<String*>(pMessage->GetValue(String(L"event")));
+		if (event != null) {
+			Frame* frame = pApp->GetFrame(FRAME_NAME);
+			Form* form = frame->GetCurrentForm();
+			if (form->GetName() == IDF_DIALOG) {
+				VKUDialogPanel* pDialogPanel = static_cast<VKUDialogPanel*>(form->GetControl(IDC_PANEL_DIALOG));
+				if (pDialogPanel != null) {
+					pDialogPanel->LoadMessages();
+				}
+			}
+		}
+	}
 
 	/*
 	String key(L"ServiceApp");

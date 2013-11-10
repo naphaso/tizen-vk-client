@@ -2,6 +2,7 @@
 #include "VKULogin.h"
 #include "VKULoginPopup.h"
 #include "../../api/VKUAuthConfig.h"
+#include "SceneRegister.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
@@ -78,7 +79,7 @@ void VKULogin::OnSuccess(const String &accessToken, const String &expiresIn, con
 	VKUAuthConfig::Replace(accessToken, expiresIn, userId);
 
 	SceneManager* pSceneManager = SceneManager::GetInstance();
-	pSceneManager->GoForward(SceneTransitionId(ID_SCNT_LOGIN_SUCCESS));
+	pSceneManager->GoForward(ForwardSceneTransition(SCENE_MAIN));
 }
 
 void VKULogin::OnError(const String &error, const String &description) {

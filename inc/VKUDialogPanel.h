@@ -6,12 +6,12 @@
 #include <FUi.h>
 #include "IAPIRequestListener.h"
 #include "VKUMessagesListItemProvider.h"
-
+#include "DialogHistoryListener.h"
+#include "MessageSentListener.h"
 
 class VKUDialogPanel :
 	public Tizen::Ui::Controls::Panel,
-	public Tizen::Ui::IKeypadEventListener,
-	public IAPIRequestListener
+	public Tizen::Ui::IKeypadEventListener
 {
 
 // Construction
@@ -32,10 +32,11 @@ public:
 	virtual void OnKeypadWillOpen (Tizen::Ui::Control &source);
 
 	// IAPIRequestListener
-	virtual void OnResponseN(Tizen::Web::Json::JsonObject *object);
+//	virtual void OnResponseN(Tizen::Web::Json::JsonObject *object);
 
 	// custom methods
-	void LoadMessages(Tizen::Base::String userId);
+	void LoadMessages();
+	void SetUserId(Tizen::Base::String userId);
 
 // Implementation
 protected:
@@ -46,7 +47,10 @@ public:
 private:
 	Tizen::Ui::Controls::EditField* pEditField;
 	VKUMessagesListItemProvider* provider;
-
+	DialogHistoryListener* pDialogHistoryListener;
+	MessageSentListener* pMessageSentListener;
+	Tizen::Base::String userId;
+	Tizen::Ui::Controls::TableView* pMessagesListView;
 };
 
 #endif

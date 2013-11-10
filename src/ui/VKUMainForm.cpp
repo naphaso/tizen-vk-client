@@ -1,11 +1,14 @@
 #include "VKUMainForm.h"
 #include "AppResourceId.h"
 
+#include "VKUColors.h"
+
 using namespace Tizen::Base;
 using namespace Tizen::App;
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Ui::Scenes;
+using namespace Tizen::Graphics;
 
 VKUMainForm::VKUMainForm(void) {
 }
@@ -21,13 +24,14 @@ bool VKUMainForm::Initialize(void) {
 
 result VKUMainForm::OnInitializing(void) {
 	result r = E_SUCCESS;
-
+	Color headerColor(HEADER_BG_COLOR, false);
 
 	// TODO:
 	// Add your initialization code here
 	Header* pHeader = GetHeader();
 	if (pHeader) {
 		pHeader->AddActionEventListener(*this);
+		pHeader->SetColor(headerColor);
 	}
 
 	// Setup back event listener

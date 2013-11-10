@@ -11,7 +11,7 @@ using namespace Tizen::Ui::Controls;
 using namespace Tizen::Graphics;
 using namespace Tizen::Web::Json;
 using namespace Tizen::Base;
-using namespace Tizen::App;
+//using namespace Tizen::App;
 using namespace Tizen::Base::Collection;
 using namespace Tizen::Ui::Scenes;
 using namespace Tizen::Ui;
@@ -189,4 +189,18 @@ void VKUMessagesListItemProvider::SetMessagesJson(JsonObject *json) {
 	CATCH:
 	    AppLogException("$${Function:UpdateItem} is failed.", GetErrorMessage(r));
 	    SetLastResult(r);
+}
+void VKUMessagesListItemProvider::SetListener(DialogHistoryListener * apListener) {
+	pListener = apListener;
+}
+
+DialogHistoryListener* VKUMessagesListItemProvider::GetListener() {
+	return pListener;
+}
+
+void VKUMessagesListItemProvider::RequestData(const String userId) {
+	TryReturnVoid(pListener != null, "IAPIRequestListener cannot be null, response will be omitted");
+
+	VKUApi::GetInstance().CreateRequest("messages.getHistory", GetListener())->Put(
+			L"count", L"20")->Put(L"user_id", userId)->Submit();
 }

@@ -30,9 +30,12 @@ void ContactsRetrieveListener::OnResponseN(JsonObject *object) {
 	pGroupedTableView->RequestRedraw(true);
 	TryCatch(GetLastResult() == E_SUCCESS, r = GetLastResult() , "Failed pGroupedTableView->RequestRedraw");
 
+	delete object;
 	SetLastResult(r);
 	return;
+
 CATCH:
 	AppLogException("$${Function:OnResponseN} is failed.", GetErrorMessage(r));
+	delete object;
 	SetLastResult(r);
 }

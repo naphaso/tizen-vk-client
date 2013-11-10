@@ -20,7 +20,7 @@ public:
 	ContactsRetrieveListener(Tizen::Ui::Controls::GroupedTableView * apTableView,
 			ContactsTableProvider * apProvider);
 	virtual ~ContactsRetrieveListener();
-	void OnResponseN(Tizen::Web::Json::JsonObject *object);
+	virtual void OnResponseN(Tizen::Web::Json::JsonObject *object);
 
 private:
 	ContactsTableProvider * pProvider;
