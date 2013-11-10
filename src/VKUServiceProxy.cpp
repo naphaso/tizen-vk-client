@@ -55,6 +55,13 @@ result VKUServiceProxy::Construct(const AppId& appId, const String& remotePortNa
 
 	AppLog("LocalMessagePort(\"%ls\") is ready", pLocalMessagePort->GetName().GetPointer());
 
+	// send connect request
+	HashMap *pMap =	new HashMap(SingleObjectDeleter);
+	pMap->Construct();
+	pMap->Add(new String(L"request"), new String(L"connect"));
+	r = SendMessage(pMap);
+	delete pMap;
+
 	return E_SUCCESS;
 }
 
@@ -98,4 +105,22 @@ void VKUServiceProxy::OnMessageReceivedN(RemoteMessagePort* pRemoteMessagePort, 
 	*/
 
 	delete pMessage;
+}
+
+void VKUServiceProxy::SubscribeNotifications(int userId) {
+	HashMap *pMap =	new HashMap(SingleObjectDeleter);
+	pMap->Construct();
+	pMap->Add(new String(L"request"), new String(L"subscribe"));
+	pMap->Add(new String(L"userid"), new Integer(userId));
+	r = SendMessage(pMap);
+	delete pMap;
+}
+
+void VKUServiceProxy::UnsubscribeNotifications(int userId) {
+	HashMap *pMap =	new HashMap(SingleObjectDeleter);
+	pMap->Construct();
+	pMap->add(new String("request"), new String("unsubscribe"));
+	pMap->Add(new String(L"userid"), new Integer(userId));
+	r = SendMessage(pMap);
+	delete pMap;
 }

@@ -40,7 +40,7 @@ HttpSession* VKUApi::GetHttpSession() {
 	if(httpSession == null) {
 		AppLog("creating httpsession...");
 		httpSession = new (std::nothrow) HttpSession();
-		r = httpSession->Construct(NET_HTTP_SESSION_MODE_PIPELINING, null, L"https://api.vk.com", null); // NET_HTTP_COOKIE_FLAG_ALWAYS_AUTOMATIC
+		r = httpSession->Construct(NET_HTTP_SESSION_MODE_MULTIPLE_HOST, null, L"https://api.vk.com", null); // NET_HTTP_COOKIE_FLAG_ALWAYS_AUTOMATIC
 		if (IsFailed(r)) {
 			delete httpSession;
 			httpSession = null;
