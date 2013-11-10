@@ -3,6 +3,7 @@
 	<name>VKU</name>
 	<comment></comment>
 	<projects>
+		<project>vkservice</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

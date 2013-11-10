@@ -27,7 +27,7 @@ public:
 public:
 	VKUApp(void);
 	virtual~VKUApp(void);
-
+	VKUServiceProxy *GetService();
 public:
 	// Called when the UiApp is initializing.
 	virtual bool OnAppInitializing(Tizen::App::AppRegistry& appRegistry);

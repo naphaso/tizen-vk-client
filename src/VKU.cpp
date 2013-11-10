@@ -79,6 +79,10 @@ bool VKUApp::OnAppInitialized(void) {
 	return true;
 }
 
+VKUServiceProxy *VKUApp::GetService() {
+	return pService;
+}
+
 bool VKUApp::OnAppWillTerminate(void) {
 	return true;
 }

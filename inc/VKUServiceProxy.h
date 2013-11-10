@@ -21,6 +21,8 @@ public:
 	result SendMessage(const Tizen::Base::Collection::IMap* pMessage);
 
 	virtual void OnMessageReceivedN(Tizen::Io::RemoteMessagePort* pRemoteMessagePort, Tizen::Base::Collection::IMap* pMessage);
+	void SubscribeNotifications(int userId);
+	void UnsubscribeNotifications(int userId);
 private:
 	Tizen::Io::LocalMessagePort* pLocalMessagePort;
 	Tizen::Io::RemoteMessagePort* pRemoteMessagePort;
