@@ -108,6 +108,7 @@ void VKUServiceProxy::OnMessageReceivedN(RemoteMessagePort* pRemoteMessagePort, 
 }
 
 void VKUServiceProxy::SubscribeNotifications(int userId) {
+	result r = E_SUCCESS;
 	HashMap *pMap =	new HashMap(SingleObjectDeleter);
 	pMap->Construct();
 	pMap->Add(new String(L"request"), new String(L"subscribe"));
@@ -117,9 +118,10 @@ void VKUServiceProxy::SubscribeNotifications(int userId) {
 }
 
 void VKUServiceProxy::UnsubscribeNotifications(int userId) {
+	result r = E_SUCCESS;
 	HashMap *pMap =	new HashMap(SingleObjectDeleter);
 	pMap->Construct();
-	pMap->add(new String("request"), new String("unsubscribe"));
+	pMap->Add(new String("request"), new String("unsubscribe"));
 	pMap->Add(new String(L"userid"), new Integer(userId));
 	r = SendMessage(pMap);
 	delete pMap;

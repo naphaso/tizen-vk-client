@@ -62,17 +62,17 @@ bool VKUApp::OnAppInitialized(void) {
 	AppLog("VKU : Service Id is %ls", serviceId.GetPointer());
 
 	// Initialize ServiceProxy.
-//	result r = E_SUCCESS;
-//	pService = new (std::nothrow) VKUServiceProxy();
-//	TryReturn(pService != null, false, "VKU : [%s] SeviceProxy creation is failed.", GetErrorMessage(r));
-//	r = pService->Construct(serviceId, REMOTE_PORT_NAME);
+	result r = E_SUCCESS;
+	pService = new (std::nothrow) VKUServiceProxy();
+	TryReturn(pService != null, false, "VKU : [%s] SeviceProxy creation is failed.", GetErrorMessage(r));
+	r = pService->Construct(serviceId, REMOTE_PORT_NAME);
 
-//	if (IsFailed(r)) {
-//		AppLog("VKU : [%s] SeviceProxy creation is failed.", GetErrorMessage(r));
-		//__pForm->SendUserEvent(STATE_FAIL, null);
-//	} else {
-		//__isReady = true;
-//	}
+	if (IsFailed(r)) {
+		AppLog("VKU : [%s] SeviceProxy creation is failed.", GetErrorMessage(r));
+//		__pForm->SendUserEvent(STATE_FAIL, null);
+	} else {
+//		__isReady = true;
+	}
 
 	// SERIVCE INIT CODE END
 
