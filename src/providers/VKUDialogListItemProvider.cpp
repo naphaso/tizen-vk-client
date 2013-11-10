@@ -127,7 +127,7 @@ void VKUDialogListItemProvider::OnListViewItemStateChanged(ListView& listView,
 
 		JsonNumber *userIdNumber = static_cast<JsonNumber *>(userIdValue);
 		ArrayList* pList = new (std::nothrow) ArrayList(SingleObjectDeleter);
-
+//
 		String userIdString;
 		userIdString.Append(userIdNumber->ToInt());
 

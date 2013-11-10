@@ -12,20 +12,23 @@
 #include <FWebJson.h>
 #include "VKU.h"
 #include "AppResourceId.h"
+#include "MessageBubble.h"
 #include <FUiCtrlIListViewItemProvider.h>
 
+
 class VKUMessagesListItemProvider :
-	public Tizen::Ui::Controls::IListViewItemProvider {
+	public Tizen::Ui::Controls::ITableViewItemProvider {
 public:
 	VKUMessagesListItemProvider();
 	virtual ~VKUMessagesListItemProvider();
 
-	// IListViewItemProvider
+	// ITableViewItemProvider
 	virtual int GetItemCount(void);
-	virtual Tizen::Ui::Controls::ListItemBase* CreateItem(int index, int itemWidth);
-	virtual bool DeleteItem(int index, Tizen::Ui::Controls::ListItemBase* pItem, int itemWidth);
+	virtual Tizen::Ui::Controls::TableViewItem* CreateItem(int itemIndex, int itemWidth);
+	virtual bool DeleteItem(int itemIndex, Tizen::Ui::Controls::TableViewItem* pItem);
+	virtual void UpdateItem(int itemIndex, Tizen::Ui::Controls::TableViewItem* pItem);
+	virtual int GetDefaultItemHeight(void);
 
-	// custom functions
 	void SetMessagesJson(Tizen::Web::Json::JsonObject *json);
 
 private:

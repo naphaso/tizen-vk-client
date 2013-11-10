@@ -1,7 +1,7 @@
 #include "VKUDialogsPanel.h"
 #include "AppResourceId.h"
 
-#include "api/VKUApi.h"
+#include "../../api/VKUApi.h"
 
 using namespace Tizen::Graphics;
 using namespace Tizen::Ui;

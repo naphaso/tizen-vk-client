@@ -7,7 +7,7 @@
 
 #include "VKULoginPopup.h"
 #include "VKU.h"
-#include "api/VKUConfig.h"
+#include "../../api/VKUConfig.h"
 #include "VKUUtils.h"
 
 using namespace Tizen::Graphics;

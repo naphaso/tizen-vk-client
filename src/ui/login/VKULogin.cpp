@@ -1,7 +1,7 @@
 #include "AppResourceId.h"
 #include "VKULogin.h"
 #include "VKULoginPopup.h"
-#include "api/VKUAuthConfig.h"
+#include "../../api/VKUAuthConfig.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
