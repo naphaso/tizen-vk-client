@@ -79,7 +79,7 @@ void VKULogin::OnSuccess(const String &accessToken, const String &expiresIn, con
 	VKUAuthConfig::Replace(accessToken, expiresIn, userId);
 
 	SceneManager* pSceneManager = SceneManager::GetInstance();
-	pSceneManager->GoForward(ForwardSceneTransition(SCENE_MAIN));
+	pSceneManager->GoForward(ForwardSceneTransition(SCENE_MAIN_DIALOGS));
 }
 
 void VKULogin::OnError(const String &error, const String &description) {

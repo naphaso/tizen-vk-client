@@ -50,7 +50,7 @@ bool VKUApp::OnAppInitialized(void) {
 		VKUAuthConfig::Read();
 
 		SceneManager::GetInstance()->GoForward(
-				SceneTransitionId(ID_SCNT_LOGIN_SUCCESS));
+				ForwardSceneTransition(SCENE_MAIN_DIALOGS));
 	}
 
 	// SERVICE INIT CODE

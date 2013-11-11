@@ -79,9 +79,6 @@ void VKUDialog::OnSceneDeactivated(
 
 void VKUDialog::OnKeyLongPressed(const Tizen::Ui::Control& source,
 		Tizen::Ui::KeyCode keyCode) {
-	SceneManager* pSceneManager = SceneManager::GetInstance();
-	pSceneManager->GoForward(SceneTransitionId(ID_SCNT_4));
-
 	// TODO: Add your implementation codes here
 
 }
@@ -103,7 +100,6 @@ void VKUDialog::OnKeyReleased(const Tizen::Ui::Control& source,
 void VKUDialog::OnFormBackRequested(Tizen::Ui::Controls::Form& source) {
 	SceneManager* pSceneManager = SceneManager::GetInstance();
 	AppAssert(pSceneManager);
-	AppLog("Back requested...");
 
-	pSceneManager->GoBackward(BackwardSceneTransition(MainScene));
+	pSceneManager->GoBackward(BackwardSceneTransition(SCENE_MAIN_CONTACTS));
 }
