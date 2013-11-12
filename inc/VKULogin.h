@@ -8,11 +8,13 @@
 class VLULogin;
 
 #include "IAuthListener.h"
+#include "VKULoginPopup.h"
 
 class VKULogin :
 	public Tizen::Ui::Controls::Form,
  	public Tizen::Ui::IActionEventListener,
  	public Tizen::Ui::Scenes::ISceneEventListener,
+ 	public Tizen::Ui::Controls::IFormBackEventListener,
  	public IAuthListener
 {
 
@@ -42,10 +44,14 @@ public:
 	virtual void OnSuccess(const Tizen::Base::String &accessToken, const Tizen::Base::String &expiresIn, const Tizen::Base::String &userId);
 	virtual void OnError(const Tizen::Base::String &error, const Tizen::Base::String &description);
 
+	// back
+	virtual void OnFormBackRequested(Tizen::Ui::Controls::Form& source);
 
 private:
 	static const int ACTION_LOGIN = 101;
 	static const int ACTION_SIGNUP = 102;
+
+	VKULoginPopup* pPopup;
 };
 
 #endif

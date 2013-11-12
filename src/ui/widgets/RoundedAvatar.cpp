@@ -17,11 +17,12 @@ using namespace Tizen::Base::Collection;
 
 static const RequestId AVATAR_LOAD_REQUEST = 1;
 
-RoundedAvatar::RoundedAvatar(const AvatarType & type) {
+RoundedAvatar::RoundedAvatar(const AvatarType & type, const PlaceholderType & placeholderType) {
 	result r = E_SUCCESS;
 
+	pAvatar = null;
 	AppResource* pAppResource = VKUApp::GetInstance()->GetAppResource();
-	String bitmapName;
+	String bitmapName = L"thumbnail_list.png", placeholderBitmapName;
 
 	switch (type) {
 	case LIST_BLACK:
@@ -32,7 +33,19 @@ RoundedAvatar::RoundedAvatar(const AvatarType & type) {
 		break;
 	}
 
+	switch (placeholderType) {
+	case PLACEHOLDER_USER:
+		placeholderBitmapName = L"no_photo_user.png";
+		break;
+
+	case PLACEHOLDER_CHAT:
+		placeholderBitmapName = L"no_photo_group.png";
+		break;
+	}
+
 	pAvatarRounding = pAppResource->GetBitmapN(bitmapName, BITMAP_PIXEL_FORMAT_ARGB8888);
+	pAvatarPlaceholder = pAppResource->GetBitmapN(placeholderBitmapName, BITMAP_PIXEL_FORMAT_ARGB8888);
+
 	TryCatch(GetLastResult() == E_SUCCESS, r = GetLastResult(), "Failed GetBitmapN thumbnail_grouped_list");
 
 	SetLastResult(r);
@@ -58,6 +71,14 @@ result RoundedAvatar::Construct(const Tizen::Graphics::Rectangle & rect, const T
 
 RoundedAvatar::~RoundedAvatar() {
 	AppLog("rounded avatar destructor");
+	if (pAvatar)
+		delete pAvatar;
+
+	if (pAvatarPlaceholder)
+		delete pAvatarPlaceholder;
+
+	if (pAvatarRounding)
+		delete pAvatarRounding;
 	//delete pAvatarRounding;
 }
 
@@ -70,9 +91,16 @@ result RoundedAvatar::OnDraw(void) {
 		AppLog("RoundedAvatar::OnDraw do");
 		AppLog("Canvas bounds %d.%d %dx%d", pCanvas->GetBounds().x, pCanvas->GetBounds().y, pCanvas->GetBounds().width, pCanvas->GetBounds().height);
 
-		AppLog("Bitmap size %dx%d", pAvatarRounding->GetWidth(), pAvatarRounding->GetHeight());
+
+		if (pAvatar != null) {
+			AppLog("Bitmap size %dx%d", pAvatar->GetWidth(), pAvatar->GetHeight());
+			r = pCanvas->DrawBitmap(pCanvas->GetBounds(), *pAvatar);
+		} else {
+			r = pCanvas->DrawBitmap(pCanvas->GetBounds(), *pAvatarPlaceholder);
+		}
 
 		r = pCanvas->DrawBitmap(pCanvas->GetBounds(), *pAvatarRounding);
+
 		TryCatch(r == E_SUCCESS, , "Failed DrawBitmap pAvatarRounding");
 
 		AppLog("RoundedAvatar::OnDraw end");
@@ -91,9 +119,10 @@ void RoundedAvatar::OnUserEventReceivedN(RequestId requestId, IList* pArgs) {
 	AppLog("rounded avatar event received");
 	if(requestId == AVATAR_LOAD_REQUEST) {
 		AppLog("rounded avatar new bitmap received: list size %d", pArgs->GetCount());
-		pAvatarRounding = VKUApp::GetInstance()->GetBitmapCache()->Take(imageUrl);
-		AppLog("bitmap pointer: %x", pAvatarRounding);
-		AppLog("Bitmap size %dx%d", pAvatarRounding->GetWidth(), pAvatarRounding->GetHeight());
+		pAvatar = VKUApp::GetInstance()->GetBitmapCache()->Take(imageUrl);
+		AppLog("bitmap pointer: %x", pAvatar);
+		AppLog("Bitmap size %dx%d", pAvatar->GetWidth(), pAvatar->GetHeight());
 		RequestRedraw();
+		delete pAvatarPlaceholder;
 	}
 }

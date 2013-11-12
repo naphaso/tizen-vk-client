@@ -16,10 +16,12 @@ using namespace Tizen::Base::Collection;
 using namespace Tizen::Web::Controls;
 using namespace Tizen::Base::Utility;
 using namespace Tizen::Io;
+using namespace Tizen::Ui;
 
 result VKULoginPopup::Construct() {
 	result r = E_SUCCESS;
 	Rectangle rect;
+	AppLog("VKULoginPopup::Construct");
 
 	r = Popup::Construct(false, Dimension(600, 800));
 	TryCatch(r == E_SUCCESS, , "Failed Construct");
@@ -39,6 +41,7 @@ result VKULoginPopup::Construct() {
 	r = AddControl(pWeb);
 	TryCatch(r == E_SUCCESS, , "Failed AddControl");
 
+	AppLog("LoginPopup constructed");
 	return r;
 
 	CATCH:
@@ -49,6 +52,8 @@ result VKULoginPopup::Construct() {
 void VKULoginPopup::StartAuth(IAuthListener *listener) {
 	result r;
 	this->authListener = listener;
+	AppLog("VKULoginPopup::StartAuth");
+
 
 	r = SetShowState(true);
 	TryCatch(r == E_SUCCESS, , "Failed SetShowState");
@@ -58,6 +63,8 @@ void VKULoginPopup::StartAuth(IAuthListener *listener) {
 	pWeb->LoadUrl(VKU_LOGIN_URL);
 	r = GetLastResult();
 	TryCatch(r == E_SUCCESS, , "Failed LoadUrl");
+
+	AppLog("VKULoginPopup::StartAuth done");
 
 	return;
 	CATCH:
@@ -121,48 +128,5 @@ void VKULoginPopup::OnLoadingCompleted() {
 
 			delete params;
 		}
-
-		/*
-
-		String params = uri.GetFragment(), section(L"auth"), authToken;
-		StringTokenizer strTok(params, L"&");
-
-		Registry reg;
-		String regPath(VKUApp::GetInstance()->GetAppDataPath() + L"auth.ini");
-
-		if (File::IsFileExist(regPath)) {
-			File::Remove(regPath);
-		}
-
-		reg.Construct(regPath, true); // Create a new registry if not exist
-		reg.AddSection(section);
-
-		while (strTok.HasMoreTokens()) {
-			String currentToken;
-			strTok.GetNextToken(currentToken);
-			StringTokenizer eqTok(currentToken, L"=");
-			AppLog("currentToken=%ls", currentToken.GetPointer());
-
-			if (eqTok.GetTokenCount() == 2) {
-				String name, value;
-				eqTok.GetNextToken(name);
-				eqTok.GetNextToken(value);
-				AppLog(
-						"name=%ls value=%ls", name.GetPointer(), value.GetPointer());
-				reg.AddValue(section, name, value);
-			}
-		}
-
-		result r = reg.GetValue(section, L"auth_token", authToken);
-		if (r == E_SUCCESS) {
-			AppLog("token successfully received");
-		} else {
-
-		}
-
-		reg.Flush();*/
 	}
-
-	//AppLog("completed url: %ls", pWeb->GetUrl().GetPointer());
 }
-

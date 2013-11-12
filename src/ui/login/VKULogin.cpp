@@ -1,6 +1,5 @@
 #include "AppResourceId.h"
 #include "VKULogin.h"
-#include "VKULoginPopup.h"
 #include "../../api/VKUAuthConfig.h"
 #include "SceneRegister.h"
 
@@ -25,6 +24,9 @@ bool VKULogin::Initialize() {
 result VKULogin::OnInitializing(void) {
 	result r = E_SUCCESS;
 
+	pPopup = new (std::nothrow) VKULoginPopup();
+	pPopup->Construct();
+
 	Button* pButton_login = static_cast<Button*>(GetControl(IDC_BUTTON_LOGIN));
 	if (pButton_login) {
 		pButton_login->SetActionId(ACTION_LOGIN);
@@ -45,9 +47,7 @@ void VKULogin::OnActionPerformed(const Control& source, int actionId) {
 
 	switch(actionId) {
 	case ACTION_LOGIN: {
-		
-		VKULoginPopup* pPopup = new (std::nothrow) VKULoginPopup();
-		pPopup->Construct();
+		AppLog("Logging in in");
 		pPopup->StartAuth(this); // FIXME: free memory
 	}; break;
 	case ACTION_SIGNUP: {
@@ -85,3 +85,9 @@ void VKULogin::OnSuccess(const String &accessToken, const String &expiresIn, con
 void VKULogin::OnError(const String &error, const String &description) {
 	AppLog("login error: %ls:%ls", error.GetPointer(), description.GetPointer());
 }
+
+void VKULogin::OnFormBackRequested(Tizen::Ui::Controls::Form& source) {
+	AppLog("Back requested..");
+	pPopup->SetShowState(false);
+}
+

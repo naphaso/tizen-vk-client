@@ -69,7 +69,7 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
 
 	pAvatar = new RoundedAvatar(LIST_BLACK);
-	r  =pAvatar->Construct(Rectangle(0, 0, 108, 108), L"no_photo_user.png");
+	r = pAvatar->Construct(Rectangle(0, 0, 108, 108), String(L"http://cs413221.vk.me/v413221706/b4e/_ratilf3mZ8.jpg"));
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
 
 	r = nameFont.Construct(FONT_STYLE_PLAIN, 40);

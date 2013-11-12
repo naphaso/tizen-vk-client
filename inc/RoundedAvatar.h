@@ -18,9 +18,15 @@ enum AvatarType {
 	HEADER_BLUE
 };
 
+enum PlaceholderType {
+	PLACEHOLDER_USER,
+	PLACEHOLDER_CHAT
+};
+
+
 class RoundedAvatar: public Tizen::Ui::Controls::Panel {
 public:
-	RoundedAvatar(const AvatarType & type);
+	RoundedAvatar(const AvatarType & type, const PlaceholderType & placeholderType = PLACEHOLDER_USER);
 	virtual ~RoundedAvatar();
 
 	result Construct(const Tizen::Graphics::Rectangle & rect, const Tizen::Base::String &avatarPath);
@@ -31,7 +37,10 @@ public:
 	virtual result OnDraw(void);
 
 private:
+	Tizen::Graphics::Bitmap* pAvatar;
 	Tizen::Graphics::Bitmap* pAvatarRounding;
+	Tizen::Graphics::Bitmap* pAvatarPlaceholder;
+
 	Tizen::Base::String imageUrl;
 };
 
