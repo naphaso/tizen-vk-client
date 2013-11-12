@@ -33,6 +33,7 @@ public:
 	virtual int GetDefaultItemHeight(void);
 
 	void SetDialogsJson(Tizen::Web::Json::JsonObject* obj);
+	void ProcessJson(Tizen::Web::Json::JsonObject* obj);
 	void LoadData();
 
 	// IAPIRequestListener

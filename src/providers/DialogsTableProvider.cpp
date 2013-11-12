@@ -7,6 +7,7 @@
 
 #include "DialogsTableProvider.h"
 #include "../api/VKUApi.h"
+#include "JsonParseUtils.h"
 
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
@@ -14,7 +15,7 @@ using namespace Tizen::Web::Json;
 using namespace Tizen::Web;
 using namespace Tizen::Base;
 using namespace Tizen::Graphics;
-
+using namespace Tizen::Base::Collection;
 static const int DIALOGS_ITEM_HEIGHT = 130;
 static const int PREVIEW_BACKGROUND_COLOR = 0x191f25;
 static const int PREVIEW_TEXT_COLOR = 0x6d6e75;
@@ -182,27 +183,82 @@ int DialogsTableProvider::GetDefaultItemHeight(void) {
 }
 
 void DialogsTableProvider::SetDialogsJson(JsonObject* json) {
-	responseJson = json;
-
-	IJsonValue *response;
-	static const String responseConst(L"response");
-	responseJson->GetValue(&responseConst, response);
 
 	IJsonValue *items;
 	static const String itemsConst(L"items");
-	(static_cast<JsonObject *>(response))->GetValue(&itemsConst, items);
+	json->GetValue(&itemsConst, items);
 
 	dialogsJson = static_cast<JsonArray *>(items);
 }
 
+void DialogsTableProvider::ProcessJson(Tizen::Web::Json::JsonObject* obj) {
+	result r;
+
+//	ByteBuffer bb;
+//	bb.Construct(65535);
+	String filePath(L"/tmp/execute.txt");
+	JsonWriter::Compose(obj, filePath);
+//	AppLog("RESULT: %s", bb.GetPointer());
+
+	IJsonValue *response;
+	const String responseConst(L"response");
+	obj->GetValue(&responseConst, response);
+
+	JsonObject *responseJson = static_cast<JsonObject *>(response);
+
+	IJsonValue *dialogs;
+	const String dialogsConst(L"dialogs");
+	r = responseJson->GetValue(&dialogsConst, dialogs);
+
+	IJsonValue *dialogItemsVal;
+	const String dialogsItems(L"items");
+	(static_cast<JsonObject *>(dialogs))->GetValue(&dialogsItems, dialogItemsVal);
+
+	JsonArray* dialogsJsonArray = static_cast<JsonArray *>(dialogItemsVal);
+
+	IJsonValue *users;
+	const String usersConst(L"users");
+	r = responseJson->GetValue(&usersConst, users);
+
+	HashMap usersMap(SingleObjectDeleter);
+
+	JsonArray *usersJsonArray = static_cast<JsonArray *>(users);
+
+	for (int i=0; i<usersJsonArray->GetCount(); i++) {
+		IJsonValue* user;
+		usersJsonArray->GetAt(i, user);
+
+		JsonObject* userJson = static_cast<JsonObject *>(user);
+
+		int userId;
+		JsonParseUtils::GetInteger(*userJson, L"id", userId);
+
+		usersMap.Add(new Integer(userId), userJson);
+	}
+
+	for (int i=0; i<dialogsJsonArray->GetCount(); i++) {
+		IJsonValue* dialog;
+		dialogsJsonArray->GetAt(i, dialog);
+
+		JsonObject* dialogJson = static_cast<JsonObject *>(dialog);
+
+		int userId;
+		JsonParseUtils::GetInteger(*dialogJson, L"user_id", userId);
+
+		JsonObject* userJson = static_cast<JsonObject *>(usersMap.GetValue(Integer(userId)));
+		dialogJson->Add(new String(L"user_json"), userJson);
+	}
+
+	SetDialogsJson(static_cast<JsonObject *>(dialogs));
+}
+
 void DialogsTableProvider::OnResponseN(Tizen::Web::Json::JsonObject *object) {
-	SetDialogsJson(object);
+	ProcessJson(object);
 
 	pDialogTableView->UpdateTableView();
 	pDialogTableView->RequestRedraw(true);
 }
 
 void DialogsTableProvider::LoadData() {
-	VKUApi::GetInstance().CreateRequest("messages.getDialogs", this)->Put(
-			L"count", L"150")->Submit();
+	VKUApi::GetInstance().CreateRequest("execute.getDialogsWithUsers", this)->Submit();
 }
