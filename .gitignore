@@ -5,4 +5,7 @@ crash-info
 .sdk_delta.info
 .rds_delta
 .cproject
+CommandLineBuild/
+src/leveldb/
+inc/leveldb/
 

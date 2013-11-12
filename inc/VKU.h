@@ -8,7 +8,11 @@
 #include <FUiIme.h>
 #include <FGraphics.h>
 #include <gl.h>
+
+class VKUApp;
+
 #include "VKUServiceProxy.h"
+#include "BitmapCache.h"
 
 /**
  * [VKUApp] UiApp must inherit from UiApp class
@@ -23,11 +27,12 @@ public:
 	 * [Test] UiApp must have a factory method that creates an instance of itself.
 	 */
 	static Tizen::App::UiApp* CreateInstance(void);
-
+	static VKUApp *GetInstance();
 public:
 	VKUApp(void);
 	virtual~VKUApp(void);
 	VKUServiceProxy *GetService();
+	BitmapCache *GetBitmapCache();
 public:
 	// Called when the UiApp is initializing.
 	virtual bool OnAppInitializing(Tizen::App::AppRegistry& appRegistry);
@@ -60,6 +65,7 @@ public:
 	virtual void OnScreenOff(void);
 private:
 	VKUServiceProxy *pService;
+	BitmapCache *bitmapCache;
 };
 
 #endif // _VKU_H_
