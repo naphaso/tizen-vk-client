@@ -23,7 +23,7 @@ using namespace Tizen::Ui::Scenes;
 static const wchar_t* REMOTE_PORT_NAME = L"SERVICE_PORT";
 
 VKUApp::VKUApp(void) {
-	cache = new BitmapCache();
+	bitmapCache = new BitmapCache();
 }
 
 VKUApp::~VKUApp(void) {
@@ -82,6 +82,10 @@ bool VKUApp::OnAppInitialized(void) {
 
 VKUServiceProxy *VKUApp::GetService() {
 	return pService;
+}
+
+BitmapCache *VKUApp::GetBitmapCache() {
+	return bitmapCache;
 }
 
 bool VKUApp::OnAppWillTerminate(void) {

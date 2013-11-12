@@ -32,6 +32,7 @@ public:
 	VKUApp(void);
 	virtual~VKUApp(void);
 	VKUServiceProxy *GetService();
+	BitmapCache *GetBitmapCache();
 public:
 	// Called when the UiApp is initializing.
 	virtual bool OnAppInitializing(Tizen::App::AppRegistry& appRegistry);
@@ -64,7 +65,7 @@ public:
 	virtual void OnScreenOff(void);
 private:
 	VKUServiceProxy *pService;
-	BitmapCache *cache;
+	BitmapCache *bitmapCache;
 };
 
 #endif // _VKU_H_

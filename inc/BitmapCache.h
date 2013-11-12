@@ -16,6 +16,7 @@
 class BitmapCache;
 
 #include "IBitmapReceiver.h"
+#include "BitmapLoader.h"
 
 typedef struct {
 	RequestId requestId;
@@ -43,6 +44,8 @@ private:
 	RequestId requestIdCounter;
 
 	RequestId GetNewRequestId();
+
+	BitmapLoader loader;
 };
 
 #endif /* BITMAPCACHE_H_ */
