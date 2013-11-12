@@ -24,7 +24,7 @@ static const wchar_t* REMOTE_PORT_NAME = L"SERVICE_PORT";
 
 VKUApp::VKUApp(void) {
 	AppLog("constructor");
-	bitmapCache = new BitmapCache();
+	bitmapCache = new BitmapCache(GetAppDataPath() + L"cache/");
 }
 
 VKUApp::~VKUApp(void) {

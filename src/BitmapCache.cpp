@@ -41,16 +41,18 @@ String BitmapCache::CacheFileFromUrl(const String &url) {
 	return hashString;
 }
 
-BitmapCache::BitmapCache() {
+BitmapCache::BitmapCache(const String &cacheDir_) {
 	AppLog("constructor");
 	bitmapCache = new HashMap(SingleObjectDeleter);
 	bitmapCache->Construct();
 
-	cacheDir = VKUApp::GetInstance()->GetAppDataPath() + L"cache/";
+	cacheDir = cacheDir_;
+	AppLog("create cache dir: %ls", cacheDir.GetPointer());
 	Directory::Create(cacheDir);
 
 	loader = new BitmapLoader();
 	downloader = new FileDownloader(loader);
+	downloader->Construct();
 }
 
 BitmapCache::~BitmapCache() {
