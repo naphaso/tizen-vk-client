@@ -34,6 +34,7 @@ void SceneRegister::RegisterAllScenes() {
 	AppAssert(pSceneManager);
 
 	pSceneManager->RegisterScene(SCENE_DIALOG, IDF_DIALOG, IDC_PANEL_DIALOG);
+	pSceneManager->RegisterScene(SCENE_LOGIN, IDF_LOGIN, L"");
 
 	pSceneManager->RegisterScene(SCENE_MAIN_DIALOGS, IDF_MAIN, IDC_PANEL_DIALOGS);
 	pSceneManager->RegisterScene(SCENE_MAIN_CONTACTS, IDF_MAIN, IDC_PANEL_CONTACTS);

@@ -33,9 +33,10 @@ result TimeUtils::GetDialogsTime(int time, String & str) {
 	dateTime.SetValue(1970, 1, 1, 0, 0, 0);
 	dateTime.AddMilliseconds((long long)time*1000);
 
+	DateTime now;
 	pCalendar->SetTime(dateTime);
 
-	DateTimeFormatter* pDateFormatter = DateTimeFormatter::CreateDateFormatterN(localeManager.GetSystemLocale(), DATE_TIME_STYLE_SHORT);
+	DateTimeFormatter* pDateFormatter = DateTimeFormatter::CreateTimeFormatterN(localeManager.GetSystemLocale(), DATE_TIME_STYLE_SHORT);
 
 	pDateFormatter->Format(*pCalendar, str);
 

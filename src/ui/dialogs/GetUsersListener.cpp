@@ -16,3 +16,6 @@ GetUsersListener::~GetUsersListener() {
 	// TODO Auto-generated destructor stub
 }
 
+void GetUsersListener::OnResponseN(Tizen::Web::Json::JsonObject *object) {
+
+}

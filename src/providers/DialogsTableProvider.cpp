@@ -6,6 +6,7 @@
  */
 
 #include "DialogsTableProvider.h"
+#include "../api/VKUApi.h"
 
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
@@ -192,4 +193,16 @@ void DialogsTableProvider::SetDialogsJson(JsonObject* json) {
 	(static_cast<JsonObject *>(response))->GetValue(&itemsConst, items);
 
 	dialogsJson = static_cast<JsonArray *>(items);
+}
+
+void DialogsTableProvider::OnResponseN(Tizen::Web::Json::JsonObject *object) {
+	SetDialogsJson(object);
+
+	pDialogTableView->UpdateTableView();
+	pDialogTableView->RequestRedraw(true);
+}
+
+void DialogsTableProvider::LoadData() {
+	VKUApi::GetInstance().CreateRequest("messages.getDialogs", this)->Put(
+			L"count", L"150")->Submit();
 }

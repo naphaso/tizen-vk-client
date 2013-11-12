@@ -74,26 +74,21 @@ RoundedAvatar::~RoundedAvatar() {
 	if (pAvatar)
 		delete pAvatar;
 
-	if (pAvatarPlaceholder)
-		delete pAvatarPlaceholder;
+//	if (pAvatarPlaceholder)
+//		delete pAvatarPlaceholder;
 
-	if (pAvatarRounding)
-		delete pAvatarRounding;
+//	if (pAvatarRounding)
+//		delete pAvatarRounding;
 	//delete pAvatarRounding;
 }
 
 result RoundedAvatar::OnDraw(void) {
 	result r = E_SUCCESS;
-	AppLog("RoundedAvatar::OnDraw start");
 	Canvas * pCanvas = GetCanvasN();
 
 	if (pCanvas != null) {
-		AppLog("RoundedAvatar::OnDraw do");
-		AppLog("Canvas bounds %d.%d %dx%d", pCanvas->GetBounds().x, pCanvas->GetBounds().y, pCanvas->GetBounds().width, pCanvas->GetBounds().height);
-
 
 		if (pAvatar != null) {
-			AppLog("Bitmap size %dx%d", pAvatar->GetWidth(), pAvatar->GetHeight());
 			r = pCanvas->DrawBitmap(pCanvas->GetBounds(), *pAvatar);
 		} else {
 			r = pCanvas->DrawBitmap(pCanvas->GetBounds(), *pAvatarPlaceholder);
@@ -103,7 +98,6 @@ result RoundedAvatar::OnDraw(void) {
 
 		TryCatch(r == E_SUCCESS, , "Failed DrawBitmap pAvatarRounding");
 
-		AppLog("RoundedAvatar::OnDraw end");
 		delete pCanvas;
 	}
 

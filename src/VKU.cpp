@@ -59,6 +59,9 @@ bool VKUApp::OnAppInitialized(void) {
 
 		SceneManager::GetInstance()->GoForward(
 				ForwardSceneTransition(SCENE_MAIN_DIALOGS));
+	} else {
+		SceneManager::GetInstance()->GoForward(
+				ForwardSceneTransition(SCENE_LOGIN));
 	}
 
 	// SERVICE INIT CODE

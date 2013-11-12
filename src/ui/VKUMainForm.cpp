@@ -73,6 +73,7 @@ void VKUMainForm::OnActionPerformed(const Tizen::Ui::Control& source,
 }
 
 void VKUMainForm::OnFormBackRequested(Tizen::Ui::Controls::Form& source) {
+	AppLog("Back requested. Finishing app");
 	UiApp* pApp = UiApp::GetInstance();
 	AppAssert(pApp);
 	pApp->Terminate();

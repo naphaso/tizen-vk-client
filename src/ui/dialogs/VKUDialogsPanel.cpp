@@ -45,11 +45,11 @@ result VKUDialogsPanel::OnInitializing(void) {
 	pDialogTableView = static_cast<TableView*>(GetControl(
 			IDC_TABLEVIEW_DIALOGS));
 
+	pProvider->Construct(pDialogTableView);
 	pDialogTableView->SetItemProvider(pProvider);
 //	pDialogTableView->AddListViewItemEventListener(provider);
 
-	VKUApi::GetInstance().CreateRequest("messages.getDialogs", this)->Put(
-			L"count", L"150")->Submit();
+	pProvider->LoadData();
 
 	return r;
 }
@@ -81,8 +81,4 @@ void VKUDialogsPanel::OnSceneDeactivated(
 
 void VKUDialogsPanel::OnResponseN(Tizen::Web::Json::JsonObject *object) {
 
-	pProvider->SetDialogsJson(object);
-
-	pDialogTableView->UpdateTableView();
-	pDialogTableView->RequestRedraw(true);
 }

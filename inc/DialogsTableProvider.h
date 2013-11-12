@@ -15,12 +15,15 @@
 #include "RoundedAvatar.h"
 #include "JsonParseUtils.h"
 #include "TimeUtils.h"
+#include "IAPIRequestListener.h"
 
 class DialogsTableProvider:
-	public Tizen::Ui::Controls::ITableViewItemProvider {
+	public Tizen::Ui::Controls::ITableViewItemProvider,
+	public IAPIRequestListener {
 public:
 	DialogsTableProvider();
 	virtual ~DialogsTableProvider();
+	void Construct(Tizen::Ui::Controls::TableView* tableView) { pDialogTableView = tableView; }
 
 	// ITableViewItemProvider
 	virtual int GetItemCount(void);
@@ -30,11 +33,15 @@ public:
 	virtual int GetDefaultItemHeight(void);
 
 	void SetDialogsJson(Tizen::Web::Json::JsonObject* obj);
+	void LoadData();
+
+	// IAPIRequestListener
+	virtual void OnResponseN(Tizen::Web::Json::JsonObject *object);
 
 private:
 	Tizen::Web::Json::JsonObject* responseJson;
 	Tizen::Web::Json::JsonArray* dialogsJson;
-//	DialogHistoryListener* pListener;
+	Tizen::Ui::Controls::TableView* pDialogTableView;
 };
 
 #endif /* DIALOGSTABLEPROVIDER_H_ */
