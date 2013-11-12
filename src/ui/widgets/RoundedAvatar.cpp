@@ -62,7 +62,7 @@ result RoundedAvatar::Construct(const Tizen::Graphics::Rectangle & rect, const T
 
 	imageUrl = avatarPath;
 	AppLog("construct rounded avatar based on url: %ls", avatarPath.GetPointer());
-	VKUApp::GetInstance()->GetBitmapCache()->TakeBitmap(imageUrl, AVATAR_LOAD_REQUEST, this, BITMAP_PIXEL_FORMAT_RGB565, 100, 100);
+	VKUApp::GetInstance()->GetBitmapCache()->TakeBitmap(imageUrl, AVATAR_LOAD_REQUEST, this);
 
 	Panel::Construct(newRect, GROUP_STYLE_NONE);
 
@@ -113,10 +113,12 @@ void RoundedAvatar::OnUserEventReceivedN(RequestId requestId, IList* pArgs) {
 	AppLog("rounded avatar event received");
 	if(requestId == AVATAR_LOAD_REQUEST) {
 		AppLog("rounded avatar new bitmap received: list size %d", pArgs->GetCount());
-		pAvatar = VKUApp::GetInstance()->GetBitmapCache()->Take(imageUrl);
+		pAvatar = static_cast<Bitmap *>(pArgs->GetAt(0));
 		AppLog("bitmap pointer: %x", pAvatar);
 		AppLog("Bitmap size %dx%d", pAvatar->GetWidth(), pAvatar->GetHeight());
 		RequestRedraw();
 		delete pAvatarPlaceholder;
 	}
+
+	delete pArgs;
 }

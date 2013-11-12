@@ -32,7 +32,7 @@ VKURequestData::~VKURequestData() {
 	}
 }
 
-// interfact implementation
+// interface implementation
 
 void VKURequestData::OnTransactionReadyToRead(HttpSession& httpSession, HttpTransaction& httpTransaction, int availableBodyLen) {
 	result r;

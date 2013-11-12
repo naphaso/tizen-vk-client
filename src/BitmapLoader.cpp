@@ -20,7 +20,7 @@ ImageLoadingOptions::ImageLoadingOptions() {
 }
 
 BitmapLoader::BitmapLoader() {
-	// TODO Auto-generated constructor stub
+	AppLog("constructor");
 
 }
 

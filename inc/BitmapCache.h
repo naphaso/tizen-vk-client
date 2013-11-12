@@ -12,13 +12,15 @@
 #include <FMedia.h>
 #include <FGraphics.h>
 #include <FUi.h>
+#include <FIo.h>
+#include <FSecCrypto.h>
 #include <map>
 
 class BitmapCache;
 
 #include "IBitmapReceiver.h"
 #include "BitmapLoader.h"
-
+#include "FileDownloader.h"
 
 
 
@@ -34,12 +36,10 @@ public:
 	BitmapCache();
 	virtual ~BitmapCache();
 
-	void TakeBitmap(const Tizen::Base::String &address, RequestId requestId, Tizen::Ui::Control *control, Tizen::Graphics::BitmapPixelFormat pixelFormat, int destWidth, int destHeigth);
+	void TakeBitmap(const Tizen::Base::String &address, RequestId requestId, Tizen::Ui::Control *control);
 	//void TakeBitmap(const Tizen::Base::String address, Tizen::Media::IImageDecodeUrlEventListener *listener);
 	void ReleaseBitmap(Tizen::Ui::Control *control, RequestId requestId);
 	void ReduceMemoryUsage();
-
-	Tizen::Graphics::Bitmap *Take(const Tizen::Base::String &address);
 
 	virtual void OnImageDecodeUrlReceived(RequestId reqId, Tizen::Graphics::Bitmap* pBitmap, result r, const Tizen::Base::String errorCode, const Tizen::Base::String errorMessage);
 private:
@@ -51,6 +51,10 @@ private:
 
 	Tizen::Base::Collection::HashMap *bitmapCache;
 	BitmapLoader *loader;
+	FileDownloader *downloader;
+
+	Tizen::Base::String cacheDir;
+	Tizen::Base::String CacheFileFromUrl(const Tizen::Base::String &url);
 };
 
 #endif /* BITMAPCACHE_H_ */
