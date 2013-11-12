@@ -50,6 +50,7 @@ result BitmapLoader::ImageLoaderRequest(RequestId requestId, Control *control, c
 	list->Add(new String(path));
 	list->Add(new Integer(pixelFormat));
 	this->SendUserEvent(requestId, list);
+	return E_SUCCESS;
 }
 
 result BitmapLoader::ImageLoaderRequest(RequestId requestId, Control *control, const String &path, BitmapPixelFormat pixelFormat, int width, int height) {
@@ -61,6 +62,7 @@ result BitmapLoader::ImageLoaderRequest(RequestId requestId, Control *control, c
 	list->Add(new Integer(width));
 	list->Add(new Integer(height));
 	this->SendUserEvent(requestId, list);
+	return E_SUCCESS;
 }
 
 void BitmapLoader::OnUserEventReceivedN(RequestId requestId, IList *pArgs) {

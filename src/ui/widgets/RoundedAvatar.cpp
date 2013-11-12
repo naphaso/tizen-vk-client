@@ -6,12 +6,16 @@
  */
 
 #include "RoundedAvatar.h"
+#include "VKU.h"
 
 using namespace Tizen::Ui;
 using namespace Tizen::Base;
 using namespace Tizen::App;
 using namespace Tizen::Graphics;
 using namespace Tizen::Ui::Controls;
+using namespace Tizen::Base::Collection;
+
+static const RequestId AVATAR_LOAD_REQUEST = 1;
 
 RoundedAvatar::RoundedAvatar(const AvatarType & type) {
 	result r = E_SUCCESS;
@@ -39,9 +43,13 @@ CATCH:
 	return;
 }
 
-result RoundedAvatar::Construct(const Tizen::Graphics::Rectangle & rect, const Tizen::Base::String avatarPath) {
+result RoundedAvatar::Construct(const Tizen::Graphics::Rectangle & rect, const Tizen::Base::String &avatarPath) {
 	result r = E_SUCCESS;
 	Rectangle newRect(0, 0, 108, 108);
+
+	imageUrl = avatarPath;
+	AppLog("construct rounded avatar based on url: %ls", avatarPath.GetPointer());
+	VKUApp::GetInstance()->GetBitmapCache()->TakeBitmap(imageUrl, AVATAR_LOAD_REQUEST, this, BITMAP_PIXEL_FORMAT_RGB565, 100, 100);
 
 	Panel::Construct(newRect, GROUP_STYLE_NONE);
 
@@ -49,7 +57,8 @@ result RoundedAvatar::Construct(const Tizen::Graphics::Rectangle & rect, const T
 }
 
 RoundedAvatar::~RoundedAvatar() {
-	delete pAvatarRounding;
+	AppLog("rounded avatar destructor");
+	//delete pAvatarRounding;
 }
 
 result RoundedAvatar::OnDraw(void) {
@@ -76,4 +85,15 @@ CATCH:
     AppLogException("$${Function:OnDraw} is failed.", GetErrorMessage(r));
     delete pCanvas;
     return r;
+}
+
+void RoundedAvatar::OnUserEventReceivedN(RequestId requestId, IList* pArgs) {
+	AppLog("rounded avatar event received");
+	if(requestId == AVATAR_LOAD_REQUEST) {
+		AppLog("rounded avatar new bitmap received: list size %d", pArgs->GetCount());
+		pAvatarRounding = VKUApp::GetInstance()->GetBitmapCache()->Take(imageUrl);
+		AppLog("bitmap pointer: %x", pAvatarRounding);
+		AppLog("Bitmap size %dx%d", pAvatarRounding->GetWidth(), pAvatarRounding->GetHeight());
+		RequestRedraw();
+	}
 }

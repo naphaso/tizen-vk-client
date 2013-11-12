@@ -91,11 +91,14 @@ TableViewItem* ContactsTableProvider::CreateItem(int groupIndex, int itemIndex,
 	// JSON stuff
 	IJsonValue *itemValue;
 	IJsonValue *nameValue;
+	IJsonValue *avatarValue;
 	JsonObject *itemObject;
 
 	static const String bodyConst(L"first_name");
+	static const String avatarConst(L"photo_100");
 	static const String avatarHardcode(L"no_photo_user.png");
 	String userName(L"That Guy");
+	String avatarUrl;
 
 	pTableItem = new TableViewItem();
 	r = pTableItem->Construct(Dimension(itemWidth, GetDefaultItemHeight()), TABLE_VIEW_ANNEX_STYLE_NORMAL);
@@ -105,17 +108,26 @@ TableViewItem* ContactsTableProvider::CreateItem(int groupIndex, int itemIndex,
 	r = placeholder->Construct(layout, Rectangle(0, 0, itemWidth, GetDefaultItemHeight()), GROUP_STYLE_NONE);
 	TryCatch(r == E_SUCCESS, , "Failed placeholder->Construct");
 
-	pRoundedAvatar = new RoundedAvatar(LIST_BLACK);
-	r = pRoundedAvatar->Construct(Rectangle(0, 0, 108, 108), avatarHardcode);
-	TryCatch(r == E_SUCCESS, , "Failed pRoundedAvatar->Construct");
-
-	r = placeholder->AddControl(pRoundedAvatar);
-	TryCatch(r == E_SUCCESS, , "Failed placeholder->AddControl");
-
 	r = contactsArray->GetAt(itemIndex, itemValue);
 	TryCatch(r == E_SUCCESS, , "Failed GetAt");
 	itemObject = static_cast<JsonObject *>(itemValue);
 
+	if(itemObject->GetValue(&avatarConst, avatarValue) == E_SUCCESS) {
+		if(avatarValue->GetType() == JSON_TYPE_STRING) {
+			avatarUrl = *static_cast<JsonString *>(avatarValue);
+		} else {
+			AppLog("avatar in contacts response is not a string");
+		}
+	} else {
+		AppLog("not found avatar in contacts response");
+	}
+
+	pRoundedAvatar = new RoundedAvatar(LIST_BLACK);
+	r = pRoundedAvatar->Construct(Rectangle(0, 0, 108, 108), avatarUrl);
+	TryCatch(r == E_SUCCESS, , "Failed pRoundedAvatar->Construct");
+
+	r = placeholder->AddControl(pRoundedAvatar);
+	TryCatch(r == E_SUCCESS, , "Failed placeholder->AddControl");
 
 	if (itemObject->GetValue(&bodyConst, nameValue) == E_SUCCESS) {
 		if (nameValue->GetType() == JSON_TYPE_STRING) {

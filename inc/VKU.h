@@ -27,7 +27,7 @@ public:
 	 * [Test] UiApp must have a factory method that creates an instance of itself.
 	 */
 	static Tizen::App::UiApp* CreateInstance(void);
-
+	static VKUApp *GetInstance();
 public:
 	VKUApp(void);
 	virtual~VKUApp(void);

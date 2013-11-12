@@ -16,9 +16,6 @@ class BitmapLoader;
 #include "VKU.h"
 #include "BitmapCache.h"
 
-typedef enum ImageLoadingOptionsType {
-
-};
 
 class ImageLoadingOptions : public Tizen::Base::Object {
 public:
