@@ -42,7 +42,7 @@ bool VKUApp::OnAppInitializing(AppRegistry& appRegistry) {
 bool VKUApp::OnAppInitialized(void) {
 	VKUFrame* pVKUFrame = new VKUFrame();
 	pVKUFrame->Construct();
-	pVKUFrame->SetName(L"VKU");
+	pVKUFrame->SetName(FRAME_NAME);
 	AddFrame(*pVKUFrame);
 
 	SceneRegister::RegisterAllScenes();
@@ -51,7 +51,7 @@ bool VKUApp::OnAppInitialized(void) {
 		VKUAuthConfig::Read();
 
 		SceneManager::GetInstance()->GoForward(
-				SceneTransitionId(ID_SCNT_LOGIN_SUCCESS));
+				ForwardSceneTransition(SCENE_MAIN_DIALOGS));
 	}
 
 	// SERVICE INIT CODE

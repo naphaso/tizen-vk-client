@@ -16,6 +16,8 @@ extern const wchar_t* IDC_DIALOG_MESSAGES_LISTVIEW;
 extern const wchar_t* IDC_EDITFIELD1;
 extern const wchar_t* IDC_GROUPEDTABLEVIEW1;
 extern const wchar_t* IDC_LABEL2;
+extern const wchar_t* IDC_LABEL3;
+extern const wchar_t* IDC_LABEL4;
 extern const wchar_t* IDC_LISTVIEW1;
 extern const wchar_t* IDC_LISTVIEW_DIALOGS;
 extern const wchar_t* IDC_PANEL_CONTACTS;
@@ -27,6 +29,7 @@ extern const wchar_t* IDC_PANEL_SETTINGS;
 extern const wchar_t* IDC_SEARCHBAR1;
 extern const wchar_t* IDC_SLIDER1;
 extern const wchar_t* IDC_TABLEVIEW1;
+extern const wchar_t* IDC_TABLEVIEW_DIALOGS;
 extern const wchar_t* IDC_TEXTBOX1;
 extern const wchar_t* IDC_TEXTBOX2;
 extern const wchar_t* IDF_DIALOG;
@@ -51,5 +54,5 @@ extern const wchar_t* LoginScene;
 extern const wchar_t* MAIN_SCENE;
 extern const wchar_t* MainScene;
 extern const wchar_t* VKUDialogList;
-
+extern const wchar_t* FRAME_NAME;
 #endif // _APP_RESOURCE_ID_H_

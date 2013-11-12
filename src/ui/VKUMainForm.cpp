@@ -1,11 +1,14 @@
 #include "VKUMainForm.h"
 #include "AppResourceId.h"
+#include "SceneRegister.h"
+#include "VKUColors.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::App;
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Ui::Scenes;
+using namespace Tizen::Graphics;
 
 VKUMainForm::VKUMainForm(void) {
 }
@@ -21,13 +24,14 @@ bool VKUMainForm::Initialize(void) {
 
 result VKUMainForm::OnInitializing(void) {
 	result r = E_SUCCESS;
-
+	Color headerColor(HEADER_BG_COLOR, false);
 
 	// TODO:
 	// Add your initialization code here
 	Header* pHeader = GetHeader();
 	if (pHeader) {
 		pHeader->AddActionEventListener(*this);
+		pHeader->SetColor(headerColor);
 	}
 
 	// Setup back event listener
@@ -47,19 +51,21 @@ result VKUMainForm::OnTerminating(void) {
 void VKUMainForm::OnActionPerformed(const Tizen::Ui::Control& source,
 		int actionId) {
 	SceneManager* pSceneManager = SceneManager::GetInstance();
-	pSceneManager->GoForward(SceneTransitionId(ID_SCNT_5));
 
 	AppAssert(pSceneManager);
 
 	switch (actionId) {
 	case ID_HEADER_MESSAGES:
-		pSceneManager->GoForward(SceneTransitionId(ID_SCNT_3));
+		pSceneManager->GoForward(ForwardSceneTransition(SCENE_MAIN_DIALOGS));
 		break;
 	case ID_HEADER_CONTACTS:
-		pSceneManager->GoForward(SceneTransitionId(ID_SCNT_2));
+		pSceneManager->GoForward(ForwardSceneTransition(SCENE_MAIN_CONTACTS));
 		break;
 	case ID_HEADER_SEARCH:
-		pSceneManager->GoForward(SceneTransitionId(ID_SCNT_1));
+		pSceneManager->GoForward(ForwardSceneTransition(SCENE_MAIN_SEARCH));
+		break;
+	case ID_HEADER_SETTINGS:
+		pSceneManager->GoForward(ForwardSceneTransition(SCENE_MAIN_SETTINGS));
 		break;
 	default:
 		break;

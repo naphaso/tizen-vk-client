@@ -33,16 +33,33 @@ result VKUDialogPanel::OnInitializing(void) {
 	pEditField = static_cast<EditField*>(GetControl(IDC_DIALOGTEXT_EDITFIELD));
 	pEditField->AddKeypadEventListener(*this);
 
-	TableView* pMessagesListView = static_cast<TableView*>(GetControl(
+	// table view init
+	pMessagesListView = static_cast<TableView*>(GetControl(
 			IDC_DIALOG_MESSAGES_LISTVIEW));
+	pMessagesListView->SetItemDividerColor(Color::GetColor(COLOR_ID_BLACK));
+
+	pDialogHistoryListener = new DialogHistoryListener(pMessagesListView, provider);
+	pMessageSentListener = new MessageSentListener(pMessagesListView, provider);
+
+	AppLog("Setting pDialogHistoryListener");
+	provider->SetListener(pDialogHistoryListener);
 	pMessagesListView->SetItemProvider(provider);
 
 	return r;
 }
 
-void VKUDialogPanel::LoadMessages(String userId) {
-	VKUApi::GetInstance().CreateRequest("messages.getHistory", this)->Put(
-			L"count", L"20")->Put(L"user_id", userId)->Submit();
+void VKUDialogPanel::LoadMessages() {
+	TryReturnVoid(userId.GetLength() != 0, "VKUDialogPanel: LoadMessages cannot be completed until userId is not set");
+	AppLog("Doing VKUDialogPanel::LoadMessages");
+
+	provider->RequestData(userId);
+}
+
+void VKUDialogPanel::SetUserId(String aUserId) {
+	TryReturnVoid(pMessageSentListener != null, "VKUDialogPanel: Fatal - pMessageSentListener is null");
+	pMessageSentListener->SetUserId(aUserId);
+
+	userId = aUserId;
 }
 
 result VKUDialogPanel::OnTerminating(void) {
@@ -63,6 +80,10 @@ void VKUDialogPanel::FitToScreen() {
 		SetBounds(rect);
 	}
 
+	if (pMessagesListView != null) {
+		pMessagesListView->ScrollToItem(pMessagesListView->GetItemCount() - 1);
+	}
+
 	Invalidate(true);
 }
 
@@ -73,8 +94,10 @@ void VKUDialogPanel::OnKeypadActionPerformed(Control &source,
 
 	if (keypadAction == KEYPAD_ACTION_SEND) {
 		String text = pEditField->GetText();
-		VKUApi::GetInstance().CreateRequest(L"messages.send", this)->Put(
+		VKUApi::GetInstance().CreateRequest(L"messages.send", pMessageSentListener)->Put(
 				L"user_id", userId)->Put(L"message", text)->Submit();
+		pEditField->Clear();
+		pEditField->RequestRedraw(true);
 	}
 }
 
@@ -94,17 +117,4 @@ void VKUDialogPanel::OnKeypadOpened(Control &source) {
 
 void VKUDialogPanel::OnKeypadWillOpen(Control &source) {
 
-}
-
-void VKUDialogPanel::OnResponseN(JsonObject *object) {
-	AppLog("Response received");
-	provider->SetMessagesJson(object);
-
-	ListView* pMessagesListView = static_cast<ListView*>(GetControl(
-			IDC_DIALOG_MESSAGES_LISTVIEW));
-
-	pMessagesListView->UpdateList();
-	pMessagesListView->RequestRedraw(true);
-	pMessagesListView->ScrollToItem(pMessagesListView->GetItemCount() - 1);
-	delete object;
 }

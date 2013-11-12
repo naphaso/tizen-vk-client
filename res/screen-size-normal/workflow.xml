@@ -6,12 +6,6 @@
     <Scene Form="IDF_MAIN" Id="IDSCN_2" Panel="IDC_PANEL_SEARCH"/>
     <Scene Form="IDF_DIALOG" Id="IDSCN_3" Panel="IDC_PANEL_DIALOG"/>
     <SceneTransition AnimationType="none" DestroyOption="keep" DirectionType="forward" HistoryOption="add" Id="ID_SCNT_START" Method="" SourceId="" SourceResourceType="" TargetId="LoginScene"/>
-    <SceneTransition AnimationType="none" DestroyOption="keep" DirectionType="forward" HistoryOption="add" Id="ID_SCNT_1" Method="OnActionPerformed" SourceId="MainScene" SourceResourceType="IDF_MAIN" TargetId="IDSCN_1"/>
-    <SceneTransition AnimationType="none" DestroyOption="keep" DirectionType="forward" HistoryOption="add" Id="ID_SCNT_5" Method="OnActionPerformed" SourceId="MainScene" SourceResourceType="IDF_MAIN" TargetId="IDSCN_3"/>
-    <SceneTransition AnimationType="none" DestroyOption="keep" DirectionType="forward" HistoryOption="add" Id="ID_SCNT_LOGIN_SUCCESS" Method="OnSuccess" SourceId="LoginScene" SourceResourceType="IDF_LOGIN" TargetId="MainScene"/>
-    <SceneTransition AnimationType="none" DestroyOption="keep" DirectionType="forward" HistoryOption="add" Id="ID_SCNT_2" Method="OnActionPerformed" SourceId="IDSCN_1" SourceResourceType="IDF_MAIN" TargetId="IDSCN_2"/>
-    <SceneTransition AnimationType="none" DestroyOption="keep" DirectionType="forward" HistoryOption="add" Id="ID_SCNT_3" Method="OnActionPerformed" SourceId="IDSCN_2" SourceResourceType="IDF_MAIN" TargetId="MainScene"/>
-    <SceneTransition AnimationType="none" DestroyOption="keep" DirectionType="forward" HistoryOption="add" Id="ID_SCNT_4" Method="OnKeyLongPressed" SourceId="IDSCN_3" SourceResourceType="IDF_DIALOG" TargetId="MainScene"/>
     <!--UI Builder(Workflow Designer) only-->
     <WorkflowDesigner>
         <Position Name="MainScene" X="193" Y="121"/>

@@ -2,11 +2,13 @@
 #include "SceneRegister.h"
 #include "VKUDialog.h"
 #include "VKUDialogPanel.h"
+#include "VKUColors.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Ui::Scenes;
+using namespace Tizen::Graphics;
 
 VKUDialog::VKUDialog(void) {
 }
@@ -22,11 +24,17 @@ bool VKUDialog::Initialize() {
 
 result VKUDialog::OnInitializing(void) {
 	result r = E_SUCCESS;
+	Color headerColor(HEADER_BG_COLOR, false);
 
 	AppLog("Form init");
 	// TODO: Add your initialization code here
 //	AddKeyEventListener(*this);
 	SetFormBackEventListener(this);
+
+	Header* pHeader = GetHeader();
+	if (pHeader) {
+		pHeader->SetColor(headerColor);
+	}
 
 	SceneManager* pSceneManager = SceneManager::GetInstance();
 	pSceneManager->AddSceneEventListener(SCENE_DIALOG, *this);
@@ -56,7 +64,9 @@ void VKUDialog::OnSceneActivatedN(
 		AppLog("Received arg %ls", userId.GetPointer());
 
 		VKUDialogPanel* pDialogPanel = static_cast<VKUDialogPanel*>(GetControl(IDC_PANEL_DIALOG));
-		pDialogPanel->LoadMessages(userId);
+		pDialogPanel->SetUserId(userId);
+		AppLog("Doing pDialogPanel->LoadMessages");
+		pDialogPanel->LoadMessages();
 	}
 }
 
@@ -69,9 +79,6 @@ void VKUDialog::OnSceneDeactivated(
 
 void VKUDialog::OnKeyLongPressed(const Tizen::Ui::Control& source,
 		Tizen::Ui::KeyCode keyCode) {
-	SceneManager* pSceneManager = SceneManager::GetInstance();
-	pSceneManager->GoForward(SceneTransitionId(ID_SCNT_4));
-
 	// TODO: Add your implementation codes here
 
 }
@@ -93,7 +100,6 @@ void VKUDialog::OnKeyReleased(const Tizen::Ui::Control& source,
 void VKUDialog::OnFormBackRequested(Tizen::Ui::Controls::Form& source) {
 	SceneManager* pSceneManager = SceneManager::GetInstance();
 	AppAssert(pSceneManager);
-	AppLog("Back requested...");
 
-	pSceneManager->GoBackward(BackwardSceneTransition(MainScene));
+	pSceneManager->GoBackward(BackwardSceneTransition(SCENE_MAIN_CONTACTS));
 }
