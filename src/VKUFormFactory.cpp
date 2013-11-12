@@ -20,15 +20,15 @@ Tizen::Ui::Controls::Form* VKUFormFactory::CreateFormN(
 	Tizen::Ui::Controls::Form* pNewForm = null;
 
 	if (formId == IDF_MAIN) {
-		VKUMainForm* pForm = new VKUMainForm();
+		VKUMainForm* pForm = new (std::nothrow) VKUMainForm();
 		pForm->Initialize();
 		pNewForm = pForm;
 	} else if (formId == IDF_LOGIN) {
-		VKULogin* pForm = new VKULogin();
+		VKULogin* pForm = new (std::nothrow) VKULogin();
 		pForm->Initialize();
 		pNewForm = pForm;
 	} else if (formId == IDF_DIALOG) {
-		VKUDialog* pForm = new VKUDialog();
+		VKUDialog* pForm = new (std::nothrow) VKUDialog();
 		pForm->Initialize();
 		pNewForm = pForm;
 	}

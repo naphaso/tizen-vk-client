@@ -33,6 +33,7 @@ public:
 	virtual~VKUApp(void);
 	VKUServiceProxy *GetService();
 	BitmapCache *GetBitmapCache();
+	Tizen::Base::String GetCacheDir();
 public:
 	// Called when the UiApp is initializing.
 	virtual bool OnAppInitializing(Tizen::App::AppRegistry& appRegistry);
@@ -66,6 +67,7 @@ public:
 private:
 	VKUServiceProxy *pService;
 	BitmapCache *bitmapCache;
+	Tizen::Base::String cacheDir;
 };
 
 #endif // _VKU_H_

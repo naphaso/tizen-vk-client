@@ -33,7 +33,8 @@ typedef struct {
 
 class BitmapCache : public Tizen::Media::IImageDecodeUrlEventListener {
 public:
-	BitmapCache(const Tizen::Base::String &cacheDir_);
+	BitmapCache();
+	result Construct();
 	virtual ~BitmapCache();
 
 	void TakeBitmap(const Tizen::Base::String &address, RequestId requestId, Tizen::Ui::Control *control);
@@ -52,9 +53,6 @@ private:
 	Tizen::Base::Collection::HashMap *bitmapCache;
 	BitmapLoader *loader;
 	FileDownloader *downloader;
-
-	Tizen::Base::String cacheDir;
-	Tizen::Base::String CacheFileFromUrl(const Tizen::Base::String &url);
 };
 
 #endif /* BITMAPCACHE_H_ */

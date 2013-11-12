@@ -30,8 +30,16 @@ BitmapLoader::~BitmapLoader() {
 
 result BitmapLoader::Construct() {
 	result r = E_SUCCESS;
-	r = EventDrivenThread::Construct();
 
+	r = EventDrivenThread::Construct();
+	TryCatch(r == E_SUCCESS, , "Failed to construct event driven thread");
+
+	r = EventDrivenThread::Start();
+	TryCatch(r == E_SUCCESS, , "Failed to start event driven thread");
+
+	return E_SUCCESS;
+	CATCH:
+	AppLogException("Failed to construct bitmapLoader: %s", GetErrorMessage(r));
 	return r;
 }
 
@@ -76,11 +84,13 @@ void BitmapLoader::OnUserEventReceivedN(RequestId requestId, IList *pArgs) {
 	Image image;
 	image.Construct();
 
-	Bitmap *bitmap;
+	Bitmap *bitmap = null;
 	if(width != null && height != null) {
 		bitmap = image.DecodeN(*path, pixelFormat, width->ToInt(), height->ToInt());
 		delete width;
 		delete height;
+	} else {
+		bitmap = image.DecodeN(*path, pixelFormat);
 	}
 
 	delete pixelFormatInt;
