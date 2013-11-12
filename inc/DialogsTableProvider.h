@@ -8,6 +8,14 @@
 #ifndef DIALOGSTABLEPROVIDER_H_
 #define DIALOGSTABLEPROVIDER_H_
 
+#include <FUi.h>
+#include <FBase.h>
+#include <FWebJson.h>
+
+#include "RoundedAvatar.h"
+#include "JsonParseUtils.h"
+#include "TimeUtils.h"
+
 class DialogsTableProvider:
 	public Tizen::Ui::Controls::ITableViewItemProvider {
 public:
@@ -20,6 +28,8 @@ public:
 	virtual bool DeleteItem(int itemIndex, Tizen::Ui::Controls::TableViewItem* pItem);
 	virtual void UpdateItem(int itemIndex, Tizen::Ui::Controls::TableViewItem* pItem);
 	virtual int GetDefaultItemHeight(void);
+
+	void SetDialogsJson(Tizen::Web::Json::JsonObject* obj);
 
 private:
 	Tizen::Web::Json::JsonObject* responseJson;

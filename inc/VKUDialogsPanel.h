@@ -11,6 +11,7 @@
 #include <gl.h>
 #include "VKUDialogListItemProvider.h"
 #include "IAPIRequestListener.h"
+#include "DialogsTableProvider.h"
 
 class VKUDialogsPanel
 	: public Tizen::Ui::Controls::Panel
@@ -34,7 +35,8 @@ public:
 	virtual void OnResponseN(Tizen::Web::Json::JsonObject *object);
 
 private:
-	VKUDialogListItemProvider provider;
+	DialogsTableProvider* pProvider;
+	Tizen::Ui::Controls::TableView* pDialogTableView;
 };
 
 #endif // _VKU_TAB1_H_

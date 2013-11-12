@@ -21,7 +21,7 @@ RoundedAvatar::RoundedAvatar(const AvatarType & type) {
 
 	switch (type) {
 	case LIST_BLACK:
-		bitmapName = L"thumbnail_grouped_list.png";
+		bitmapName = L"thumbnail_list.png";
 		break;
 	case HEADER_BLUE:
 		bitmapName = L"thumbnail_header.png";

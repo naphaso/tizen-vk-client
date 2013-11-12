@@ -10,19 +10,15 @@ using namespace Tizen::Ui::Scenes;
 using namespace Tizen::Web::Json;
 using namespace Tizen::Base;
 
-VKUDialogsPanel::VKUDialogsPanel(void)
-{
+VKUDialogsPanel::VKUDialogsPanel(void) {
+	pProvider = new DialogsTableProvider();
+}
+
+VKUDialogsPanel::~VKUDialogsPanel(void) {
 
 }
 
-VKUDialogsPanel::~VKUDialogsPanel(void)
-{
-
-}
-
-bool
-VKUDialogsPanel::Initialize(void)
-{
+bool VKUDialogsPanel::Initialize(void) {
 	result r = Construct(IDC_PANEL_DIALOGS);
 	if (IsFailed(r))
 		return false;
@@ -30,37 +26,35 @@ VKUDialogsPanel::Initialize(void)
 	return true;
 }
 
-result
-VKUDialogsPanel::OnInitializing(void)
-{
+result VKUDialogsPanel::OnInitializing(void) {
 	result r = E_SUCCESS;
 
 	// Layout setting
 	const Form* pForm = dynamic_cast<Form*>(GetParent());
-	RelativeLayout* pRelativeLayout = dynamic_cast<RelativeLayout*>(pForm->GetLandscapeLayoutN());
+	RelativeLayout* pRelativeLayout =
+			dynamic_cast<RelativeLayout*>(pForm->GetLandscapeLayoutN());
 	pRelativeLayout->SetHorizontalFitPolicy(*this, FIT_POLICY_PARENT);
 	pRelativeLayout->SetVerticalFitPolicy(*this, FIT_POLICY_PARENT);
 	delete pRelativeLayout;
-	pRelativeLayout = dynamic_cast<RelativeLayout*>(pForm->GetPortraitLayoutN());
+	pRelativeLayout =
+			dynamic_cast<RelativeLayout*>(pForm->GetPortraitLayoutN());
 	pRelativeLayout->SetHorizontalFitPolicy(*this, FIT_POLICY_PARENT);
 	pRelativeLayout->SetVerticalFitPolicy(*this, FIT_POLICY_PARENT);
 	delete pRelativeLayout;
 
-	ListView* pDialogListView = static_cast<ListView*>(GetControl(IDC_LISTVIEW_DIALOGS));
-	pDialogListView->SetItemProvider(provider);
-	pDialogListView->AddListViewItemEventListener(provider);
+	pDialogTableView = static_cast<TableView*>(GetControl(
+			IDC_TABLEVIEW_DIALOGS));
 
+	pDialogTableView->SetItemProvider(pProvider);
+//	pDialogTableView->AddListViewItemEventListener(provider);
 
-	VKUApi::GetInstance().CreateRequest("messages.getDialogs", this)
-			->Put(L"count", L"150")
-			->Submit();
+	VKUApi::GetInstance().CreateRequest("messages.getDialogs", this)->Put(
+			L"count", L"150")->Submit();
 
 	return r;
 }
 
-result
-VKUDialogsPanel::OnTerminating(void)
-{
+result VKUDialogsPanel::OnTerminating(void) {
 	result r = E_SUCCESS;
 
 	// TODO: Add your termination code here
@@ -68,31 +62,27 @@ VKUDialogsPanel::OnTerminating(void)
 	return r;
 }
 
-void
-VKUDialogsPanel::OnSceneActivatedN(const Tizen::Ui::Scenes::SceneId& previousSceneId,
-								const Tizen::Ui::Scenes::SceneId& currentSceneId, Tizen::Base::Collection::IList* pArgs)
-{
+void VKUDialogsPanel::OnSceneActivatedN(
+		const Tizen::Ui::Scenes::SceneId& previousSceneId,
+		const Tizen::Ui::Scenes::SceneId& currentSceneId,
+		Tizen::Base::Collection::IList* pArgs) {
 	// TODO:
 	// Add your scene activate code here
 	AppLog("OnSceneActivatedN");
 }
 
-void
-VKUDialogsPanel::OnSceneDeactivated(const Tizen::Ui::Scenes::SceneId& currentSceneId,
-								const Tizen::Ui::Scenes::SceneId& nextSceneId)
-{
+void VKUDialogsPanel::OnSceneDeactivated(
+		const Tizen::Ui::Scenes::SceneId& currentSceneId,
+		const Tizen::Ui::Scenes::SceneId& nextSceneId) {
 	// TODO:
 	// Add your scene deactivate code here
 	AppLog("OnSceneDeactivated");
 }
 
-
 void VKUDialogsPanel::OnResponseN(Tizen::Web::Json::JsonObject *object) {
 
-	provider.SetDialogsJson(object);
+	pProvider->SetDialogsJson(object);
 
-	ListView* pDialogListView = static_cast<ListView*>(GetControl(IDC_LISTVIEW_DIALOGS));
-
-	pDialogListView->UpdateList();
-	pDialogListView->RequestRedraw(true);
+	pDialogTableView->UpdateTableView();
+	pDialogTableView->RequestRedraw(true);
 }
