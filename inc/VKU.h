@@ -8,7 +8,11 @@
 #include <FUiIme.h>
 #include <FGraphics.h>
 #include <gl.h>
+
+class VKUApp;
+
 #include "VKUServiceProxy.h"
+#include "BitmapCache.h"
 
 /**
  * [VKUApp] UiApp must inherit from UiApp class
@@ -60,6 +64,7 @@ public:
 	virtual void OnScreenOff(void);
 private:
 	VKUServiceProxy *pService;
+	BitmapCache *cache;
 };
 
 #endif // _VKU_H_

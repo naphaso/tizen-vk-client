@@ -23,6 +23,7 @@ using namespace Tizen::Ui::Scenes;
 static const wchar_t* REMOTE_PORT_NAME = L"SERVICE_PORT";
 
 VKUApp::VKUApp(void) {
+	cache = new BitmapCache();
 }
 
 VKUApp::~VKUApp(void) {
