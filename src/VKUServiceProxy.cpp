@@ -91,13 +91,18 @@ void VKUServiceProxy::OnMessageReceivedN(RemoteMessagePort* pRemoteMessagePort, 
 	if (pApp != null) {
 		String* event = static_cast<String*>(pMessage->GetValue(String(L"event")));
 		if (event != null) {
-			Frame* frame = pApp->GetFrame(FRAME_NAME);
-			Form* form = frame->GetCurrentForm();
-			if (form->GetName() == IDF_DIALOG) {
-				VKUDialogPanel* pDialogPanel = static_cast<VKUDialogPanel*>(form->GetControl(IDC_PANEL_DIALOG));
-				if (pDialogPanel != null) {
-					pDialogPanel->LoadMessages();
+
+			if(event->CompareTo(L"newmessage") == 0) {
+				Frame* frame = pApp->GetFrame(FRAME_NAME);
+				Form* form = frame->GetCurrentForm();
+				if (form->GetName() == IDF_DIALOG) {
+					VKUDialogPanel* pDialogPanel = static_cast<VKUDialogPanel*>(form->GetControl(IDC_PANEL_DIALOG));
+					if (pDialogPanel != null) {
+						pDialogPanel->LoadMessages();
+					}
 				}
+			} else if(event->CompareTo("typing")) {
+				// TODO: add show typing event
 			}
 		}
 	}
@@ -133,7 +138,7 @@ void VKUServiceProxy::SubscribeNotifications(int userId) {
 	HashMap *pMap =	new HashMap(SingleObjectDeleter);
 	pMap->Construct();
 	pMap->Add(new String(L"request"), new String(L"subscribe"));
-	pMap->Add(new String(L"userid"), new Integer(userId));
+	pMap->Add(new String(L"userid"), new String(Integer::ToString(userId)));
 	r = SendMessage(pMap);
 	delete pMap;
 }
@@ -143,7 +148,7 @@ void VKUServiceProxy::UnsubscribeNotifications(int userId) {
 	HashMap *pMap =	new HashMap(SingleObjectDeleter);
 	pMap->Construct();
 	pMap->Add(new String("request"), new String("unsubscribe"));
-	pMap->Add(new String(L"userid"), new Integer(userId));
+	pMap->Add(new String(L"userid"), new String(Integer::ToString(userId)));
 	r = SendMessage(pMap);
 	delete pMap;
 }
