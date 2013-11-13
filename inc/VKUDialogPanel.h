@@ -36,7 +36,7 @@ public:
 
 	// custom methods
 	void LoadMessages();
-	void SetUserId(Tizen::Base::String userId);
+	void SetUserJson(Tizen::Web::Json::JsonObject * userJson);
 
 // Implementation
 protected:
@@ -49,7 +49,7 @@ private:
 	VKUMessagesListItemProvider* provider;
 	DialogHistoryListener* pDialogHistoryListener;
 	MessageSentListener* pMessageSentListener;
-	Tizen::Base::String userId;
+	Tizen::Web::Json::JsonObject* userJson = null;
 	Tizen::Ui::Controls::TableView* pMessagesListView;
 };
 

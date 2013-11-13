@@ -47,7 +47,7 @@ result VKUDialogsPanel::OnInitializing(void) {
 
 	pProvider->Construct(pDialogTableView);
 	pDialogTableView->SetItemProvider(pProvider);
-//	pDialogTableView->AddListViewItemEventListener(provider);
+	pDialogTableView->AddTableViewItemEventListener(*pProvider);
 
 	pProvider->LoadData();
 

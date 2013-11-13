@@ -37,7 +37,7 @@ public:
 
 	// custom
 	void SetMessagesJson(Tizen::Web::Json::JsonObject *json);
-	void RequestData(const Tizen::Base::String userId);
+	void RequestData(Tizen::Web::Json::JsonObject * userJson);
 
 	DialogHistoryListener* GetListener();
 	void SetListener(DialogHistoryListener * apListener);

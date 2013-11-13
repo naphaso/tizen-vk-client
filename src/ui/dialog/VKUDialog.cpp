@@ -9,6 +9,7 @@ using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Ui::Scenes;
 using namespace Tizen::Graphics;
+using namespace Tizen::Web::Json;
 
 VKUDialog::VKUDialog(void) {
 }
@@ -60,11 +61,11 @@ void VKUDialog::OnSceneActivatedN(
 	AppLog("Scene activated");
 
 	if (pArgs != null) {
-		userId = String(*static_cast< String* > (pArgs->GetAt(0)));
-		AppLog("Received arg %ls", userId.GetPointer());
+		userJson = static_cast<JsonObject* > (pArgs->GetAt(0));
+//		AppLog("Received arg %ls", userJson.GetPointer());
 
 		VKUDialogPanel* pDialogPanel = static_cast<VKUDialogPanel*>(GetControl(IDC_PANEL_DIALOG));
-		pDialogPanel->SetUserId(userId);
+		pDialogPanel->SetUserJson(userJson);
 		AppLog("Doing pDialogPanel->LoadMessages");
 		pDialogPanel->LoadMessages();
 	}
@@ -101,5 +102,5 @@ void VKUDialog::OnFormBackRequested(Tizen::Ui::Controls::Form& source) {
 	SceneManager* pSceneManager = SceneManager::GetInstance();
 	AppAssert(pSceneManager);
 
-	pSceneManager->GoBackward(BackwardSceneTransition(SCENE_MAIN_CONTACTS));
+	pSceneManager->GoBackward(BackwardSceneTransition(SCENE_MAIN_DIALOGS));
 }

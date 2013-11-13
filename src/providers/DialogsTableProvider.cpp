@@ -9,6 +9,7 @@
 #include "../api/VKUApi.h"
 #include "JsonParseUtils.h"
 #include "../api/VKUAuthConfig.h"
+#include "SceneRegister.h"
 
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
@@ -17,6 +18,7 @@ using namespace Tizen::Web;
 using namespace Tizen::Base;
 using namespace Tizen::Graphics;
 using namespace Tizen::Base::Collection;
+using namespace Tizen::Ui::Scenes;
 
 static const int DIALOGS_ITEM_HEIGHT = 130;
 static const int PREVIEW_BACKGROUND_COLOR = 0x191f25;
@@ -301,4 +303,50 @@ void DialogsTableProvider::OnResponseN(Tizen::Web::Json::JsonObject *object) {
 
 void DialogsTableProvider::LoadData() {
 	VKUApi::GetInstance().CreateRequest("execute.getDialogsWithUsers", this)->Submit();
+}
+
+void DialogsTableProvider::OnTableViewItemStateChanged(
+		Tizen::Ui::Controls::TableView& tableView, int itemIndex,
+		Tizen::Ui::Controls::TableViewItem* pItem,
+		Tizen::Ui::Controls::TableViewItemStatus status) {
+
+	switch(status) {
+	case TABLE_VIEW_ITEM_STATUS_SELECTED:
+		OpenDialog(itemIndex);
+		break;
+	case TABLE_VIEW_ITEM_STATUS_HIGHLIGHTED:
+		AppLog("TABLE_VIEW_ITEM_STATUS_HIGHLIGHTED");
+		break;
+	case TABLE_VIEW_ITEM_STATUS_CHECKED:
+		AppLog("TABLE_VIEW_ITEM_STATUS_CHECKED");
+		break;
+	case TABLE_VIEW_ITEM_STATUS_UNCHECKED:
+		AppLog("TABLE_VIEW_ITEM_STATUS_UNCHECKED");
+		break;
+	case TABLE_VIEW_ITEM_STATUS_MORE:
+		AppLog("TABLE_VIEW_ITEM_STATUS_MORE");
+		break;
+	}
+}
+
+void DialogsTableProvider::OpenDialog(int index) {
+	SceneManager* pSceneManager = SceneManager::GetInstance();
+	AppAssert(pSceneManager);
+
+	IJsonValue *itemValue;
+	dialogsJson->GetAt(index, itemValue);
+	JsonObject *itemObject = static_cast<JsonObject *>(itemValue);
+
+	static const String userJsonConst(L"user_json");
+	IJsonValue *userJsonValue;
+	itemObject->GetValue(&userJsonConst, userJsonValue);
+
+	JsonObject *userJsonObject = static_cast<JsonObject *>(userJsonValue);
+
+	ArrayList* pList = new (std::nothrow) ArrayList(SingleObjectDeleter);
+
+	pList->Construct(1);
+	pList->Add(userJsonObject);
+
+	pSceneManager->GoForward(ForwardSceneTransition(SCENE_DIALOG), pList);
 }

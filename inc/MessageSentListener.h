@@ -22,12 +22,12 @@ public:
 
 	// IAPIRequestListener
 	virtual void OnResponseN(Tizen::Web::Json::JsonObject *object);
-	void SetUserId(Tizen::Base::String userId);
+	void SetUserJson(Tizen::Web::Json::JsonObject* userId);
 
 private:
 	Tizen::Ui::Controls::TableView * pTableView;
 	VKUMessagesListItemProvider * pProvider;
-	Tizen::Base::String userIdStr;
+	Tizen::Web::Json::JsonObject* pUserJson = null;
 };
 
 #endif /* MESSAGESENTLISTENER_H_ */

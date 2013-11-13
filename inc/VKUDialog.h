@@ -4,8 +4,7 @@
 
 #include <FBase.h>
 #include <FUi.h>
-
-
+#include <FWebJson.h>
 
 class VKUDialog :
 	public Tizen::Ui::Controls::Form,
@@ -41,8 +40,9 @@ public:
 	// back
 	virtual void OnFormBackRequested(Tizen::Ui::Controls::Form& source);
 
-	Tizen::Base::String userId;
+
 private:
+	Tizen::Web::Json::JsonObject* userJson;
 };
 
 #endif

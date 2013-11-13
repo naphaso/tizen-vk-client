@@ -2,12 +2,13 @@
 #include "VKULogin.h"
 #include "../../api/VKUAuthConfig.h"
 #include "SceneRegister.h"
+#include "VKU.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Ui::Scenes;
-
+using namespace Tizen::App;
 
 VKULogin::VKULogin(void) {
 }
@@ -26,6 +27,9 @@ result VKULogin::OnInitializing(void) {
 
 	pPopup = new (std::nothrow) VKULoginPopup();
 	pPopup->Construct();
+	pPopup->SetShowState(false);
+
+	SetFormBackEventListener(this);
 
 	Button* pButton_login = static_cast<Button*>(GetControl(IDC_BUTTON_LOGIN));
 	if (pButton_login) {
@@ -88,6 +92,14 @@ void VKULogin::OnError(const String &error, const String &description) {
 
 void VKULogin::OnFormBackRequested(Tizen::Ui::Controls::Form& source) {
 	AppLog("Back requested..");
-	pPopup->SetShowState(false);
+	if (pPopup->GetShowState()) {
+		pPopup->SetShowState(false);
+		return;
+	}
+
+	AppLog("Back requested. Finishing app");
+	UiApp* pApp = UiApp::GetInstance();
+	AppAssert(pApp);
+	pApp->Terminate();
 }
 

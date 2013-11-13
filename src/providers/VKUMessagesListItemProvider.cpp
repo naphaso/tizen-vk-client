@@ -6,6 +6,7 @@
  */
 
 #include "VKUMessagesListItemProvider.h"
+#include "JsonParseUtils.h"
 
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Graphics;
@@ -198,9 +199,11 @@ DialogHistoryListener* VKUMessagesListItemProvider::GetListener() {
 	return pListener;
 }
 
-void VKUMessagesListItemProvider::RequestData(const String userId) {
+void VKUMessagesListItemProvider::RequestData(JsonObject * userJson) {
 	TryReturnVoid(pListener != null, "IAPIRequestListener cannot be null, response will be omitted");
+	int userId;
+	JsonParseUtils::GetInteger(*userJson, L"id", userId);
 
 	VKUApi::GetInstance().CreateRequest("messages.getHistory", GetListener())->Put(
-			L"count", L"20")->Put(L"user_id", userId)->Submit();
+			L"count", L"20")->Put(L"user_id", Integer::ToString(userId))->Submit();
 }

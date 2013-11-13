@@ -8,6 +8,7 @@
 #include "MessageSentListener.h"
 
 using namespace Tizen::Base;
+using namespace Tizen::Web::Json;
 
 MessageSentListener::MessageSentListener(Tizen::Ui::Controls::TableView * apTableView,
 		VKUMessagesListItemProvider * apProvider) {
@@ -16,18 +17,18 @@ MessageSentListener::MessageSentListener(Tizen::Ui::Controls::TableView * apTabl
 
 }
 
-void MessageSentListener::SetUserId(String userId) {
-	userIdStr = userId;
+void MessageSentListener::SetUserJson(JsonObject * userJson) {
+	pUserJson = userJson;
 }
 
 MessageSentListener::~MessageSentListener() {
 	// TODO Auto-generated destructor stub
 }
 
-void MessageSentListener::OnResponseN(Tizen::Web::Json::JsonObject *object) {
+void MessageSentListener::OnResponseN(JsonObject *object) {
 	TryReturnVoid(pProvider != null, "MessageSentListener: Provider cannot be null");
-	TryReturnVoid(userIdStr.GetLength() != 0, "MessageSentListener: UserId is empty");
+	TryReturnVoid(pUserJson != null, "MessageSentListener: pUserJson is empty");
 
-	pProvider->RequestData(userIdStr);
+	pProvider->RequestData(pUserJson);
 	delete object;
 }

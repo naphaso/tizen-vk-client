@@ -2,6 +2,7 @@
 #include "VKUDialogPanel.h"
 #include "../../api/VKUApi.h"
 #include "VKUDialog.h"
+#include "JsonParseUtils.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
@@ -11,6 +12,7 @@ using namespace Tizen::Web::Json;
 
 VKUDialogPanel::VKUDialogPanel(void) {
 	provider = new VKUMessagesListItemProvider();
+	pMessagesListView = null;
 }
 
 VKUDialogPanel::~VKUDialogPanel(void) {
@@ -29,37 +31,41 @@ result VKUDialogPanel::OnInitializing(void) {
 
 	// TODO: Add your initialization code here
 	FitToScreen();
+	AppLog("Panel init 2");
 
 	pEditField = static_cast<EditField*>(GetControl(IDC_DIALOGTEXT_EDITFIELD));
 	pEditField->AddKeypadEventListener(*this);
+	AppLog("Panel init 3");
 
 	// table view init
 	pMessagesListView = static_cast<TableView*>(GetControl(
 			IDC_DIALOG_MESSAGES_LISTVIEW));
 	pMessagesListView->SetItemDividerColor(Color::GetColor(COLOR_ID_BLACK));
+	AppLog("Panel init 4");
 
 	pDialogHistoryListener = new DialogHistoryListener(pMessagesListView, provider);
 	pMessageSentListener = new MessageSentListener(pMessagesListView, provider);
+	AppLog("Panel init 5");
 
 	AppLog("Setting pDialogHistoryListener");
 	provider->SetListener(pDialogHistoryListener);
 	pMessagesListView->SetItemProvider(provider);
-
+	AppLog("Panel init 6");
 	return r;
 }
 
 void VKUDialogPanel::LoadMessages() {
-	TryReturnVoid(userId.GetLength() != 0, "VKUDialogPanel: LoadMessages cannot be completed until userId is not set");
+	TryReturnVoid(userJson != null, "VKUDialogPanel: LoadMessages cannot be completed until userId is not set");
 	AppLog("Doing VKUDialogPanel::LoadMessages");
 
-	provider->RequestData(userId);
+	provider->RequestData(userJson);
 }
 
-void VKUDialogPanel::SetUserId(String aUserId) {
+void VKUDialogPanel::SetUserJson(JsonObject* apJson) {
 	TryReturnVoid(pMessageSentListener != null, "VKUDialogPanel: Fatal - pMessageSentListener is null");
-	pMessageSentListener->SetUserId(aUserId);
+	pMessageSentListener->SetUserJson(apJson);
 
-	userId = aUserId;
+	userJson = apJson;
 }
 
 result VKUDialogPanel::OnTerminating(void) {
@@ -89,13 +95,14 @@ void VKUDialogPanel::FitToScreen() {
 
 void VKUDialogPanel::OnKeypadActionPerformed(Control &source,
 		KeypadAction keypadAction) {
-	VKUDialog *pForm = static_cast<VKUDialog *>(GetParent());
-	String userId = pForm->userId;
+	int userId;
+
+	JsonParseUtils::GetInteger(*userJson, L"id", userId);
 
 	if (keypadAction == KEYPAD_ACTION_SEND) {
 		String text = pEditField->GetText();
 		VKUApi::GetInstance().CreateRequest(L"messages.send", pMessageSentListener)->Put(
-				L"user_id", userId)->Put(L"message", text)->Submit();
+				L"user_id", Integer::ToString(userId))->Put(L"message", text)->Submit();
 		pEditField->Clear();
 		pEditField->RequestRedraw(true);
 	}
