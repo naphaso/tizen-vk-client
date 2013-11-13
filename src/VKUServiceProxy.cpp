@@ -101,7 +101,7 @@ void VKUServiceProxy::OnMessageReceivedN(RemoteMessagePort* pRemoteMessagePort, 
 						pDialogPanel->LoadMessages();
 					}
 				}
-			} else if(event->CompareTo("typing")) {
+			} else if(event->CompareTo("typing") == 0) {
 				// TODO: add show typing event
 			} else if(event->CompareTo("read")) {
 				int messageId;
