@@ -14,7 +14,8 @@
 #include "VKU.h"
 
 enum AvatarType {
-	LIST_BLACK,
+	AVATAR_NORMAL,
+	AVATAR_UNREAD,
 	HEADER_BLUE
 };
 

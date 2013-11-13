@@ -8,6 +8,7 @@
         <incompatible>false</incompatible>
         <version>true</version>
         <deprecated>false</deprecated>
+        <final>false</final>
     </acheck>
     <pcheck>
         <violation>true</violation>

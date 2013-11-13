@@ -122,7 +122,7 @@ TableViewItem* ContactsTableProvider::CreateItem(int groupIndex, int itemIndex,
 		AppLog("not found avatar in contacts response");
 	}
 
-	pRoundedAvatar = new RoundedAvatar(LIST_BLACK);
+	pRoundedAvatar = new RoundedAvatar(AVATAR_NORMAL);
 	r = pRoundedAvatar->Construct(Rectangle(0, 0, 108, 108), avatarUrl);
 	TryCatch(r == E_SUCCESS, , "Failed pRoundedAvatar->Construct");
 

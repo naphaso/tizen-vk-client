@@ -8,6 +8,7 @@
 #include "DialogsTableProvider.h"
 #include "../api/VKUApi.h"
 #include "JsonParseUtils.h"
+#include "../api/VKUAuthConfig.h"
 
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
@@ -16,9 +17,12 @@ using namespace Tizen::Web;
 using namespace Tizen::Base;
 using namespace Tizen::Graphics;
 using namespace Tizen::Base::Collection;
+
 static const int DIALOGS_ITEM_HEIGHT = 130;
 static const int PREVIEW_BACKGROUND_COLOR = 0x191f25;
 static const int PREVIEW_TEXT_COLOR = 0x6d6e75;
+static const int UNREAD_BACKGROUND_COLOR = 0x191f25;
+static const int HIGHLIGHTED_COLOR = 0x213f63;
 
 DialogsTableProvider::DialogsTableProvider() {
 	dialogsJson = null;
@@ -46,16 +50,32 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 	Font nameFont, previewFont;
 	Color nameColor, previewColor;
 
-	IJsonValue *pJsonValue;
-	JsonObject *pObject;
+	IJsonValue *pJsonValue, *pUserInfoValue;
+	JsonObject *pObject, *pUserInfoObject;
 
-	String nameText = String("User Name");
-	String previewText, timestampText;
-	int timeInSec;
+	const String userJsonConst(L"user_json");
+
+	String firstName, lastName, fullName;
+	String previewText, timestampText, avatarUrl;
+	int timeInSec, readState, myUserId, out;
+	AvatarType avType = AVATAR_NORMAL;
+
+	myUserId = VKUAuthConfig::GetUserId();
 
 	r = dialogsJson->GetAt(itemIndex, pJsonValue);
 	TryCatch(r == E_SUCCESS, , "Failed dialogsJson->GetAt");
 	pObject = static_cast<JsonObject *>(pJsonValue);
+	pObject->GetValue(&userJsonConst, pUserInfoValue);
+	pUserInfoObject = static_cast<JsonObject *>(pUserInfoValue);
+	JsonParseUtils::GetString(*pUserInfoObject, L"first_name", firstName);
+	JsonParseUtils::GetString(*pUserInfoObject, L"last_name", lastName);
+	JsonParseUtils::GetString(*pUserInfoObject, L"photo_100", avatarUrl);
+
+	firstName.Append(L" ");
+	firstName.Append(lastName);
+
+	JsonParseUtils::GetInteger(*pObject, "read_state", readState);
+	JsonParseUtils::GetInteger(*pObject, "out", out);
 
 	r = JsonParseUtils::GetString(*pObject, L"body", previewText);
 	TryCatch(r == E_SUCCESS, , "Failed JsonParseUtils::GetString");
@@ -69,9 +89,16 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 	pItem = new TableViewItem();
 	r = pItem->Construct(pItemlayout, Dimension(itemWidth, GetDefaultItemHeight()));
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
+	pItem->SetBackgroundColor(Color(HIGHLIGHTED_COLOR, false), TABLE_VIEW_ITEM_DRAWING_STATUS_PRESSED);
+	pItem->SetBackgroundColor(Color(HIGHLIGHTED_COLOR, false), TABLE_VIEW_ITEM_DRAWING_STATUS_HIGHLIGHTED);
 
-	pAvatar = new RoundedAvatar(LIST_BLACK);
-	r = pAvatar->Construct(Rectangle(0, 0, 108, 108), String(L"http://cs413221.vk.me/v413221706/b4e/_ratilf3mZ8.jpg"));
+	if (out == 0 && readState == 0) {
+		pItem->SetBackgroundColor(Color(UNREAD_BACKGROUND_COLOR, false), TABLE_VIEW_ITEM_DRAWING_STATUS_NORMAL);
+		avType = AVATAR_UNREAD;
+	}
+
+	pAvatar = new RoundedAvatar(avType);
+	r = pAvatar->Construct(Rectangle(0, 0, 108, 108), avatarUrl);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
 
 	r = nameFont.Construct(FONT_STYLE_PLAIN, 40);
@@ -83,7 +110,7 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 	previewColor = Color(PREVIEW_TEXT_COLOR, false);
 
 	pNameLabel = new Label();
-	r = pNameLabel->Construct(Rectangle(0, 0, 300, 50), nameText);
+	r = pNameLabel->Construct(Rectangle(0, 0, 300, 50), firstName);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
 	pNameLabel->SetTextConfig(nameFont.GetSize(), LABEL_TEXT_STYLE_NORMAL);
 	r = pNameLabel->SetMargin(0, 16);
@@ -95,9 +122,14 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 	pPreviewTextLabel->SetTextConfig(previewFont.GetSize(), LABEL_TEXT_STYLE_NORMAL);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
 	pPreviewTextLabel->SetTextColor(previewColor);
-	pPreviewTextLabel->SetBackgroundColor(Color(PREVIEW_BACKGROUND_COLOR, false));
-	r = pPreviewTextLabel->SetMargin(0, 10);
-	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
+
+	if (out == 1 && readState == 0) {
+		pPreviewTextLabel->SetBackgroundColor(Color(PREVIEW_BACKGROUND_COLOR, false));
+		r = pPreviewTextLabel->SetMargin(0, 10);
+		TryCatch(r == E_SUCCESS, , "Failed pPreviewTextLabel->SetMargin");
+	} else {
+		r = pPreviewTextLabel->SetMargin(0, 0);
+	}
 
 	pTimestampLabel = new Label();
 	r = pTimestampLabel->Construct(Rectangle(0, 0, 32, 40), timestampText);
@@ -175,7 +207,7 @@ bool DialogsTableProvider::DeleteItem(int itemIndex, TableViewItem* pItem) {
 }
 
 void DialogsTableProvider::UpdateItem(int itemIndex, TableViewItem* pItem) {
-
+	AppLog("DialogsTableProvider::UpdateItem %d", itemIndex);
 }
 
 int DialogsTableProvider::GetDefaultItemHeight(void) {
