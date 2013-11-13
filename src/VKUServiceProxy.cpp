@@ -103,6 +103,11 @@ void VKUServiceProxy::OnMessageReceivedN(RemoteMessagePort* pRemoteMessagePort, 
 				}
 			} else if(event->CompareTo("typing")) {
 				// TODO: add show typing event
+			} else if(event->CompareTo("read")) {
+				int messageId;
+				Integer::Parse(*static_cast<String *>(pMessage->GetValue(String(L"msg_id"))), messageId);
+
+				// TODO: mark message as read (if in current dialog)
 			}
 		}
 	}
