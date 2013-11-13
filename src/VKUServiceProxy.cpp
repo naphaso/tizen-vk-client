@@ -101,39 +101,28 @@ void VKUServiceProxy::OnMessageReceivedN(RemoteMessagePort* pRemoteMessagePort, 
 						pDialogPanel->LoadMessages();
 					}
 				}
-			} else if(event->CompareTo("typing") == 0) {
+			} else if(event->CompareTo(L"typing") == 0) {
 				// TODO: add show typing event
 			} else if(event->CompareTo("read")) {
 				int messageId;
 				Integer::Parse(*static_cast<String *>(pMessage->GetValue(String(L"msg_id"))), messageId);
 
 				// TODO: mark message as read (if in current dialog)
+			} else if(event->CompareTo(L"status") == 0) {
+				int userId;
+				bool online;
+				bool current;
+
+				Integer::Parse(*static_cast<String *>(pMessage->GetValue(String(L"user_id"))), userId);
+				online = static_cast<String *>(pMessage->GetValue(String(L"status")))->CompareTo(L"online") == 0;
+				current = static_cast<String *>(pMessage->GetValue(String(L"current")))->CompareTo(L"true") == 0;
+
+				// TODO: status processing
+				// current = user in current dialog?
 			}
 		}
 	}
 
-	/*
-	String key(L"ServiceApp");
-	String* pData = static_cast<String*>(pMessage->GetValue(key));
-
-	App* pApp = App::GetInstance();
-
-	if (pData != null && pApp != null) {
-		AppLog("SampleUiApp : Received data : %ls", pData->GetPointer());
-
-		if (pData->CompareTo(L"ready") == 0) {
-			pApp->SendUserEvent(STATE_CONNECTED, null);
-		} else if (pData->CompareTo(L"started") == 0) {
-			pApp->SendUserEvent(STATE_TIMER_STARTED, null);
-		} else if (pData->CompareTo(L"timer expired") == 0) {
-			pApp->SendUserEvent(STATE_TIMER_EXPIRED, null);
-		} else if (pData->CompareTo(L"stopped") == 0) {
-			pApp->SendUserEvent(STATE_TIMER_STOPPED, null);
-		} else if (pData->CompareTo(L"exit") == 0) {
-			pApp->SendUserEvent(STATE_EXIT, null);
-		}
-	}
-	*/
 
 	delete pMessage;
 }
