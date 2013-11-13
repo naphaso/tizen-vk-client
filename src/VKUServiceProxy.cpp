@@ -91,39 +91,38 @@ void VKUServiceProxy::OnMessageReceivedN(RemoteMessagePort* pRemoteMessagePort, 
 	if (pApp != null) {
 		String* event = static_cast<String*>(pMessage->GetValue(String(L"event")));
 		if (event != null) {
-			Frame* frame = pApp->GetFrame(FRAME_NAME);
-			Form* form = frame->GetCurrentForm();
-			if (form->GetName() == IDF_DIALOG) {
-				VKUDialogPanel* pDialogPanel = static_cast<VKUDialogPanel*>(form->GetControl(IDC_PANEL_DIALOG));
-				if (pDialogPanel != null) {
-					pDialogPanel->LoadMessages();
+
+			if(event->CompareTo(L"newmessage") == 0) {
+				Frame* frame = pApp->GetFrame(FRAME_NAME);
+				Form* form = frame->GetCurrentForm();
+				if (form->GetName() == IDF_DIALOG) {
+					VKUDialogPanel* pDialogPanel = static_cast<VKUDialogPanel*>(form->GetControl(IDC_PANEL_DIALOG));
+					if (pDialogPanel != null) {
+						pDialogPanel->LoadMessages();
+					}
 				}
+			} else if(event->CompareTo(L"typing") == 0) {
+				// TODO: add show typing event
+			} else if(event->CompareTo("read")) {
+				int messageId;
+				Integer::Parse(*static_cast<String *>(pMessage->GetValue(String(L"msg_id"))), messageId);
+
+				// TODO: mark message as read (if in current dialog)
+			} else if(event->CompareTo(L"status") == 0) {
+				int userId;
+				bool online;
+				bool current;
+
+				Integer::Parse(*static_cast<String *>(pMessage->GetValue(String(L"user_id"))), userId);
+				online = static_cast<String *>(pMessage->GetValue(String(L"status")))->CompareTo(L"online") == 0;
+				current = static_cast<String *>(pMessage->GetValue(String(L"current")))->CompareTo(L"true") == 0;
+
+				// TODO: status processing
+				// current = user in current dialog?
 			}
 		}
 	}
 
-	/*
-	String key(L"ServiceApp");
-	String* pData = static_cast<String*>(pMessage->GetValue(key));
-
-	App* pApp = App::GetInstance();
-
-	if (pData != null && pApp != null) {
-		AppLog("SampleUiApp : Received data : %ls", pData->GetPointer());
-
-		if (pData->CompareTo(L"ready") == 0) {
-			pApp->SendUserEvent(STATE_CONNECTED, null);
-		} else if (pData->CompareTo(L"started") == 0) {
-			pApp->SendUserEvent(STATE_TIMER_STARTED, null);
-		} else if (pData->CompareTo(L"timer expired") == 0) {
-			pApp->SendUserEvent(STATE_TIMER_EXPIRED, null);
-		} else if (pData->CompareTo(L"stopped") == 0) {
-			pApp->SendUserEvent(STATE_TIMER_STOPPED, null);
-		} else if (pData->CompareTo(L"exit") == 0) {
-			pApp->SendUserEvent(STATE_EXIT, null);
-		}
-	}
-	*/
 
 	delete pMessage;
 }
@@ -133,7 +132,7 @@ void VKUServiceProxy::SubscribeNotifications(int userId) {
 	HashMap *pMap =	new HashMap(SingleObjectDeleter);
 	pMap->Construct();
 	pMap->Add(new String(L"request"), new String(L"subscribe"));
-	pMap->Add(new String(L"userid"), new Integer(userId));
+	pMap->Add(new String(L"userid"), new String(Integer::ToString(userId)));
 	r = SendMessage(pMap);
 	delete pMap;
 }
@@ -143,7 +142,7 @@ void VKUServiceProxy::UnsubscribeNotifications(int userId) {
 	HashMap *pMap =	new HashMap(SingleObjectDeleter);
 	pMap->Construct();
 	pMap->Add(new String("request"), new String("unsubscribe"));
-	pMap->Add(new String(L"userid"), new Integer(userId));
+	pMap->Add(new String(L"userid"), new String(Integer::ToString(userId)));
 	r = SendMessage(pMap);
 	delete pMap;
 }
