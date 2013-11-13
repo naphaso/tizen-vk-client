@@ -23,8 +23,23 @@ using namespace Tizen::Ui::Scenes;
 static const wchar_t* REMOTE_PORT_NAME = L"SERVICE_PORT";
 
 VKUApp::VKUApp(void) {
+	result r;
 	AppLog("constructor");
-	bitmapCache = new BitmapCache();
+
+
+	bitmapCache = new (std::nothrow) BitmapCache();
+	TryCatch(bitmapCache != null, r = E_FAILURE, "bitmap cache allocation failure");
+
+	r = bitmapCache->Construct();
+	TryCatch(r == E_SUCCESS, , "fail to construct VKUApp");
+
+
+	AppLog("constructor ends");
+
+	return;
+	CATCH:
+	AppLogException("Failed VKUApp constructor: %s", GetErrorMessage(r));
+	return;
 }
 
 VKUApp::~VKUApp(void) {
@@ -46,12 +61,27 @@ bool VKUApp::OnAppInitializing(AppRegistry& appRegistry) {
 	return true;
 }
 
-bool VKUApp::OnAppInitialized(void) {
-	VKUFrame* pVKUFrame = new VKUFrame();
-	pVKUFrame->Construct();
-	pVKUFrame->SetName(FRAME_NAME);
-	AddFrame(*pVKUFrame);
+String VKUApp::GetCacheDir() {
+	return cacheDir;
+}
 
+bool VKUApp::OnAppInitialized(void) {
+	result r;
+
+	cacheDir = GetAppDataPath() + L"cache/";
+
+	VKUFrame* pVKUFrame = new (std::nothrow) VKUFrame();
+	TryCatch(pVKUFrame != null, r = E_FAILURE, "failed to allocate VKUFrame");
+
+	r = pVKUFrame->Construct();
+	TryCatch(r == E_SUCCESS, , "Failed to construct VKUFrame");
+
+	pVKUFrame->SetName(FRAME_NAME);
+
+	r = AddFrame(*pVKUFrame);
+	TryCatch(r == E_SUCCESS, , "Failed to set name of VKUFrame");
+
+	// TODO: add exception handling
 	SceneRegister::RegisterAllScenes();
 
 	if (VKUAuthConfig::IsExists()) {
@@ -60,12 +90,13 @@ bool VKUApp::OnAppInitialized(void) {
 		SceneManager::GetInstance()->GoForward(
 				ForwardSceneTransition(SCENE_MAIN_DIALOGS));
 	} else {
-		SceneManager::GetInstance()->GoForward(
-				ForwardSceneTransition(SCENE_LOGIN));
+		//SceneManager::GetInstance()->GoForward(
+		//		ForwardSceneTransition(SCENE_LOGIN));
 	}
 
 	// SERVICE INIT CODE
 
+	/*
 	String serviceName(L".vkservice");
 	String repAppId(15);
 	GetAppId().SubString(0, 10, repAppId);
@@ -73,7 +104,6 @@ bool VKUApp::OnAppInitialized(void) {
 	AppLog("VKU : Service Id is %ls", serviceId.GetPointer());
 
 	// Initialize ServiceProxy.
-	result r = E_SUCCESS;
 	pService = new (std::nothrow) VKUServiceProxy();
 	TryReturn(pService != null, false, "VKU : [%s] SeviceProxy creation is failed.", GetErrorMessage(r));
 	r = pService->Construct(serviceId, REMOTE_PORT_NAME);
@@ -84,9 +114,11 @@ bool VKUApp::OnAppInitialized(void) {
 	} else {
 //		__isReady = true;
 	}
-
+*/
 	// SERIVCE INIT CODE END
-
+	return true;
+	CATCH:
+	AppLogException("failed to initialize VKUApp: %s", GetErrorMessage(r));
 	return true;
 }
 

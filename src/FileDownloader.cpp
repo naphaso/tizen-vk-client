@@ -71,14 +71,12 @@ FileDownloader::FileDownloader(BitmapLoader *loader) {
 
 result FileDownloader::Construct() {
 	result r;
+
 	httpSession = new (std::nothrow) HttpSession();
+	TryCatch(httpSession != null, r = E_FAILURE, "failed allocation http session");
+
 	r = httpSession->Construct(NET_HTTP_SESSION_MODE_MULTIPLE_HOST, null, L"", null, NET_HTTP_COOKIE_FLAG_ALWAYS_MANUAL);
-	if (IsFailed(r)) {
-		delete httpSession;
-		httpSession = null;
-		AppLogException("Failed to create the HttpSession.");
-		goto CATCH;
-	}
+	TryCatch(r == E_SUCCESS, , "failed to create http session");
 
 	r = httpSession->SetAutoRedirectionEnabled(true);
 	TryCatch(r == E_SUCCESS, , "Failed to set the redirection automatically.");
