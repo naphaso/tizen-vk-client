@@ -60,12 +60,12 @@ CATCH:
 
 result RoundedAvatar::Construct(const Tizen::Graphics::Rectangle & rect, const Tizen::Base::String &avatarPath) {
 	result r = E_SUCCESS;
-	Rectangle newRect(0, 0, 108, 108);
+//	Rectangle newRect(0, 0, 108, 108);
 
 	imageUrl = avatarPath;
 	AppLog("construct rounded avatar based on url: %ls", avatarPath.GetPointer());
 
-	Panel::Construct(newRect, GROUP_STYLE_NONE);
+	Panel::Construct(rect, GROUP_STYLE_NONE);
 
 	VKUApp::GetInstance()->GetBitmapCache()->TakeBitmap(imageUrl, this);
 

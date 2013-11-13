@@ -33,11 +33,6 @@ result VKUDialog::OnInitializing(void) {
 //	AddKeyEventListener(*this);
 	SetFormBackEventListener(this);
 
-	Header* pHeader = GetHeader();
-	if (pHeader) {
-		pHeader->SetColor(headerColor);
-	}
-
 	SceneManager* pSceneManager = SceneManager::GetInstance();
 	pSceneManager->AddSceneEventListener(SCENE_DIALOG, *this);
 
