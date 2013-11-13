@@ -15,7 +15,6 @@ using namespace Tizen::Graphics;
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Base::Collection;
 
-static const RequestId AVATAR_LOAD_REQUEST = 1;
 
 RoundedAvatar::RoundedAvatar(const AvatarType & type, const PlaceholderType & placeholderType) {
 	result r = E_SUCCESS;
@@ -62,17 +61,17 @@ result RoundedAvatar::Construct(const Tizen::Graphics::Rectangle & rect, const T
 
 	imageUrl = avatarPath;
 	AppLog("construct rounded avatar based on url: %ls", avatarPath.GetPointer());
-//	VKUApp::GetInstance()->GetBitmapCache()->TakeBitmap(imageUrl, AVATAR_LOAD_REQUEST, this);
 
 	Panel::Construct(newRect, GROUP_STYLE_NONE);
+
+	VKUApp::GetInstance()->GetBitmapCache()->TakeBitmap(imageUrl, this);
 
 	return r;
 }
 
 RoundedAvatar::~RoundedAvatar() {
 	AppLog("rounded avatar destructor");
-	if (pAvatar)
-		delete pAvatar;
+	VKUApp::GetInstance()->GetBitmapCache()->ReleaseBitmap(imageUrl, this);
 
 //	if (pAvatarPlaceholder)
 //		delete pAvatarPlaceholder;
@@ -122,6 +121,12 @@ void RoundedAvatar::OnUserEventReceivedN(RequestId requestId, IList* pArgs) {
 //		RequestRedraw();
 //		delete pAvatarPlaceholder;
 //	}
+
+	if(requestId == BITMAP_LOADED) {
+		AppLog("bitmap loaded event");
+		pAvatar = static_cast<Bitmap *>(pArgs->GetAt(0));
+		RequestRedraw();
+	}
 
 	delete pArgs;
 }
