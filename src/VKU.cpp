@@ -27,11 +27,6 @@ VKUApp::VKUApp(void) {
 	AppLog("constructor");
 
 
-	bitmapCache = new (std::nothrow) BitmapCache();
-	TryCatch(bitmapCache != null, r = E_FAILURE, "bitmap cache allocation failure");
-
-	r = bitmapCache->Construct();
-	TryCatch(r == E_SUCCESS, , "fail to construct VKUApp");
 
 
 	AppLog("constructor ends");
@@ -57,7 +52,20 @@ VKUApp *VKUApp::GetInstance() {
 }
 
 bool VKUApp::OnAppInitializing(AppRegistry& appRegistry) {
+	result r = E_SUCCESS;
 	PowerManager::SetScreenEventListener(*this);
+
+	cacheDir = GetAppDataPath() + L"cache/";
+
+	bitmapCache = new (std::nothrow) BitmapCache();
+	TryCatch(bitmapCache != null, r = E_FAILURE, "bitmap cache allocation failure");
+
+	r = bitmapCache->Construct();
+	TryCatch(r == E_SUCCESS, , "fail to construct VKUApp");
+
+	return true;
+CATCH:
+	AppLogException("Failed VKUApp constructor: %s", GetErrorMessage(r));
 	return true;
 }
 
@@ -68,7 +76,6 @@ String VKUApp::GetCacheDir() {
 bool VKUApp::OnAppInitialized(void) {
 	result r;
 
-	cacheDir = GetAppDataPath() + L"cache/";
 
 	VKUFrame* pVKUFrame = new (std::nothrow) VKUFrame();
 	TryCatch(pVKUFrame != null, r = E_FAILURE, "failed to allocate VKUFrame");

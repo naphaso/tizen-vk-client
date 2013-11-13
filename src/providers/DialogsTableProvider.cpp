@@ -196,14 +196,15 @@ void DialogsTableProvider::ProcessJson(Tizen::Web::Json::JsonObject* obj) {
 
 //	ByteBuffer bb;
 //	bb.Construct(65535);
-	String filePath(L"/tmp/execute.txt");
-	JsonWriter::Compose(obj, filePath);
+//	String filePath(L"/tmp/execute.txt");
+//	JsonWriter::Compose(obj, filePath);
 //	AppLog("RESULT: %s", bb.GetPointer());
 
 	IJsonValue *response;
 	const String responseConst(L"response");
 	obj->GetValue(&responseConst, response);
 
+	AppLog("casting response to json");
 	JsonObject *responseJson = static_cast<JsonObject *>(response);
 
 	IJsonValue *dialogs;
@@ -213,16 +214,20 @@ void DialogsTableProvider::ProcessJson(Tizen::Web::Json::JsonObject* obj) {
 	IJsonValue *dialogItemsVal;
 	const String dialogsItems(L"items");
 	(static_cast<JsonObject *>(dialogs))->GetValue(&dialogsItems, dialogItemsVal);
+	AppLog("dialogs items received");
 
 	JsonArray* dialogsJsonArray = static_cast<JsonArray *>(dialogItemsVal);
 
 	IJsonValue *users;
 	const String usersConst(L"users");
 	r = responseJson->GetValue(&usersConst, users);
+	AppLog("users received");
 
 	HashMap usersMap(SingleObjectDeleter);
+	usersMap.Construct(); // FIXME: we know map size!
 
 	JsonArray *usersJsonArray = static_cast<JsonArray *>(users);
+	AppLog("constructing map");
 
 	for (int i=0; i<usersJsonArray->GetCount(); i++) {
 		IJsonValue* user;
@@ -233,9 +238,10 @@ void DialogsTableProvider::ProcessJson(Tizen::Web::Json::JsonObject* obj) {
 		int userId;
 		JsonParseUtils::GetInteger(*userJson, L"id", userId);
 
-		usersMap.Add(new Integer(userId), userJson);
+		usersMap.Add(new Integer(userId), userJson->CloneN());
 	}
 
+	AppLog("building new json");
 	for (int i=0; i<dialogsJsonArray->GetCount(); i++) {
 		IJsonValue* dialog;
 		dialogsJsonArray->GetAt(i, dialog);
@@ -246,10 +252,12 @@ void DialogsTableProvider::ProcessJson(Tizen::Web::Json::JsonObject* obj) {
 		JsonParseUtils::GetInteger(*dialogJson, L"user_id", userId);
 
 		JsonObject* userJson = static_cast<JsonObject *>(usersMap.GetValue(Integer(userId)));
-		dialogJson->Add(new String(L"user_json"), userJson);
+		dialogJson->Add(new String(L"user_json"), userJson->CloneN());
 	}
 
-	SetDialogsJson(static_cast<JsonObject *>(dialogs));
+	AppLog("SetDialogsJson");
+	SetDialogsJson((static_cast<JsonObject *>(dialogs))->CloneN());
+	delete obj;
 }
 
 void DialogsTableProvider::OnResponseN(Tizen::Web::Json::JsonObject *object) {
