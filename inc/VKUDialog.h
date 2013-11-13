@@ -42,6 +42,7 @@ public:
 	virtual void OnFormBackRequested(Tizen::Ui::Controls::Form& source);
 
 	Tizen::Base::String userId;
+	int userIdInt;
 private:
 };
 

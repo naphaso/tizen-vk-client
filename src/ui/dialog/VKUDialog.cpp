@@ -62,19 +62,23 @@ void VKUDialog::OnSceneActivatedN(
 	if (pArgs != null) {
 		userId = String(*static_cast< String* > (pArgs->GetAt(0)));
 		AppLog("Received arg %ls", userId.GetPointer());
-
 		VKUDialogPanel* pDialogPanel = static_cast<VKUDialogPanel*>(GetControl(IDC_PANEL_DIALOG));
 		pDialogPanel->SetUserId(userId);
 		AppLog("Doing pDialogPanel->LoadMessages");
 		pDialogPanel->LoadMessages();
+
+		Integer::Parse(userId, userIdInt);
+
 	}
+
+	VKUApp::GetInstance()->GetService()->SubscribeNotifications(userIdInt);
 }
 
 void VKUDialog::OnSceneDeactivated(
 		const Tizen::Ui::Scenes::SceneId& currentSceneId,
 		const Tizen::Ui::Scenes::SceneId& nextSceneId) {
-	// TODO: Add your implementation codes here
 
+	VKUApp::GetInstance()->GetService()->UnsubscribeNotifications(userIdInt);
 }
 
 void VKUDialog::OnKeyLongPressed(const Tizen::Ui::Control& source,
