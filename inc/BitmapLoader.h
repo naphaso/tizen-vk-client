@@ -28,8 +28,7 @@ public:
 	virtual ~BitmapLoader();
 
 	result Construct();
-	result ImageLoaderRequest(RequestId requestId, Tizen::Ui::Control *control, const Tizen::Base::String &path, Tizen::Graphics::BitmapPixelFormat pixelFormat = Tizen::Graphics::BITMAP_PIXEL_FORMAT_RGB565);
-	result ImageLoaderRequest(RequestId requestId, Tizen::Ui::Control *control, const Tizen::Base::String &path, Tizen::Graphics::BitmapPixelFormat pixelFormat, int width, int height);
+	result ImageLoaderRequest(ICacheEntry *cacheEntry);
 
 	virtual bool OnStart(void);
 	virtual void OnStop(void);

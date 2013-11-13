@@ -16,7 +16,10 @@
 #include <FSecCrypto.h>
 #include <map>
 
+#define BITMAP_LOADED 31337
+
 class BitmapCache;
+class ICacheEntry;
 
 #include "IBitmapReceiver.h"
 #include "BitmapLoader.h"
@@ -24,32 +27,27 @@ class BitmapCache;
 
 
 
-typedef struct {
-	RequestId requestId;
-	Tizen::Ui::Control *control;
-	Tizen::Base::String address;
-	Tizen::Media::Image *image;
-} PendingRequest;
+class ICacheEntry : public Tizen::Base::Object {
+public:
+	virtual ~ICacheEntry() {};
+	virtual Tizen::Base::String GetUrl() = 0;
+	virtual Tizen::Base::String GetFile() = 0;
+	virtual void OnDownloadSuccess() = 0;
+	virtual void OnDownloadError() = 0;
+	virtual void OnLoadingSuccess(Tizen::Graphics::Bitmap *bitmap) = 0;
+	virtual void OnLoadingError() = 0;
+};
 
-class BitmapCache : public Tizen::Media::IImageDecodeUrlEventListener {
+class BitmapCache {
 public:
 	BitmapCache();
 	result Construct();
 	virtual ~BitmapCache();
 
-	void TakeBitmap(const Tizen::Base::String &address, RequestId requestId, Tizen::Ui::Control *control);
-	//void TakeBitmap(const Tizen::Base::String address, Tizen::Media::IImageDecodeUrlEventListener *listener);
-	void ReleaseBitmap(Tizen::Ui::Control *control, RequestId requestId);
+	void TakeBitmap(const Tizen::Base::String &address, Tizen::Ui::Control *control);
+	void ReleaseBitmap(const Tizen::Base::String &address, Tizen::Ui::Control *control);
 	void ReduceMemoryUsage();
-
-	virtual void OnImageDecodeUrlReceived(RequestId reqId, Tizen::Graphics::Bitmap* pBitmap, result r, const Tizen::Base::String errorCode, const Tizen::Base::String errorMessage);
 private:
-	//Tizen::Media::Image image;
-	//Tizen::Base::Collection::HashMapT<Tizen::Base::String, PendingRequest> pendingRequests;
-	//Tizen::Base::Collection::LinkedList pendingRequests;
-	//Tizen::Base::Collection::HashMapT<RequestId, PendingRequest*> pendingRequests;
-	std::map<RequestId, PendingRequest *> pendingRequests;
-
 	Tizen::Base::Collection::HashMap *bitmapCache;
 	BitmapLoader *loader;
 	FileDownloader *downloader;

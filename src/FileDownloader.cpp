@@ -24,17 +24,13 @@ using namespace Tizen::Graphics;
 
 class DownloadingImageData : public Object {
 private:
-	Control *_control;
 	File *_file;
-	String _name;
-	RequestId _requestId;
+	ICacheEntry *_cacheEntry;
 public:
-	DownloadingImageData(Control *control, const String &name, RequestId requestId) {
-		_control = control;
-		_name = name;
+	DownloadingImageData(ICacheEntry *cacheEntry) {
+		_cacheEntry = cacheEntry;
 		_file = new File();
-		_file->Construct(name, "w");
-		_requestId = requestId;
+		_file->Construct(cacheEntry->GetFile(), "w");
 	}
 
 	void Write(const ByteBuffer &buffer) {
@@ -43,30 +39,19 @@ public:
 
 	void FinishRemove() {
 		delete _file;
-		File::Remove(_name);
+		File::Remove(_cacheEntry->GetFile());
+		_cacheEntry->OnDownloadError();
 	}
 
 	void FinishFlush() {
 		_file->Flush();
 		delete _file;
-	}
-
-	RequestId GetRequestId() {
-		return _requestId;
-	}
-
-	Control *GetControl() {
-		return _control;
-	}
-
-	String GetName() {
-		return _name;
+		_cacheEntry->OnDownloadSuccess();
 	}
 };
 
-FileDownloader::FileDownloader(BitmapLoader *loader) {
+FileDownloader::FileDownloader() {
 	AppLog("constructor");
-	this->loader = loader;
 }
 
 result FileDownloader::Construct() {
@@ -91,7 +76,7 @@ FileDownloader::~FileDownloader() {
 
 }
 
-result FileDownloader::DownloadImage(const String &url, const String &file, Control *control, RequestId requestId) {
+result FileDownloader::DownloadImage(ICacheEntry *cacheEntry) {
 	result r;
 	HttpTransaction *transaction;
 	HttpRequest *request;
@@ -99,7 +84,7 @@ result FileDownloader::DownloadImage(const String &url, const String &file, Cont
 	transaction = httpSession->OpenTransactionN();
 	TryCatch(GetLastResult() == E_SUCCESS, r = GetLastResult(), "Failed to open the HttpTransaction.");
 
-	r = transaction->SetUserObject(new DownloadingImageData(control, file, requestId));
+	r = transaction->SetUserObject(new DownloadingImageData(cacheEntry));
 	TryCatch(r == E_SUCCESS, , "Failed SetUserObject");
 
 	r = transaction->AddHttpTransactionListener(*this);
@@ -107,7 +92,7 @@ result FileDownloader::DownloadImage(const String &url, const String &file, Cont
 
 	request = const_cast<HttpRequest *>(transaction->GetRequest());
 
-	r = request->SetUri(url);
+	r = request->SetUri(cacheEntry->GetUrl());
 	TryCatch(r == E_SUCCESS, , "Failed to set the uri.");
 
 	r = request->SetMethod(NET_HTTP_METHOD_GET);
@@ -159,8 +144,6 @@ void FileDownloader::OnTransactionCompleted(HttpSession& httpSession, HttpTransa
 
 	DownloadingImageData *downloadingData = static_cast<DownloadingImageData *>(httpTransaction.GetUserObject());
 	downloadingData->FinishFlush();
-
-	loader->ImageLoaderRequest(downloadingData->GetRequestId(), downloadingData->GetControl(), downloadingData->GetName(), BITMAP_PIXEL_FORMAT_RGB565);
 
 	delete downloadingData;
 }

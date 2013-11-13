@@ -25,7 +25,7 @@ BitmapLoader::BitmapLoader() {
 }
 
 BitmapLoader::~BitmapLoader() {
-	// TODO Auto-generated destructor stub
+	AppLog("destructor");
 }
 
 result BitmapLoader::Construct() {
@@ -51,54 +51,26 @@ void BitmapLoader::OnStop() {
 
 }
 
-result BitmapLoader::ImageLoaderRequest(RequestId requestId, Control *control, const String &path, BitmapPixelFormat pixelFormat) {
+result BitmapLoader::ImageLoaderRequest(ICacheEntry *cacheEntry) {
 	ArrayList *list = new ArrayList(NoOpDeleter);
 	list->Construct(3);
-	list->Add(control);
-	list->Add(new String(path));
-	list->Add(new Integer(pixelFormat));
-	this->SendUserEvent(requestId, list);
-	return E_SUCCESS;
-}
-
-result BitmapLoader::ImageLoaderRequest(RequestId requestId, Control *control, const String &path, BitmapPixelFormat pixelFormat, int width, int height) {
-	ArrayList *list = new ArrayList(NoOpDeleter);
-	list->Construct(5);
-	list->Add(control);
-	list->Add(new String(path));
-	list->Add(new Integer(pixelFormat));
-	list->Add(new Integer(width));
-	list->Add(new Integer(height));
-	this->SendUserEvent(requestId, list);
+	list->Add(cacheEntry);
+	this->SendUserEvent(1, list);
 	return E_SUCCESS;
 }
 
 void BitmapLoader::OnUserEventReceivedN(RequestId requestId, IList *pArgs) {
-	Control *control = static_cast<Control *>(pArgs->GetAt(0));
-	String *path = static_cast<String*>(pArgs->GetAt(1));
-	Integer *pixelFormatInt = static_cast<Integer *>(pArgs->GetAt(2));
-	BitmapPixelFormat pixelFormat = static_cast<BitmapPixelFormat>(pixelFormatInt->ToInt());
-	Integer *width = static_cast<Integer *>(pArgs->GetAt(3));
-	Integer *height = static_cast<Integer *>(pArgs->GetAt(4));
+	ICacheEntry *cacheEntry = static_cast<ICacheEntry *>(pArgs->GetAt(0));
 
 	Image image;
 	image.Construct();
 
-	Bitmap *bitmap = null;
-	if(width != null && height != null) {
-		bitmap = image.DecodeN(*path, pixelFormat, width->ToInt(), height->ToInt());
-		delete width;
-		delete height;
+	Bitmap *bitmap = image.DecodeN(cacheEntry->GetFile(), BITMAP_PIXEL_FORMAT_RGB565);
+	if(GetLastResult() == E_SUCCESS) {
+		cacheEntry->OnLoadingSuccess(bitmap);
 	} else {
-		bitmap = image.DecodeN(*path, pixelFormat);
+		cacheEntry->OnLoadingError();
 	}
 
-	delete pixelFormatInt;
-	delete path;
 	delete pArgs;
-
-	ArrayList *result = new ArrayList(NoOpDeleter);
-	result->Construct(1);
-	result->Add(bitmap);
-	control->SendUserEvent(requestId, result);
 }

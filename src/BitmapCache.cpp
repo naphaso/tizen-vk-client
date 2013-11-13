@@ -43,28 +43,34 @@ typedef enum {
 	CACHE_ENTRY_STATE_NOT_FOUND,
 	CACHE_ENTRY_STATE_DOWNLOADING,
 	CACHE_ENTRY_STATE_FILE,
-	CACHE_ENTRY_STATE_DECODING,
+	CACHE_ENTRY_STATE_LOADING,
 	CACHE_ENTRY_STATE_MEMORY
 } CacheEntryState;
 
-class CacheEntry : public Object {
+class CacheEntry : public ICacheEntry {
 private:
-	CacheEntryState state;
+	FileDownloader *_downloader;
+	BitmapLoader *_loader;
+
+	CacheEntryState _state;
 	String _url;
 	String _file;
 	Bitmap *_bitmap;
-	ArrayList subscribers;
-	void StartDownloading() {
+	ArrayList _subscribers;
 
+	void StartDownloading() {
+		_state = CACHE_ENTRY_STATE_DOWNLOADING;
+		_downloader->DownloadImage(this);
 	}
 
 	void StartLoading() {
-
+		_state = CACHE_ENTRY_STATE_LOADING;
+		_loader->ImageLoaderRequest(this);
 	}
 
 	void SendEventsToAll() {
-		for(int i = 0; i < subscribers.GetCount(); i++) {
-			SendEvent(static_cast<Control *>(subscribers.GetAt(i)));
+		for(int i = 0; i < _subscribers.GetCount(); i++) {
+			SendEvent(static_cast<Control *>(_subscribers.GetAt(i)));
 		}
 	}
 
@@ -72,32 +78,48 @@ private:
 		ArrayList *list = new ArrayList(NoOpDeleter);
 		list->Construct(1);
 		list->Add(_bitmap);
-		control->SendUserEvent(1, list); // BITMAP_LOADED_EVENT
+		control->SendUserEvent(BITMAP_LOADED, list); // BITMAP_LOADED_EVENT
 	}
 public:
-	CacheEntry(const String &url) : _url(url), _file(CacheFileFromUrl(url)), subscribers(NoOpDeleter) {
-		subscribers.Construct();
+	CacheEntry(const String &url, FileDownloader *downloader, BitmapLoader *loader)
+			: _url(url), _file(CacheFileFromUrl(url)), _downloader(downloader), _loader(loader), _subscribers(NoOpDeleter) {
+		_subscribers.Construct();
 		if(File::IsFileExist(_file)) {
-			state = CACHE_ENTRY_STATE_FILE;
+			_state = CACHE_ENTRY_STATE_FILE;
 		} else {
-			state = CACHE_ENTRY_STATE_NOT_FOUND;
+			_state = CACHE_ENTRY_STATE_NOT_FOUND;
 		}
 	}
 
 	CacheEntryState GetState() {
-		return state;
+		return _state;
+	}
+
+	virtual String GetUrl() {
+		return _url;
+	}
+
+	virtual String GetFile() {
+		return _file;
+	}
+
+	virtual ~CacheEntry() {
+		AppLog("cache entry desctructor. TODO: implement it");
 	}
 
 	void AddSubscriber(Control *control) {
-		subscribers.Add(control);
-		switch(state) {
+		_subscribers.Add(control);
+		switch(_state) {
 		case CACHE_ENTRY_STATE_NOT_FOUND:
+			AppLog("new subscriber on cache entry, entry not found, downloading...");
 			StartDownloading();
 			break;
 		case CACHE_ENTRY_STATE_FILE:
+			AppLog("new subscriber on cache entry, entry in file, loading...");
 			StartLoading();
 			break;
 		case CACHE_ENTRY_STATE_MEMORY:
+			AppLog("new subscriber on cache entry, entry in memory, send bitmap...");
 			SendEvent(control);
 			break;
 		default:
@@ -105,34 +127,70 @@ public:
 		}
 	}
 
-	void OnDownloadStarted() {
-		state = CACHE_ENTRY_STATE_DOWNLOADING;
-	}
-
-	void OnDownloaded() {
-		if(File::IsFileExist(_file)) {
-			state = CACHE_ENTRY_STATE_FILE;
-			if(subscribers.GetCount() != 0) {
-				state = CACHE_ENTRY_STATE_DECODING;
-				StartLoading();
-			}
+	void RemoveSubscriber(Control *control) {
+		result r;
+		r = _subscribers.Remove(*control);
+		if(r != E_SUCCESS) {
+			AppLog("WARNING: unsubscribe unsubscribed!!!!!!!!!!!!!!");
 		}
 	}
 
-	void OnLoaded(Bitmap *bitmap) {
-		_bitmap = bitmap;
-		state = CACHE_ENTRY_STATE_MEMORY;
-		if(subscribers.GetCount() != 0) {
-			SendEventsToAll();
+	virtual void OnDownloadSuccess() {
+		if(_state == CACHE_ENTRY_STATE_DOWNLOADING && File::IsFileExist(_file)) {
+			AppLog("file downloaded");
+			_state = CACHE_ENTRY_STATE_FILE;
+			if(_subscribers.GetCount() != 0) {
+				_state = CACHE_ENTRY_STATE_LOADING;
+				StartLoading();
+			}
+		} else {
+			AppLog("WARNING: illegal state: downloaded event not on DOWNLOADING state, or file don't exists");
+		}
+	}
+
+	virtual void OnDownloadError() {
+		if(_state == CACHE_ENTRY_STATE_DOWNLOADING) {
+			AppLog("file downloading error");
+			_state = CACHE_ENTRY_STATE_NOT_FOUND;
+		} else {
+			AppLog("WARNING: illegal state: downloading error not on DOWNLOADING state, or file don't exists");
+		}
+	}
+
+	virtual void OnLoadingSuccess(Bitmap *bitmap) {
+		if(_state == CACHE_ENTRY_STATE_LOADING) {
+			AppLog("bitmap loaded");
+			_bitmap = bitmap;
+			_state = CACHE_ENTRY_STATE_MEMORY;
+			if(_subscribers.GetCount() != 0) {
+				SendEventsToAll();
+			}
+		} else {
+			AppLog("WARNING: illegal state: loaded event not on LOADING state");
+		}
+	}
+
+	virtual void OnLoadingError() {
+		if(_state == CACHE_ENTRY_STATE_LOADING) {
+			AppLog("bitmap loading error");
+			_state = CACHE_ENTRY_STATE_NOT_FOUND;
+			File::Remove(_file);
+			if(_subscribers.GetCount() != 0) {
+				StartDownloading();
+			}
+		} else {
+			AppLog("WARNING: illegal state: loading error not on LOADING state");
 		}
 	}
 
 	bool TrimMemory() {
-		if(state == CACHE_ENTRY_STATE_MEMORY && subscribers.GetCount() == 0) {
-			state = CACHE_ENTRY_STATE_FILE;
+		if(_state == CACHE_ENTRY_STATE_MEMORY && _subscribers.GetCount() == 0) {
+			AppLog("trim memory, delete bitmap");
+			_state = CACHE_ENTRY_STATE_FILE;
 			delete _bitmap;
 			return true;
 		} else {
+			AppLog("trim memory, not needed or not possible");
 			return false;
 		}
 	}
@@ -167,7 +225,7 @@ result BitmapCache::Construct() {
 	r = loader->Construct();
 	TryCatch(r == E_SUCCESS, , "Failed to construct BitmapLoader");
 
-	downloader = new (std::nothrow) FileDownloader(loader);
+	downloader = new (std::nothrow) FileDownloader();
 	TryCatch(downloader != null, r = E_FAILURE, "fail to allocate file downloader");
 
 	r = downloader->Construct();
@@ -186,83 +244,30 @@ BitmapCache::~BitmapCache() {
 }
 
 //  Tizen::Graphics::BitmapPixelFormat pixelFormat, int destWidth, int destHeight, RequestId& reqId, const IImageDecodeUrlEventListener& listener, long timeout
-void BitmapCache::TakeBitmap(const Tizen::Base::String &address, RequestId requestId, Control *control) {
-	String cacheFile(CacheFileFromUrl(address));
-
-	if(File::IsFileExist(cacheFile)) {
-		loader->ImageLoaderRequest(requestId, control, cacheFile);
-	} else {
-		downloader->DownloadImage(address, cacheFile, control, requestId);
+void BitmapCache::TakeBitmap(const String &address, Control *control) {
+	AppLog("getting cache entry %ls from bitmap cache", address.GetPointer());
+	CacheEntry *cacheEntry = static_cast<CacheEntry *>(bitmapCache->GetValue(address));
+	if(cacheEntry == null) {
+		AppLog("cache entry not found, creating new");
+		cacheEntry = new CacheEntry(address, downloader, loader);
+		bitmapCache->Add(new String(address), cacheEntry);
 	}
 
-/*
-	Uri uri;
-	RequestId newRequestId;
-	uri.SetUri(address);
-
-	Image *image = new Image();
-	image->Construct();
-
-	PendingRequest *pendingRequest = new PendingRequest();
-	pendingRequest->requestId = requestId;
-	pendingRequest->address = address;
-	pendingRequest->control = control;
-	pendingRequest->image = image;
-
-
-
-	r = image->DecodeUrl(uri, pixelFormat, destWidth, destHeigth, newRequestId, *this, 30000);
-	if(r == E_SUCCESS) {
-		//pendingRequests.Add(newRequestId, pendingRequest);
-		pendingRequests[newRequestId] = pendingRequest;
-		AppLog("send request with id %ld", newRequestId);
-	} else {
-		AppLog("failed send request");
-	}
-	*/
+	cacheEntry->AddSubscriber(control);
 }
 
-void BitmapCache::ReleaseBitmap(Control *control, RequestId requestId) {
-
+void BitmapCache::ReleaseBitmap(const String &address, Control *control) {
+	AppLog("release bitmap");
+	CacheEntry *cacheEntry = static_cast<CacheEntry *>(bitmapCache->GetValue(address));
+	if(cacheEntry == null) {
+		AppLog("WARNING: release unknown cache entry!!!!!!!!!!!");
+	} else {
+		cacheEntry->RemoveSubscriber(control);
+	}
 }
 
 void BitmapCache::ReduceMemoryUsage() {
-
-}
-
-void BitmapCache::OnImageDecodeUrlReceived(RequestId requestId, Bitmap* pBitmap, result r, const String errorCode, const String errorMessage) {
-	AppLog("received response with id %ld", requestId);
-	ArrayList *list;
-	Bitmap *newBitmap;
-	PendingRequest *pendingRequest = pendingRequests[requestId];
-
-	TryCatch(pendingRequest != null, , "response on unknown request");
-	//r2 = pendingRequests.GetValue(requestId, pendingRequest);
-	//TryCatch(r == E_SUCCESS, , "response on unknown request");
-	//r2 = pendingRequests.Remove(requestId);
-	//TryCatch(r == E_SUCCESS, , "error remove pending request");
-	//pendingRequests.erase(requestId);
-
-	TryCatch(r == E_SUCCESS, , "error request image");
-
-	AppLog("received bitmap size %dx%d", pBitmap->GetWidth(), pBitmap->GetHeight());
-	AppLog("received bitmap pointer %x", pBitmap);
-	newBitmap = new Bitmap();
-	newBitmap->Construct(*pBitmap, Rectangle(0,0,pBitmap->GetWidth(), pBitmap->GetHeight()));
-	r = bitmapCache->Add(new String(pendingRequest->address), newBitmap);
-	TryCatch(r == E_SUCCESS, , "save image in cache error");
-
-	list = new ArrayList(NoOpDeleter);
-	list->Construct(0);
-	//list->Add(pBitmap);
-
-	pendingRequest->control->SendUserEvent(pendingRequest->requestId, list);
-	AppLog("event sended");
-
-	return;
-
-	CATCH:
-	AppLogException("OnImageDecodeUrlReceived is failed: %s", GetErrorMessage(r));
-	return;
+	AppLog("reduce memory usage");
+	// TODO: iterate on each cache entry and trim memory
 }
 

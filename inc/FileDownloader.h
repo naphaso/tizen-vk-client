@@ -14,15 +14,16 @@
 
 class FileDownloader;
 
+#include "BitmapCache.h"
 #include "BitmapLoader.h"
 
 class FileDownloader : public Tizen::Net::Http::IHttpTransactionEventListener {
 public:
-	FileDownloader(BitmapLoader *loader);
+	FileDownloader();
 	result Construct();
 	virtual ~FileDownloader();
 
-	result DownloadImage(const Tizen::Base::String &url, const Tizen::Base::String &file, Tizen::Ui::Control *control, RequestId requestId);
+	result DownloadImage(ICacheEntry *cacheEntry);
 
 	// IHttpTransactionEventListener
 	virtual void OnTransactionReadyToRead(Tizen::Net::Http::HttpSession& httpSession, Tizen::Net::Http::HttpTransaction& httpTransaction, int availableBodyLen);
@@ -34,7 +35,6 @@ public:
 
 private:
 	Tizen::Net::Http::HttpSession *httpSession;
-	BitmapLoader *loader;
 };
 
 #endif /* FILEDOWNLOADER_H_ */
