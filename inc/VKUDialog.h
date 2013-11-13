@@ -40,9 +40,8 @@ public:
 	// back
 	virtual void OnFormBackRequested(Tizen::Ui::Controls::Form& source);
 
-
 private:
-	Tizen::Web::Json::JsonObject* userJson;
+	Tizen::Web::Json::JsonObject* userJson = null;
 };
 
 #endif

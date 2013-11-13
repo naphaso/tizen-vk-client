@@ -78,15 +78,15 @@ bool VKUApp::OnAppInitialized(void) {
 
 
 	VKUFrame* pVKUFrame = new (std::nothrow) VKUFrame();
-	TryCatch(pVKUFrame != null, r = E_FAILURE, "failed to allocate VKUFrame");
+//	TryCatch(pVKUFrame != null, r = E_FAILURE, "failed to allocate VKUFrame");
 
 	r = pVKUFrame->Construct();
-	TryCatch(r == E_SUCCESS, , "Failed to construct VKUFrame");
+//	TryCatch(r == E_SUCCESS, , "Failed to construct VKUFrame");
 
 	pVKUFrame->SetName(FRAME_NAME);
 
 	r = AddFrame(*pVKUFrame);
-	TryCatch(r == E_SUCCESS, , "Failed to set name of VKUFrame");
+//	TryCatch(r == E_SUCCESS, , "Failed to set name of VKUFrame");
 
 	// TODO: add exception handling
 	SceneRegister::RegisterAllScenes();
@@ -103,7 +103,7 @@ bool VKUApp::OnAppInitialized(void) {
 
 	// SERVICE INIT CODE
 
-	/*
+
 	String serviceName(L".vkservice");
 	String repAppId(15);
 	GetAppId().SubString(0, 10, repAppId);
@@ -121,7 +121,7 @@ bool VKUApp::OnAppInitialized(void) {
 	} else {
 //		__isReady = true;
 	}
-*/
+
 	// SERIVCE INIT CODE END
 	return true;
 	CATCH:

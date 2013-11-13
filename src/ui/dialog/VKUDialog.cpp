@@ -3,6 +3,7 @@
 #include "VKUDialog.h"
 #include "VKUDialogPanel.h"
 #include "VKUColors.h"
+#include "JsonParseUtils.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
@@ -69,13 +70,21 @@ void VKUDialog::OnSceneActivatedN(
 		AppLog("Doing pDialogPanel->LoadMessages");
 		pDialogPanel->LoadMessages();
 	}
+
+	if (userJson != null) {
+		int userId;
+		JsonParseUtils::GetInteger(*userJson, L"id", userId);
+		VKUApp::GetInstance()->GetService()->SubscribeNotifications(userId);
+	}
 }
 
 void VKUDialog::OnSceneDeactivated(
 		const Tizen::Ui::Scenes::SceneId& currentSceneId,
 		const Tizen::Ui::Scenes::SceneId& nextSceneId) {
-	// TODO: Add your implementation codes here
 
+	int userId;
+	JsonParseUtils::GetInteger(*userJson, L"id", userId);
+	VKUApp::GetInstance()->GetService()->UnsubscribeNotifications(userId);
 }
 
 void VKUDialog::OnKeyLongPressed(const Tizen::Ui::Control& source,
