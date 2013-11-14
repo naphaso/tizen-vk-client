@@ -24,7 +24,6 @@ result JsonParseUtils::GetString(const JsonObject & object, const String & key,
 	result r = E_SUCCESS;
 
 	IJsonValue * value;
-	static const String bodyConst(L"body");
 	if (object.GetValue(&key, value) == E_SUCCESS) {
 		if (value->GetType() == JSON_TYPE_STRING) {
 			resVal = *static_cast<JsonString *>(value);
@@ -43,7 +42,6 @@ result JsonParseUtils::GetInteger(const JsonObject & object, const String & key,
 	result r = E_SUCCESS;
 
 	IJsonValue * value;
-	static const String bodyConst(L"body");
 	if (object.GetValue(&key, value) == E_SUCCESS) {
 		if (value->GetType() == JSON_TYPE_NUMBER) {
 			JsonNumber jsonValNum = *static_cast<JsonNumber *>(value);
