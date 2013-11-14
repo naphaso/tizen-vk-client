@@ -46,6 +46,7 @@ public:
 	void SetHeaderUser(Tizen::Web::Json::JsonObject * userJson);
 	void SetUserTyping(bool typing);
 
+	void SetDialogData(Tizen::Web::Json::JsonObject *dialogData);
 // Implementation
 protected:
 

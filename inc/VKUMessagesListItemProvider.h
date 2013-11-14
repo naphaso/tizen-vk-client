@@ -37,15 +37,17 @@ public:
 
 	// custom
 	void SetMessagesJson(Tizen::Web::Json::JsonObject *json);
-	void RequestData(Tizen::Web::Json::JsonObject * userJson);
+	void RequestData();
 
 	DialogHistoryListener* GetListener();
 	void SetListener(DialogHistoryListener * apListener);
-
+	void SetUserJson(Tizen::Web::Json::JsonObject* json);
 private:
 	Tizen::Web::Json::JsonObject* responseJson;
+	Tizen::Web::Json::JsonObject* userJson;
 	Tizen::Web::Json::JsonArray* messagesJson;
 	DialogHistoryListener* pListener;
+
 };
 
 #endif /* VKUMESSAGESLISTITEMPROVIDER_H_ */

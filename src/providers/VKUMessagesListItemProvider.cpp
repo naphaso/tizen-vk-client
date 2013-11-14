@@ -19,6 +19,8 @@ using namespace Tizen::Ui;
 
 static const int LIST_HEIGHT = 10000;
 
+#define USE_CACHE 1
+
 VKUMessagesListItemProvider::VKUMessagesListItemProvider() {
 	messagesJson = null;
 }
@@ -167,6 +169,12 @@ int VKUMessagesListItemProvider::GetDefaultItemHeight() {
 void VKUMessagesListItemProvider::SetMessagesJson(JsonObject *json) {
 	result r = E_SUCCESS;
 
+	// save cache
+	int userId;
+	JsonParseUtils::GetInteger(*userJson, L"id", userId);
+	String cacheFile(VKUApp::GetInstance()->GetCacheDir() + "dialog" + Integer::ToString(userId) + ".json");
+	JsonWriter::Compose(json, cacheFile);
+
 	responseJson = json;
 	AppLog("Setting messaging json");
 
@@ -191,6 +199,7 @@ void VKUMessagesListItemProvider::SetMessagesJson(JsonObject *json) {
 	    AppLogException("$${Function:UpdateItem} is failed.", GetErrorMessage(r));
 	    SetLastResult(r);
 }
+
 void VKUMessagesListItemProvider::SetListener(DialogHistoryListener * apListener) {
 	pListener = apListener;
 }
@@ -199,7 +208,11 @@ DialogHistoryListener* VKUMessagesListItemProvider::GetListener() {
 	return pListener;
 }
 
-void VKUMessagesListItemProvider::RequestData(JsonObject * userJson) {
+void VKUMessagesListItemProvider::SetUserJson(JsonObject *json) {
+	userJson = json;
+}
+
+void VKUMessagesListItemProvider::RequestData() {
 	TryReturnVoid(pListener != null, "IAPIRequestListener cannot be null, response will be omitted");
 	int userId;
 	JsonParseUtils::GetInteger(*userJson, L"id", userId);

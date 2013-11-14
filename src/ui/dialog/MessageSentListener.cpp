@@ -29,6 +29,6 @@ void MessageSentListener::OnResponseN(JsonObject *object) {
 	TryReturnVoid(pProvider != null, "MessageSentListener: Provider cannot be null");
 	TryReturnVoid(pUserJson != null, "MessageSentListener: pUserJson is empty");
 
-	pProvider->RequestData(pUserJson);
+	pProvider->RequestData();
 	delete object;
 }

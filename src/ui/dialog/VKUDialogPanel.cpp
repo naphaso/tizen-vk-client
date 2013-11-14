@@ -63,12 +63,13 @@ void VKUDialogPanel::LoadMessages() {
 	TryReturnVoid(userJson != null, "VKUDialogPanel: LoadMessages cannot be completed until userId is not set");
 	AppLog("Doing VKUDialogPanel::LoadMessages");
 
-	provider->RequestData(userJson);
+	provider->RequestData();
 }
 
 void VKUDialogPanel::SetUserJson(JsonObject* apJson) {
 	TryReturnVoid(pMessageSentListener != null, "VKUDialogPanel: Fatal - pMessageSentListener is null");
 	pMessageSentListener->SetUserJson(apJson);
+	provider->SetUserJson(apJson);
 
 	SetHeaderUser(apJson);
 
@@ -92,6 +93,7 @@ void VKUDialogPanel::SetUserTyping(bool typing) {
 void VKUDialogPanel::SetHeaderUser(JsonObject * userJson) {
 	Label * pNameLabel = static_cast<Label*>(pHeaderPanel->GetControl(IDC_DIALOG_HEADER_NAME));
 	Panel * pAvatarHolder = static_cast<Panel*>(pHeaderPanel->GetControl(IDC_PANEL_DIALOG_AVATAR));
+	Label * pStatuslabel = static_cast<Label*>(pHeaderPanel->GetControl(IDC_DIALOG_HEADER_STATUS));
 
 	String fname, sname, status, avararUrl;
 	int online;
@@ -196,4 +198,8 @@ void VKUDialogPanel::OnTextValueChanged(const Tizen::Ui::Control& source) {
 
 void VKUDialogPanel::OnTextValueChangeCanceled(const Tizen::Ui::Control& source) {
 
+}
+
+void VKUDialogPanel::SetDialogData(JsonObject *dialogData) {
+	pDialogHistoryListener->OnResponseN(dialogData);
 }

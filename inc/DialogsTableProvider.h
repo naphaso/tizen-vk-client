@@ -22,10 +22,8 @@ class DialogsTableProvider: public Tizen::Ui::Controls::ITableViewItemProvider,
 		public IAPIRequestListener {
 public:
 	DialogsTableProvider();
+	result Construct(Tizen::Ui::Controls::TableView* tableView);
 	virtual ~DialogsTableProvider();
-	void Construct(Tizen::Ui::Controls::TableView* tableView) {
-		pDialogTableView = tableView;
-	}
 
 	// ITableViewItemProvider
 	virtual int GetItemCount(void);

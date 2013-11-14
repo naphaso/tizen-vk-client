@@ -30,6 +30,14 @@ DialogsTableProvider::DialogsTableProvider() {
 	dialogsJson = null;
 }
 
+result DialogsTableProvider::Construct(TableView* tableView) {
+	pDialogTableView = tableView;
+	IJsonValue *dialogs = JsonParser::ParseN(VKUApp::GetInstance()->GetCacheDir() + "dialogs.json");
+	if(GetLastResult() == E_SUCCESS) {
+		dialogsJson = static_cast<JsonArray *>(dialogs);
+	}
+}
+
 DialogsTableProvider::~DialogsTableProvider() {
 	// TODO Auto-generated destructor stub
 }
@@ -223,6 +231,9 @@ void DialogsTableProvider::SetDialogsJson(JsonObject* json) {
 	json->GetValue(&itemsConst, items);
 
 	dialogsJson = static_cast<JsonArray *>(items);
+
+	String cacheFilePath(VKUApp::GetInstance()->GetCacheDir() + L"dialogs.json");
+	JsonWriter::Compose(dialogsJson, cacheFilePath);
 }
 
 void DialogsTableProvider::ProcessJson(Tizen::Web::Json::JsonObject* obj) {

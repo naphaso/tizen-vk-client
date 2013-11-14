@@ -64,6 +64,13 @@ void VKUDialog::OnSceneActivatedN(
 		pDialogPanel->SetUserJson(userJson);
 		AppLog("Doing pDialogPanel->LoadMessages");
 		pDialogPanel->LoadMessages();
+
+		int userId;
+		JsonParseUtils::GetInteger(*userJson, L"id", userId);
+		JsonObject *dialogData = static_cast<JsonObject *>(JsonParser::ParseN(VKUApp::GetInstance()->GetCacheDir() + "dialog" + Integer::ToString(userId) + ".json"));
+		if(GetLastResult() == E_SUCCESS) {
+			pDialogPanel->SetDialogData(dialogData);
+		}
 	}
 
 	if (userJson != null) {
