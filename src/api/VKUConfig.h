@@ -21,7 +21,8 @@
 	L"&display=" VKU_DISPLAY_TYPE       \
 	"&response_type=" VKU_RESPONSE_TYPE
 
-#define VKU_API_VERSION L"5.2"
+#define VKU_API_VERSION L"5.3"
 
+#define VKU_SIGNUP_URL L"https://m.vk.com/join"
 
 #endif /* VKUCONFIG_H_ */

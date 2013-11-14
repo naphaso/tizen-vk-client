@@ -2,7 +2,9 @@
 #define _APP_RESOURCE_ID_H_
 
 extern const wchar_t* IDC_BUTTON1;
+extern const wchar_t* IDC_BUTTON2;
 extern const wchar_t* IDC_BUTTON_LOGIN;
+extern const wchar_t* IDC_BUTTON_REGISTER;
 extern const wchar_t* IDC_CHECKBUTTON1;
 extern const wchar_t* IDC_CONTACTS_GROUPEDLISTVIEW;
 extern const wchar_t* IDC_DIALOGTEXT_EDITFIELD;
@@ -28,6 +30,7 @@ extern const wchar_t* IDC_PANEL_DIALOG;
 extern const wchar_t* IDC_PANEL_DIALOGS;
 extern const wchar_t* IDC_PANEL_DIALOG_AVATAR;
 extern const wchar_t* IDC_PANEL_DIALOG_HEADER;
+extern const wchar_t* IDC_PANEL_LOGIN;
 extern const wchar_t* IDC_PANEL_SEARCH;
 extern const wchar_t* IDC_PANEL_SETTINGS;
 extern const wchar_t* IDC_SEARCHBAR1;

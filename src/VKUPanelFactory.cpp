@@ -6,6 +6,7 @@
 #include "VKSettingsPanel.h"
 #include "VKUSearchPanel.h"
 #include "VKUDialogPanel.h"
+#include "LoginPanel.h"
 
 using namespace Tizen::Ui::Scenes;
 
@@ -43,6 +44,10 @@ VKUPanelFactory::CreatePanelN(const Tizen::Base::String& panelId,
 		pNewPanel = pPanel;
 	} else if (panelId == IDC_PANEL_DIALOG) {
 		VKUDialogPanel* pPanel = new VKUDialogPanel();
+		pPanel->Initialize();
+		pNewPanel = pPanel;
+	} else if (panelId == IDC_PANEL_LOGIN) {
+		LoginPanel* pPanel = new LoginPanel();
 		pPanel->Initialize();
 		pNewPanel = pPanel;
 	}

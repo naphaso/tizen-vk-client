@@ -8,15 +8,11 @@
 class VLULogin;
 
 #include "IAuthListener.h"
-#include "VKULoginPopup.h"
 
 class VKULogin :
 	public Tizen::Ui::Controls::Form,
- 	public Tizen::Ui::IActionEventListener,
  	public Tizen::Ui::Scenes::ISceneEventListener,
- 	public Tizen::Ui::Controls::IFormBackEventListener,
- 	public IAuthListener
-{
+ 	public Tizen::Ui::Controls::IFormBackEventListener {
 
 // Construction
 public:
@@ -32,26 +28,16 @@ protected:
 // Generated call-back functions
 public:
 
-
-	virtual void OnActionPerformed(const Tizen::Ui::Control& source, int actionId);
-
 	virtual void OnSceneActivatedN(const Tizen::Ui::Scenes::SceneId& previousSceneId,
 								   const Tizen::Ui::Scenes::SceneId& currentSceneId, Tizen::Base::Collection::IList* pArgs);
 	virtual void OnSceneDeactivated(const Tizen::Ui::Scenes::SceneId& currentSceneId,
 									const Tizen::Ui::Scenes::SceneId& nextSceneId);
 
-	// IAuthListener
-	virtual void OnSuccess(const Tizen::Base::String &accessToken, const Tizen::Base::String &expiresIn, const Tizen::Base::String &userId);
-	virtual void OnError(const Tizen::Base::String &error, const Tizen::Base::String &description);
-
 	// back
 	virtual void OnFormBackRequested(Tizen::Ui::Controls::Form& source);
 
 private:
-	static const int ACTION_LOGIN = 101;
-	static const int ACTION_SIGNUP = 102;
 
-	VKULoginPopup* pPopup;
 };
 
 #endif

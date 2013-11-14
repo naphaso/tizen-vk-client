@@ -23,8 +23,10 @@ result VKULoginPopup::Construct() {
 	Rectangle rect;
 	AppLog("VKULoginPopup::Construct");
 
+
 	r = Popup::Construct(false, Dimension(600, 800));
 	TryCatch(r == E_SUCCESS, , "Failed Construct");
+
 
 	rect = GetClientAreaBounds();
 
@@ -41,6 +43,8 @@ result VKULoginPopup::Construct() {
 	r = AddControl(pWeb);
 	TryCatch(r == E_SUCCESS, , "Failed AddControl");
 
+	SetPropagatedKeyEventListener(this);
+
 	AppLog("LoginPopup constructed");
 	return r;
 
@@ -49,11 +53,10 @@ result VKULoginPopup::Construct() {
 	return r;
 }
 
-void VKULoginPopup::StartAuth(IAuthListener *listener) {
+void VKULoginPopup::StartLogin(IAuthListener *listener) {
 	result r;
 	this->authListener = listener;
 	AppLog("VKULoginPopup::StartAuth");
-
 
 	r = SetShowState(true);
 	TryCatch(r == E_SUCCESS, , "Failed SetShowState");
@@ -61,6 +64,28 @@ void VKULoginPopup::StartAuth(IAuthListener *listener) {
 	TryCatch(r == E_SUCCESS, , "Failed Show");
 
 	pWeb->LoadUrl(VKU_LOGIN_URL);
+	r = GetLastResult();
+	TryCatch(r == E_SUCCESS, , "Failed LoadUrl");
+
+	AppLog("VKULoginPopup::StartAuth done");
+
+	return;
+	CATCH:
+	AppLogException("StartAuth is failed.", GetErrorMessage(r));
+	return;
+}
+
+void VKULoginPopup::StartSignup(IAuthListener *listener) {
+	result r;
+	this->authListener = listener;
+	AppLog("VKULoginPopup::StartAuth");
+
+	r = SetShowState(true);
+	TryCatch(r == E_SUCCESS, , "Failed SetShowState");
+	r = Show();
+	TryCatch(r == E_SUCCESS, , "Failed Show");
+
+	pWeb->LoadUrl(VKU_SIGNUP_URL);
 	r = GetLastResult();
 	TryCatch(r == E_SUCCESS, , "Failed LoadUrl");
 
@@ -95,14 +120,14 @@ void VKULoginPopup::OnLoadingCompleted() {
 
 				SetShowState(false);
 
-				authListener->OnSuccess(accessTokenValue, expiresInValue, userIdValue);
+				authListener->OnLoginSuccess(accessTokenValue, expiresInValue, userIdValue);
 			} else {
 				String errorValue(L"error_unknown");
 				String errorDescription(L"Unknown error");
 
 				SetShowState(false);
 
-				authListener->OnError(errorValue, errorDescription);
+				authListener->OnLoginError(errorValue, errorDescription);
 			}
 
 			delete params;
@@ -116,17 +141,29 @@ void VKULoginPopup::OnLoadingCompleted() {
 
 				SetShowState(false);
 
-				authListener->OnError(errorValue, errorDescriptionValue);
+				authListener->OnLoginError(errorValue, errorDescriptionValue);
 			} else {
 				String errorValue(L"error_unknown");
 				String errorDescription(L"Unknown error");
 
 				SetShowState(false);
 
-				authListener->OnError(errorValue, errorDescription);
+				authListener->OnLoginError(errorValue, errorDescription);
 			}
 
 			delete params;
 		}
 	}
+}
+
+bool VKULoginPopup::OnKeyReleased(Control& source, const KeyEventInfo& keyEventInfo) {
+   KeyCode key = keyEventInfo.GetKeyCode();
+   if (key == KEY_BACK || key == KEY_ESC)
+   {
+      Popup* pPopup = static_cast< Popup * >(&source);
+      pPopup->SetShowState(false);
+      pPopup->Invalidate(true);
+   }
+
+   return false;
 }

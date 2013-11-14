@@ -36,6 +36,8 @@ result DialogsTableProvider::Construct(TableView* tableView) {
 	if(GetLastResult() == E_SUCCESS) {
 		dialogsJson = static_cast<JsonArray *>(dialogs);
 	}
+
+	return E_SUCCESS;
 }
 
 DialogsTableProvider::~DialogsTableProvider() {

@@ -24,12 +24,6 @@ static const wchar_t* REMOTE_PORT_NAME = L"SERVICE_PORT";
 
 VKUApp::VKUApp(void) {
 	result r;
-	AppLog("constructor");
-
-
-
-
-	AppLog("constructor ends");
 
 	return;
 	CATCH:
@@ -97,8 +91,8 @@ bool VKUApp::OnAppInitialized(void) {
 		SceneManager::GetInstance()->GoForward(
 				ForwardSceneTransition(SCENE_MAIN_DIALOGS));
 	} else {
-		//SceneManager::GetInstance()->GoForward(
-		//		ForwardSceneTransition(SCENE_LOGIN));
+		SceneManager::GetInstance()->GoForward(
+				ForwardSceneTransition(SCENE_LOGIN));
 	}
 
 	// SERVICE INIT CODE
