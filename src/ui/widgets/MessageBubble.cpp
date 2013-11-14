@@ -12,6 +12,8 @@ using namespace Tizen::Base;
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::App;
+using namespace Tizen::Base::Collection;
+
 
 MessageBubble::MessageBubble() {
 	result r = E_SUCCESS;
@@ -38,70 +40,82 @@ MessageBubble::~MessageBubble() {
 	delete pBubbleOut;
 }
 
-void MessageBubble::SetMessage(const String & msg, const int aOut = 0) {
-	message = new String(msg);
-	out = aOut;
+void MessageBubble::SetOut(int out) {
+	this->out = out;
 }
 
 result MessageBubble::Construct(const Tizen::Graphics::Dimension& dim) {
 	result r = E_SUCCESS;
-	VerticalBoxLayout layout;
-	RichTextPanel* pRtPanel;
-	Dimension baseDim(dim);
-	Dimension textDim(0, 0);
+	r = itemLayout.Construct(VERTICAL_DIRECTION_UPWARD);
 
-	baseDim.width -= BUBBLE_HORIZONTAL_SIDE_MARGIN;
+	placeholderLayout.Construct();
+	pPlaceholderPanel = new Panel();
+	pPlaceholderPanel->Construct(itemLayout, Rectangle(0, 0, dim.width, dim.height));
 
-	RelativeLayout textWrapLayout;
-	textWrapLayout.Construct();
-	Panel* textWrapPanel = new Panel();
-	textWrapPanel->Construct(textWrapLayout, Rectangle(0, 0, baseDim.width, baseDim.height), GROUP_STYLE_NONE);
-
-	int textPadL = BUBBLE_TRIANGLE_SIZE + BUBBLE_PADDING,
-			textPadR = BUBBLE_PADDING,
-			textPadT = BUBBLE_PADDING,
-			textPadB = BUBBLE_PADDING;
-
-	r = layout.Construct(VERTICAL_DIRECTION_UPWARD);
 	TryCatch(r == E_SUCCESS, , "Failed Construct layout");
 
-	r = Panel::Construct(layout, Rectangle(0, 0, baseDim.width, baseDim.height), GROUP_STYLE_NONE);
-	TryCatch(r == E_SUCCESS, , "Failed Construct MessageBubble parent");
+	r = Panel::Construct(placeholderLayout, Rectangle(0, 0, dim.width, dim.height), GROUP_STYLE_NONE);
+	TryCatch(r == E_SUCCESS, , "Panel::Construct");
 
-	if (message != null) {
-		pRtPanel = new RichTextPanel();
+	AddControl(pPlaceholderPanel);
 
-		textDim = Dimension(baseDim.width-2*BUBBLE_PADDING-BUBBLE_TRIANGLE_SIZE, baseDim.height-2*BUBBLE_VERTICAL_PADDING);
-		pRtPanel->Construct(textDim, *message);
-		textDim = pRtPanel->GetSize();
-
-		textWrapPanel->AddControl(pRtPanel);
-		textWrapPanel->SetSize(textDim.width + 2*BUBBLE_PADDING+BUBBLE_TRIANGLE_SIZE+BUBBLE_TRIANGLE_EXTRA, textDim.height + 2*BUBBLE_VERTICAL_PADDING);
-		textWrapLayout.SetMargin(*pRtPanel, BUBBLE_PADDING, BUBBLE_PADDING, BUBBLE_VERTICAL_PADDING, BUBBLE_VERTICAL_PADDING);
-
-		textWrapLayout.SetCenterAligned(*pRtPanel, CENTER_ALIGN_HORIZONTAL);
-		textWrapLayout.SetCenterAligned(*pRtPanel, CENTER_ALIGN_VERTICAL);
-
-		baseDim = textWrapPanel->GetSize();
-		TryCatch(GetLastResult() == E_SUCCESS, r = GetLastResult(), "Failed SetBackgroundColor");
-
-		r = AddControl(textWrapPanel);
-		TryCatch(r == E_SUCCESS, , "Failed Add message text to MessageBubble");
-
-//		r = layout.SetHorizontalAlignment(*textWrapPanel, LAYOUT_HORIZONTAL_ALIGN_RIGHT);
-//		TryCatch(r == E_SUCCESS, , "Failed SetHorizontalAlignment");
-//		layout.SetHorizontalMargin(*textWrapPanel, BUBBLE_PADDING, BUBBLE_PADDING);
-	}
-
-	r = SetSize(baseDim);
-	TryCatch(r == E_SUCCESS, , "Failed SetSize");
-
+	pElements = new ArrayList();
+	r = pElements->Construct();
 	return r;
 
 CATCH:
-	AppLogException("$${Function:Construct} is failed.", GetErrorMessage(r));
+	AppLogException("MessageBubble::Construct is failed.", GetErrorMessage(r));
 	return r;
 }
+
+result MessageBubble::AddElement(MessageElement * pElement) {
+	result r = E_SUCCESS;
+	Dimension mySize, elementSize;
+
+	if (out == 1) {
+		r = placeholderLayout.SetMargin(*pPlaceholderPanel, 10, 30, 10, 10);
+	} else {
+		r = placeholderLayout.SetMargin(*pPlaceholderPanel, 30, 10, 10, 10);
+	}
+	TryCatch(r == E_SUCCESS, , "Failed placeholderLayout.SetMargin");
+
+	r = pElements->Add(pElement);
+	TryCatch(r == E_SUCCESS, , "Failed pElements->Add");
+
+	r = pPlaceholderPanel->SetSize(pElement->GetSize());
+	TryCatch(r == E_SUCCESS, , "pPlaceholderPanel->SetSize");
+
+	r = pPlaceholderPanel->AddControl(pElement);
+	TryCatch(r == E_SUCCESS, , "pPlaceholderPanel->AddControl");
+
+
+	itemLayout.SetSpacing(*pElement, 10);
+
+
+//	r = AddControl(pPlaceholderPanel);
+//	TryCatch(r == E_SUCCESS, , "Failed AddControl");
+
+	mySize = GetSize();
+	elementSize = pElement->GetSize();
+
+//	if (mySize.width < elementSize.width) {
+//		SetSize(elementSize.width, mySize.height + elementSize.height);
+//	} else {
+//		SetSize(mySize.width, mySize.height + elementSize.height);
+//	}
+
+	SetSize(pElement->GetSize().width+40, pElement->GetSize().height+20);
+
+	AppLog("pElement size: %dx%d", pElement->GetWidth(), pElement->GetHeight());
+	AppLog("pPlaceholderPanel size: %dx%d", pPlaceholderPanel->GetWidth(), pPlaceholderPanel->GetHeight());
+	AppLog("Bubble size: %dx%d", GetWidth(), GetHeight());
+	return r;
+
+CATCH:
+	AppLogException("MessageBubble::AddElement is failed. : %s", GetErrorMessage(r));
+	return r;
+}
+
 result MessageBubble::OnDraw(void) {
 	result r = E_SUCCESS;
 

@@ -63,9 +63,11 @@ int DialogsTableProvider::GetItemCount(void) {
 TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 	result r;
 
+	AppLog("DialogsTableProvider::CreateItem");
+
 	TableViewItem* pItem;
 	RoundedAvatar* pAvatar;
-	RelativeLayout pItemlayout;
+	RelativeLayout* pItemlayout;
 	Label* pNameLabel, *pPreviewTextLabel, *pTimestampLabel;
 	Font nameFont, previewFont;
 	Color nameColor, previewColor;
@@ -108,13 +110,16 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 	r = TimeUtils::GetDialogsTime(timeInSec, timestampText);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
 
-	pItemlayout.Construct();
+	pItemlayout = new RelativeLayout();
+	pItemlayout->Construct();
 
 	pItem = new TableViewItem();
-	r = pItem->Construct(pItemlayout, Dimension(itemWidth, GetDefaultItemHeight()));
+	r = pItem->Construct(*pItemlayout, Dimension(itemWidth, GetDefaultItemHeight()));
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
 	pItem->SetBackgroundColor(Color(HIGHLIGHTED_COLOR, false), TABLE_VIEW_ITEM_DRAWING_STATUS_PRESSED);
 	pItem->SetBackgroundColor(Color(HIGHLIGHTED_COLOR, false), TABLE_VIEW_ITEM_DRAWING_STATUS_HIGHLIGHTED);
+
+	pItemlayout = static_cast<RelativeLayout *>(pItem->GetLayoutN());
 
 	if (out == 0 && readState == 0) {
 		pItem->SetBackgroundColor(Color(UNREAD_BACKGROUND_COLOR, false), TABLE_VIEW_ITEM_DRAWING_STATUS_NORMAL);
@@ -175,57 +180,68 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 	r = pItem->AddControl(pTimestampLabel);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
 
-	/* LAYOUT */
+//	/* LAYOUT */
+//
+	AppLog("DialogsTableProvider::CreateItem - avatar layout");
 
 	// avatar layout
-	r = pItemlayout.SetRelation(*pAvatar, *pItem, RECT_EDGE_RELATION_LEFT_TO_LEFT);
+	r = pItemlayout->SetRelation(*pAvatar, *pItem, RECT_EDGE_RELATION_LEFT_TO_LEFT);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
-	r = pItemlayout.SetRelation(*pAvatar, *pItem, RECT_EDGE_RELATION_TOP_TO_TOP);
+	r = pItemlayout->SetRelation(*pAvatar, *pItem, RECT_EDGE_RELATION_TOP_TO_TOP);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
-	r = pItemlayout.SetMargin(*pAvatar, 20, 0, 11, 0);
-	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
-
-	r = pItemlayout.SetRelation(*pNameLabel, *pAvatar, RECT_EDGE_RELATION_LEFT_TO_RIGHT);
-	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
-	r = pItemlayout.SetRelation(*pNameLabel, *pItem, RECT_EDGE_RELATION_TOP_TO_TOP);
-	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
-	r = pItemlayout.SetMargin(*pNameLabel, 4, 0, 15, 0);
-	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
-	r = pItemlayout.SetHorizontalFitPolicy(*pNameLabel, FIT_POLICY_CONTENT);
+	r = pItemlayout->SetMargin(*pAvatar, 20, 0, 11, 0);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
 
-	r = pItemlayout.SetRelation(*pPreviewTextLabel, *pNameLabel, RECT_EDGE_RELATION_TOP_TO_BOTTOM);
+	AppLog("DialogsTableProvider::CreateItem - name layout");
+
+	r = pItemlayout->SetRelation(*pNameLabel, *pAvatar, RECT_EDGE_RELATION_LEFT_TO_RIGHT);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
-	r = pItemlayout.SetRelation(*pPreviewTextLabel, *pAvatar, RECT_EDGE_RELATION_LEFT_TO_RIGHT);
+	r = pItemlayout->SetRelation(*pNameLabel, *pItem, RECT_EDGE_RELATION_TOP_TO_TOP);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
-	r = pItemlayout.SetRelation(*pPreviewTextLabel, *pItem, RECT_EDGE_RELATION_RIGHT_TO_RIGHT);
+	r = pItemlayout->SetMargin(*pNameLabel, 4, 0, 15, 0);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
-	r = pItemlayout.SetHorizontalFitPolicy(*pPreviewTextLabel, FIT_POLICY_CONTENT);
-	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
-	r = pItemlayout.SetMargin(*pPreviewTextLabel, 20, 20, 5, 0); // TODO: top padding?
+	r = pItemlayout->SetHorizontalFitPolicy(*pNameLabel, FIT_POLICY_CONTENT);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
 
-	r = pItemlayout.SetRelation(*pTimestampLabel, *pItem, RECT_EDGE_RELATION_RIGHT_TO_RIGHT);
+	AppLog("DialogsTableProvider::CreateItem - preview layout");
+
+	r = pItemlayout->SetRelation(*pPreviewTextLabel, *pNameLabel, RECT_EDGE_RELATION_TOP_TO_BOTTOM);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
-	r = pItemlayout.SetRelation(*pTimestampLabel, *pItem, RECT_EDGE_RELATION_TOP_TO_TOP);
+	r = pItemlayout->SetRelation(*pPreviewTextLabel, *pAvatar, RECT_EDGE_RELATION_LEFT_TO_RIGHT);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
-	r = pItemlayout.SetMargin(*pTimestampLabel, 0, 0, 20, 0);
+	r = pItemlayout->SetRelation(*pPreviewTextLabel, *pItem, RECT_EDGE_RELATION_RIGHT_TO_RIGHT);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
-	r = pItemlayout.SetHorizontalFitPolicy(*pTimestampLabel, FIT_POLICY_CONTENT);
+	r = pItemlayout->SetHorizontalFitPolicy(*pPreviewTextLabel, FIT_POLICY_CONTENT);
+	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
+	r = pItemlayout->SetMargin(*pPreviewTextLabel, 20, 20, 5, 0); // TODO: top padding?
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
 
-	r = pItemlayout.SetRelation(*pNameLabel, *pTimestampLabel, RECT_EDGE_RELATION_RIGHT_TO_LEFT);
+	AppLog("DialogsTableProvider::CreateItem - timestamp layout");
+
+	r = pItemlayout->SetRelation(*pTimestampLabel, *pItem, RECT_EDGE_RELATION_RIGHT_TO_RIGHT);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
+	r = pItemlayout->SetRelation(*pTimestampLabel, *pItem, RECT_EDGE_RELATION_TOP_TO_TOP);
+	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
+	r = pItemlayout->SetMargin(*pTimestampLabel, 0, 0, 20, 0);
+	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
+	r = pItemlayout->SetHorizontalFitPolicy(*pTimestampLabel, FIT_POLICY_CONTENT);
+	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
+
+	r = pItemlayout->SetRelation(*pNameLabel, *pTimestampLabel, RECT_EDGE_RELATION_RIGHT_TO_LEFT);
+	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
+	AppLog("DialogsTableProvider::CreateItem - after timestamp");
 
 	return pItem;
 
 CATCH:
-	AppLogException("CreateItem is failed.", GetErrorMessage(r));
+	AppLogException("CreateItem is failed. %s", GetErrorMessage(r));
 	SetLastResult(r);
 	return pItem;
 }
 
 bool DialogsTableProvider::DeleteItem(int itemIndex, TableViewItem* pItem) {
+	AppLog("DialogsTableProvider::DeleteItem");
+
 	delete pItem;
 	return true;
 }
@@ -239,6 +255,7 @@ int DialogsTableProvider::GetDefaultItemHeight(void) {
 }
 
 void DialogsTableProvider::SetDialogsJson(JsonObject* json) {
+	AppLog("DialogsTableProvider::SetDialogsJson");
 
 	IJsonValue *items;
 	static const String itemsConst(L"items");

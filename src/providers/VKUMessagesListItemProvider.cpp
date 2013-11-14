@@ -8,6 +8,7 @@
 #include "VKUMessagesListItemProvider.h"
 #include "JsonParseUtils.h"
 #include "TimeUtils.h"
+#include "MessageTextElement.h"
 
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Graphics;
@@ -44,15 +45,15 @@ int VKUMessagesListItemProvider::GetItemCount() {
 
 TableViewItem* VKUMessagesListItemProvider::CreateItem(int index, int itemWidth) {
 	result r;
-	AppLog("Create item");
+	AppLog("VKUMessagesListItemProvider::CreateItem");
 
 	MessageBubble* pMessageBubble;
 	RelativeLayout itemLayout;
 
+	MessageTextElement* pMessageTextElement;
+
 	JsonObject *itemObject;
 	IJsonValue *itemValue;
-	IJsonValue *bodyValue;
-	IJsonValue *outValue;
 	TableViewItem* pItem;
 	JsonNumber outNumber;
 
@@ -81,13 +82,18 @@ TableViewItem* VKUMessagesListItemProvider::CreateItem(int index, int itemWidth)
 	// create rich text panel
 	AppLog("Message is %d == out", out);
 	pMessageBubble = new MessageBubble();
-	pMessageBubble->SetMessage(messageText, out);
 	r = pMessageBubble->Construct(Dimension(itemWidth, LIST_HEIGHT));
 	TryCatch(r == E_SUCCESS, , "Failed Construct RichTextPanel");
-	AppLog("RTPanel created and constructed");
 
-//	placeholderLayout.Construct(VERTICAL_DIRECTION_UPWARD);
+	pMessageBubble->SetOut(out);
+	AppLog("RTPanel created and constructed");
 	itemLayout.Construct();
+
+	// message text element
+	pMessageTextElement = new MessageTextElement();
+	pMessageTextElement->Construct(Rectangle(0, 0, itemWidth-200, 1000));
+	pMessageTextElement->SetText(messageText);
+	pMessageBubble->AddElement(pMessageTextElement);
 
 	// timestamp label
 	pTimeStamp = new Label();
@@ -127,9 +133,9 @@ TableViewItem* VKUMessagesListItemProvider::CreateItem(int index, int itemWidth)
 	AppLog("Returning item");
 	return pItem;
 
-	CATCH:
-	    AppLogException("$${Function:CreateItem} is failed.", GetErrorMessage(r));
-	    return null;
+CATCH:
+	AppLogException("$${Function:CreateItem} is failed. %s", GetErrorMessage(r));
+	return null;
 }
 
 bool VKUMessagesListItemProvider::DeleteItem(int index, TableViewItem* pItem) {

@@ -29,7 +29,7 @@ bool VKUDialogPanel::Initialize() {
 
 result VKUDialogPanel::OnInitializing(void) {
 	result r = E_SUCCESS;
-	AppLog("Panel init");
+	AppLog("VKUDialogPanel::OnInitializing");
 
 	FitToScreen();
 
@@ -56,10 +56,14 @@ result VKUDialogPanel::OnInitializing(void) {
 	provider->SetListener(pDialogHistoryListener);
 	pMessagesListView->SetItemProvider(provider);
 
+	AppLog("End VKUDialogPanel::OnInitializing");
+
 	return r;
 }
 
 void VKUDialogPanel::LoadMessages() {
+	AppLog("VKUDialogPanel::LoadMessages");
+
 	TryReturnVoid(userJson != null, "VKUDialogPanel: LoadMessages cannot be completed until userId is not set");
 	AppLog("Doing VKUDialogPanel::LoadMessages");
 
@@ -67,6 +71,8 @@ void VKUDialogPanel::LoadMessages() {
 }
 
 void VKUDialogPanel::SetUserJson(JsonObject* apJson) {
+	AppLog("VKUDialogPanel::SetUserJson");
+
 	TryReturnVoid(pMessageSentListener != null, "VKUDialogPanel: Fatal - pMessageSentListener is null");
 	pMessageSentListener->SetUserJson(apJson);
 	provider->SetUserJson(apJson);
@@ -124,6 +130,8 @@ result VKUDialogPanel::OnTerminating(void) {
 }
 
 void VKUDialogPanel::FitToScreen() {
+	AppLog("VKUDialogPanel::FitToScreen");
+
 	VKUDialog *pForm = static_cast<VKUDialog *>(GetParent());
 
 	if (pForm != null) {
