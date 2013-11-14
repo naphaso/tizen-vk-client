@@ -378,9 +378,9 @@ void DialogsTableProvider::OpenDialog(int index) {
 
 // ITextEventListener
 void DialogsTableProvider::OnTextValueChanged(const Tizen::Ui::Control& source) {
-	String filter = static_cast<const SearchBar*>(&source)->GetText();
-
-	AppLog("TEXT CHANGE EVENT: %ls !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", filter.GetPointer());
+	String filter1 = static_cast<const SearchBar*>(&source)->GetText();
+	String filter;
+	filter1.ToLowerCase(filter);
 
 	if(!filter.IsEmpty()) {
 		JsonArray *newDialogs = new JsonArray();
@@ -394,6 +394,9 @@ void DialogsTableProvider::OnTextValueChanged(const Tizen::Ui::Control& source) 
 			String firstName;
 			String lastName;
 			String messageText;
+			String firstNameL;
+			String lastNameL;
+			String messageTextL;
 
 			dialogsJson->GetAt(i, dialog);
 			dialogObject = static_cast<JsonObject *> (dialog);
@@ -404,7 +407,11 @@ void DialogsTableProvider::OnTextValueChanged(const Tizen::Ui::Control& source) 
 			JsonParseUtils::GetString(*userInfo, L"last_name", lastName);
 			JsonParseUtils::GetString(*dialogObject, L"body", messageText);
 
-			if(firstName.Contains(filter) || lastName.Contains(filter) || messageText.Contains(filter)) {
+			firstName.ToLowerCase(firstNameL);
+			lastName.ToLowerCase(lastNameL);
+			messageText.ToLowerCase(messageTextL);
+
+			if(firstNameL.Contains(filter) || lastNameL.Contains(filter) || messageTextL.Contains(filter)) {
 				newDialogs->Add(dialogObject->CloneN());
 			}
 		}
@@ -423,7 +430,6 @@ void DialogsTableProvider::OnTextValueChanged(const Tizen::Ui::Control& source) 
 }
 
 void DialogsTableProvider::OnTextValueChangeCanceled(const Tizen::Ui::Control& source) {
-	AppLog("CANCEL EVENT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 	if(filteredDialogsJson != null) {
 		delete filteredDialogsJson;
 		filteredDialogsJson = null;
@@ -442,23 +448,4 @@ void DialogsTableProvider::OnSearchBarModeChanged(Tizen::Ui::Controls::SearchBar
 			pDialogTableView->RequestRedraw();
 		}
 	}
-	/*
-	Form* pForm = dynamic_cast<Form*>(GetParent());
-	Rectangle clientRect = pForm->GetClientAreaBounds();
-	_searchBar->SetText(L"");
-
-	if(mode == SEARCH_BAR_MODE_INPUT) {
-		pForm->SetActionBarsVisible(FORM_ACTION_BAR_FOOTER, false);
-		_searchBar->SetContentAreaSize(Dimension(clientRect.width, clientRect.height));
-		pDialogTableView->SetSize(Dimension(clientRect.width, clientRect.height));
-		pDialogTableView->UpdateTableView();
-	} else {
-		pForm->SetActionBarsVisible(FORM_ACTION_BAR_FOOTER, true);
-		pDialogTableView->UpdateTableView();
-		pDialogTableView->SetShowState(false);
-		_searchBar->SetText(L"Click here!");
-	}
-
-	pForm->Invalidate(true);
-	*/
 }
