@@ -37,6 +37,7 @@ public:
 private:
 	DialogsTableProvider* pProvider;
 	Tizen::Ui::Controls::TableView* pDialogTableView;
+	Tizen::Ui::Controls::SearchBar *_searchBar;
 };
 
 #endif // _VKU_TAB1_H_

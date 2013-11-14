@@ -45,6 +45,11 @@ result VKUDialogsPanel::OnInitializing(void) {
 	pDialogTableView = static_cast<TableView*>(GetControl(
 			IDC_TABLEVIEW_DIALOGS));
 
+	_searchBar = static_cast<SearchBar*>(GetControl(IDC_SEARCHBAR1));
+	_searchBar->AddSearchBarEventListener(*pProvider);
+	_searchBar->AddTextEventListener(*pProvider);
+
+
 	pProvider->Construct(pDialogTableView);
 	pDialogTableView->SetItemProvider(pProvider);
 	pDialogTableView->AddTableViewItemEventListener(*pProvider);
@@ -82,3 +87,5 @@ void VKUDialogsPanel::OnSceneDeactivated(
 void VKUDialogsPanel::OnResponseN(Tizen::Web::Json::JsonObject *object) {
 
 }
+
+
