@@ -26,8 +26,11 @@ static const int PREVIEW_TEXT_COLOR = 0x6d6e75;
 static const int UNREAD_BACKGROUND_COLOR = 0x191f25;
 static const int HIGHLIGHTED_COLOR = 0x213f63;
 
+static const String userJsonConst(L"user_json");
+
 DialogsTableProvider::DialogsTableProvider() {
 	dialogsJson = null;
+	filteredDialogsJson = null;
 }
 
 result DialogsTableProvider::Construct(TableView* tableView) {
@@ -43,8 +46,13 @@ DialogsTableProvider::~DialogsTableProvider() {
 }
 
 int DialogsTableProvider::GetItemCount(void) {
-	if (dialogsJson == null)
+	if(filteredDialogsJson != null) {
+		return filteredDialogsJson->GetCount();
+	}
+
+	if (dialogsJson == null) {
 		return 0;
+	}
 
 	return dialogsJson->GetCount();
 }
@@ -63,8 +71,6 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 	IJsonValue *pJsonValue, *pUserInfoValue;
 	JsonObject *pObject, *pUserInfoObject;
 
-	const String userJsonConst(L"user_json");
-
 	String firstName, lastName, fullName;
 	String previewText, timestampText, avatarUrl;
 	int timeInSec, readState, myUserId, out;
@@ -72,8 +78,14 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 
 	myUserId = VKUAuthConfig::GetUserId();
 
-	r = dialogsJson->GetAt(itemIndex, pJsonValue);
-	TryCatch(r == E_SUCCESS, , "Failed dialogsJson->GetAt");
+	if(filteredDialogsJson != null) {
+		r = filteredDialogsJson->GetAt(itemIndex, pJsonValue);
+		TryCatch(r == E_SUCCESS, , "Failed dialogsJson->GetAt");
+	} else {
+		r = dialogsJson->GetAt(itemIndex, pJsonValue);
+		TryCatch(r == E_SUCCESS, , "Failed dialogsJson->GetAt");
+	}
+
 	pObject = static_cast<JsonObject *>(pJsonValue);
 	pObject->GetValue(&userJsonConst, pUserInfoValue);
 	pUserInfoObject = static_cast<JsonObject *>(pUserInfoValue);
@@ -360,4 +372,91 @@ void DialogsTableProvider::OpenDialog(int index) {
 	pList->Add(userJsonObject);
 
 	pSceneManager->GoForward(ForwardSceneTransition(SCENE_DIALOG), pList);
+}
+
+// ITextEventListener
+void DialogsTableProvider::OnTextValueChanged(const Tizen::Ui::Control& source) {
+	String filter = static_cast<const SearchBar*>(&source)->GetText();
+
+	AppLog("TEXT CHANGE EVENT: %ls !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", filter.GetPointer());
+
+	if(!filter.IsEmpty()) {
+		JsonArray *newDialogs = new JsonArray();
+		newDialogs->Construct();
+
+		for(int i = 0; i < dialogsJson->GetCount(); i++) {
+			IJsonValue *dialog;
+			JsonObject *dialogObject;
+			IJsonValue *userInfoValue;
+			JsonObject *userInfo;
+			String firstName;
+			String lastName;
+			String messageText;
+
+			dialogsJson->GetAt(i, dialog);
+			dialogObject = static_cast<JsonObject *> (dialog);
+
+			dialogObject->GetValue(&userJsonConst, userInfoValue);
+			userInfo = static_cast<JsonObject *>(userInfoValue);
+			JsonParseUtils::GetString(*userInfo, L"first_name", firstName);
+			JsonParseUtils::GetString(*userInfo, L"last_name", lastName);
+			JsonParseUtils::GetString(*dialogObject, L"body", messageText);
+
+			if(firstName.Contains(filter) || lastName.Contains(filter) || messageText.Contains(filter)) {
+				newDialogs->Add(dialogObject->CloneN());
+			}
+		}
+
+		filteredDialogsJson = newDialogs;
+		pDialogTableView->UpdateTableView();
+		pDialogTableView->RequestRedraw();
+	} else {
+		if(filteredDialogsJson != null) {
+			delete filteredDialogsJson;
+			filteredDialogsJson = null;
+			pDialogTableView->UpdateTableView();
+			pDialogTableView->RequestRedraw();
+		}
+	}
+}
+
+void DialogsTableProvider::OnTextValueChangeCanceled(const Tizen::Ui::Control& source) {
+	AppLog("CANCEL EVENT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+	if(filteredDialogsJson != null) {
+		delete filteredDialogsJson;
+		filteredDialogsJson = null;
+		pDialogTableView->UpdateTableView();
+		pDialogTableView->RequestRedraw();
+	}
+}
+
+// ISearchBarEventListener
+void DialogsTableProvider::OnSearchBarModeChanged(Tizen::Ui::Controls::SearchBar& source, SearchBarMode mode) {
+	if(mode == SEARCH_BAR_MODE_NORMAL) {
+		if(filteredDialogsJson != null) {
+			delete filteredDialogsJson;
+			filteredDialogsJson = null;
+			pDialogTableView->UpdateTableView();
+			pDialogTableView->RequestRedraw();
+		}
+	}
+	/*
+	Form* pForm = dynamic_cast<Form*>(GetParent());
+	Rectangle clientRect = pForm->GetClientAreaBounds();
+	_searchBar->SetText(L"");
+
+	if(mode == SEARCH_BAR_MODE_INPUT) {
+		pForm->SetActionBarsVisible(FORM_ACTION_BAR_FOOTER, false);
+		_searchBar->SetContentAreaSize(Dimension(clientRect.width, clientRect.height));
+		pDialogTableView->SetSize(Dimension(clientRect.width, clientRect.height));
+		pDialogTableView->UpdateTableView();
+	} else {
+		pForm->SetActionBarsVisible(FORM_ACTION_BAR_FOOTER, true);
+		pDialogTableView->UpdateTableView();
+		pDialogTableView->SetShowState(false);
+		_searchBar->SetText(L"Click here!");
+	}
+
+	pForm->Invalidate(true);
+	*/
 }

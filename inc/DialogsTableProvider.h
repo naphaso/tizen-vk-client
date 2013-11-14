@@ -19,7 +19,9 @@
 
 class DialogsTableProvider: public Tizen::Ui::Controls::ITableViewItemProvider,
 		public Tizen::Ui::Controls::ITableViewItemEventListener,
-		public IAPIRequestListener {
+		public IAPIRequestListener,
+		public Tizen::Ui::ITextEventListener,
+		public Tizen::Ui::Controls::ISearchBarEventListener {
 public:
 	DialogsTableProvider();
 	result Construct(Tizen::Ui::Controls::TableView* tableView);
@@ -58,9 +60,17 @@ public:
 	// IAPIRequestListener
 	virtual void OnResponseN(Tizen::Web::Json::JsonObject *object);
 
+	// ITextEventListener
+	virtual void OnTextValueChanged(const Tizen::Ui::Control& source);
+	virtual void OnTextValueChangeCanceled(const Tizen::Ui::Control& source);
+
+
+	//ISearchBarEventListener
+	virtual void OnSearchBarModeChanged(Tizen::Ui::Controls::SearchBar& source, Tizen::Ui::Controls::SearchBarMode mode);
 private:
 	Tizen::Web::Json::JsonObject* responseJson;
 	Tizen::Web::Json::JsonArray* dialogsJson;
+	Tizen::Web::Json::JsonArray* filteredDialogsJson;
 	Tizen::Ui::Controls::TableView* pDialogTableView;
 };
 
