@@ -13,7 +13,9 @@
 #include <FGraphics.h>
 #include <FBase.h>
 
-class MessagePhotoElement: public MessageElement {
+class MessagePhotoElement:
+	public MessageElement,
+	public Tizen::Ui::IPropagatedTouchEventListener {
 public:
 	MessagePhotoElement();
 	virtual ~MessagePhotoElement();
@@ -25,6 +27,15 @@ public:
 	virtual result OnDraw(void);
 
 	void SetUrl(Tizen::Base::String & url);
+
+	// ITouchEventListener
+	virtual bool OnTouchPressed(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo);
+	virtual bool OnTouchReleased(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo);
+	virtual bool OnTouchMoved(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo) { return false; }
+	virtual bool OnTouchCanceled(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo) { return false; }
+	virtual bool OnPreviewTouchPressed(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo) { return false; }
+	virtual bool OnPreviewTouchReleased(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo) { return false; }
+	virtual bool OnPreviewTouchMoved(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo) { return false; }
 
 private:
 	Tizen::Base::String url;

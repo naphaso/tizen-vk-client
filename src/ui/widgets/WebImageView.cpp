@@ -21,8 +21,8 @@ WebImageView::WebImageView() {
 
 WebImageView::~WebImageView() {
 	VKUApp::GetInstance()->GetBitmapCache()->ReleaseBitmap(imageUrl, this);
-	if (pImageBitmap)
-		delete pImageBitmap;
+//	if (pImageBitmap)
+//		delete pImageBitmap;
 }
 
 result WebImageView::Construct(const Tizen::Graphics::Rectangle & rect, const Tizen::Base::String &bitmapPath) {

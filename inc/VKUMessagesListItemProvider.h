@@ -44,6 +44,7 @@ public:
 	DialogHistoryListener* GetListener();
 	void SetListener(DialogHistoryListener * apListener);
 	void SetUserJson(Tizen::Web::Json::JsonObject* json);
+
 private:
 	Tizen::Web::Json::JsonObject* responseJson;
 	Tizen::Web::Json::JsonObject* userJson;

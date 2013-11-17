@@ -6,15 +6,20 @@
  */
 
 #include "MessagePhotoElement.h"
+#include "SceneRegister.h"
+#include "VKU.h"
 
 using namespace Tizen::Graphics;
+using namespace Tizen::Ui::Scenes;
+using namespace Tizen::Base::Collection;
+using namespace Tizen::Base;
 
 MessagePhotoElement::MessagePhotoElement() {
 	pImageView = null;
 }
 
 MessagePhotoElement::~MessagePhotoElement() {
-	delete pImageView;
+
 }
 
 result MessagePhotoElement::Construct(const Tizen::Graphics::Rectangle & rect, Tizen::Base::String & imageUrl) {
@@ -27,6 +32,7 @@ result MessagePhotoElement::Construct(const Tizen::Graphics::Rectangle & rect, T
 	r = pImageView->Construct(rect, imageUrl);
 
 	r = AddControl(pImageView);
+	SetPropagatedTouchEventListener(this);
 
 	return r;
 }
@@ -47,5 +53,23 @@ result MessagePhotoElement::OnDraw() {
 		delete pCanvas;
 	}
 
-	return E_SUCCESS;
+	return r;
+}
+
+bool MessagePhotoElement::OnTouchPressed(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo) {
+	return true;
+}
+
+bool MessagePhotoElement::OnTouchReleased(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo) {
+	SceneManager* pSceneManager = SceneManager::GetInstance();
+
+	ArrayList* pList = new (std::nothrow) ArrayList(SingleObjectDeleter);
+	String *pUrl = new String(url);
+
+	pList->Construct(1);
+	pList->Add(pUrl);
+
+	pSceneManager->GoForward(ForwardSceneTransition(SCENE_GALLERY), pList);
+
+	return true;
 }

@@ -153,6 +153,7 @@ CATCH:
 	return null;
 }
 
+
 bool VKUMessagesListItemProvider::DeleteItem(int index, TableViewItem* pItem) {
 	delete pItem;
 	return true;

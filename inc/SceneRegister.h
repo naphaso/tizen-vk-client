@@ -15,6 +15,7 @@ extern const wchar_t* SCENE_MAIN_DIALOGS;
 extern const wchar_t* SCENE_MAIN_CONTACTS;
 extern const wchar_t* SCENE_MAIN_SEARCH;
 extern const wchar_t* SCENE_MAIN_SETTINGS;
+extern const wchar_t* SCENE_GALLERY;
 
 class SceneRegister {
 public:
