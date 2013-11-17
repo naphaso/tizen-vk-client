@@ -28,9 +28,13 @@ private:
 	ICacheEntry *_cacheEntry;
 public:
 	DownloadingImageData(ICacheEntry *cacheEntry) {
+		result r;
 		_cacheEntry = cacheEntry;
-		_file = new File();
-		_file->Construct(cacheEntry->GetFile(), "w");
+		_file = new (std::nothrow) File();
+		r = _file->Construct(cacheEntry->GetFile(), "w");
+		if(r != E_SUCCESS) {
+			AppLogException("failed to open file: %s", GetErrorMessage(r));
+		}
 	}
 
 	void Write(const ByteBuffer &buffer) {
@@ -81,25 +85,41 @@ result FileDownloader::DownloadImage(ICacheEntry *cacheEntry) {
 	HttpTransaction *transaction;
 	HttpRequest *request;
 
+	AppLog("download image url %ls to file %ls", cacheEntry->GetUrl().GetPointer(), cacheEntry->GetFile().GetPointer());
+
 	transaction = httpSession->OpenTransactionN();
 	TryCatch(GetLastResult() == E_SUCCESS, r = GetLastResult(), "Failed to open the HttpTransaction.");
+
+	AppLog("1");
 
 	r = transaction->SetUserObject(new DownloadingImageData(cacheEntry));
 	TryCatch(r == E_SUCCESS, , "Failed SetUserObject");
 
+	AppLog("2");
+
 	r = transaction->AddHttpTransactionListener(*this);
 	TryCatch(r == E_SUCCESS, , "Failed to add the HttpTransactionListener.");
 
+	AppLog("3");
+
 	request = const_cast<HttpRequest *>(transaction->GetRequest());
+
+	AppLog("4");
 
 	r = request->SetUri(cacheEntry->GetUrl());
 	TryCatch(r == E_SUCCESS, , "Failed to set the uri.");
 
+	AppLog("5");
+
 	r = request->SetMethod(NET_HTTP_METHOD_GET);
 	TryCatch(r == E_SUCCESS, , "Failed to set the method.");
 
+	AppLog("6");
+
 	r = transaction->Submit();
 	TryCatch(r == E_SUCCESS, , "Failed to submit transaction");
+
+	AppLog("request submitted");
 
 	return E_SUCCESS;
 	CATCH:

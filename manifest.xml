@@ -10,9 +10,13 @@
         <ApiVersion>2.2</ApiVersion>
         <Privileges>
             <Privilege>http://tizen.org/privilege/web.service</Privilege>
-            <Privilege>http://tizen.org/privilege/http</Privilege>
+            <Privilege>http://tizen.org/privilege/account.write</Privilege>
             <Privilege>http://tizen.org/privilege/application.launch</Privilege>
+            <Privilege>http://tizen.org/privilege/http</Privilege>
+            <Privilege>http://tizen.org/privilege/contact.write</Privilege>
             <Privilege>http://tizen.org/privilege/notification</Privilege>
+            <Privilege>http://tizen.org/privilege/account.read</Privilege>
+            <Privilege>http://tizen.org/privilege/contact.read</Privilege>
         </Privileges>
         <UiApp HwAcceleration="On" LaunchingHistoryVisible="True" Main="True" MenuIconVisible="True" Name="VKU">
             <UiScalability BaseScreenSize="Normal" CoordinateSystem="Logical" LogicalCoordinate="720"/>
@@ -23,6 +27,21 @@
             <Icons>
                 <Icon Section="MainMenu">mainmenu.png</Icon>
             </Icons>
+            <Accounts>
+                <AccountProvider MultipleAccountsSupport="False">
+                    <Icons>
+                        <Icon Section="Account">mainmenu.png</Icon>
+                        <Icon Section="AccountSmall">mainmenu.png</Icon>
+                    </Icons>
+                    <DisplayNames>
+                        <DisplayName Locale="eng-GB">VK</DisplayName>
+                        <DisplayName Locale="eng-US">VK</DisplayName>
+                    </DisplayNames>
+                    <Capabilities>
+                        <Capability>http://tizen.org/account/capability/contact</Capability>
+                    </Capabilities>
+                </AccountProvider>
+            </Accounts>
             <LaunchConditions/>
         </UiApp>
     </Apps>

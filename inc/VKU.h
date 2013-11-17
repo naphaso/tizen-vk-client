@@ -13,6 +13,7 @@ class VKUApp;
 
 #include "VKUServiceProxy.h"
 #include "BitmapCache.h"
+#include "Contacts.h"
 
 /**
  * [VKUApp] UiApp must inherit from UiApp class
@@ -67,6 +68,7 @@ public:
 private:
 	VKUServiceProxy *pService;
 	BitmapCache *bitmapCache;
+	Contacts *contacts;
 	Tizen::Base::String cacheDir;
 };
 

@@ -49,6 +49,7 @@ bool VKUApp::OnAppInitializing(AppRegistry& appRegistry) {
 	result r = E_SUCCESS;
 	PowerManager::SetScreenEventListener(*this);
 
+
 	cacheDir = GetAppDataPath() + L"cache/";
 
 	bitmapCache = new (std::nothrow) BitmapCache();
@@ -56,6 +57,7 @@ bool VKUApp::OnAppInitializing(AppRegistry& appRegistry) {
 
 	r = bitmapCache->Construct();
 	TryCatch(r == E_SUCCESS, , "fail to construct VKUApp");
+
 
 	return true;
 CATCH:
@@ -87,6 +89,9 @@ bool VKUApp::OnAppInitialized(void) {
 
 	if (VKUAuthConfig::IsExists()) {
 		VKUAuthConfig::Read();
+
+		contacts = new Contacts();
+		contacts->Sync();
 
 		SceneManager::GetInstance()->GoForward(
 				ForwardSceneTransition(SCENE_MAIN_DIALOGS));

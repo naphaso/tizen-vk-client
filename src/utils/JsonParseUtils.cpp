@@ -55,3 +55,45 @@ result JsonParseUtils::GetInteger(const JsonObject & object, const String & key,
 
 	return r;
 }
+
+result JsonParseUtils::GetObject(const JsonObject *object, const String &key, JsonObject *&result) {
+	IJsonValue *value;
+	if(object->GetValue(&key, value) == E_SUCCESS) {
+		if(value->GetType() == JSON_TYPE_OBJECT) {
+			result = static_cast<JsonObject *>(value);
+			return E_SUCCESS;
+		} else {
+			return E_PARSING_FAILED;
+		}
+	} else {
+		return E_PARSING_FAILED;
+	}
+}
+
+result JsonParseUtils::GetArray(const JsonObject *object, const String &key, JsonArray *&result) {
+	IJsonValue *value;
+	if(object->GetValue(&key, value) == E_SUCCESS) {
+		if(value->GetType() == JSON_TYPE_ARRAY) {
+			result = static_cast<JsonArray *>(value);
+			return E_SUCCESS;
+		} else {
+			return E_PARSING_FAILED;
+		}
+	} else {
+		return E_PARSING_FAILED;
+	}
+}
+
+result JsonParseUtils::GetObject(const JsonArray *array, const int index, JsonObject *&result) {
+	IJsonValue *value;
+	if(array->GetAt(index, value) == E_SUCCESS) {
+		if(value->GetType() == JSON_TYPE_OBJECT) {
+			result = static_cast<JsonObject *>(value);
+			return E_SUCCESS;
+		} else {
+			return E_PARSING_FAILED;
+		}
+	} else {
+		return E_PARSING_FAILED;
+	}
+}
