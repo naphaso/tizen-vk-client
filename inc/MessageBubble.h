@@ -29,6 +29,7 @@ public:
 	virtual result OnDraw(void);
 
 	void SetMessage(const Tizen::Base::String & msg, const int aOut);
+	Tizen::Graphics::Dimension GetPlaceholderSize();
 private:
 	// possible bubble content
 	Tizen::Base::String* message;

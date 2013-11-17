@@ -45,6 +45,7 @@ extern const wchar_t* IDC_PANEL1;
 extern const wchar_t* IDC_PANEL2;
 extern const wchar_t* IDC_PANEL3;
 extern const wchar_t* IDC_LABEL1;
+extern const wchar_t* IDF_IMAGEVIEW;
 extern const wchar_t* IDF_LOGIN;
 extern const wchar_t* IDF_MAIN;
 extern const wchar_t* IDSCN_1;

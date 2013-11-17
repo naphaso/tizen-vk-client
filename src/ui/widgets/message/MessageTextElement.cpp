@@ -16,7 +16,7 @@ static const int TEXT_FONT_SIZE = 35;
 
 MessageTextElement::~MessageTextElement() {
 //	delete pEnrichedText;
-	delete pFont;
+//	delete pFont;
 }
 
 result MessageTextElement::SetText(const String & text) {
@@ -55,7 +55,7 @@ result MessageTextElement::SetText(const String & text) {
 	return r;
 
 CATCH:
-	AppLogException("MessageTextElement::SetText is failed.", GetErrorMessage(r));
+	AppLogException("MessageTextElement::SetText is failed. %s", GetErrorMessage(r));
 	return r;
 }
 
@@ -66,7 +66,8 @@ result MessageTextElement::Construct(const Rectangle & rect) {
 	TryCatch(r == E_SUCCESS, , "Failed Panel::Construct");
 
 	pFont = new Font();
-	pFont->Construct(FONT_STYLE_PLAIN, TEXT_FONT_SIZE);
+	r = pFont->Construct(FONT_STYLE_PLAIN, TEXT_FONT_SIZE);
+	TryCatch(r == E_SUCCESS, , "Failed pFont->Construct");
 
 	pEnrichedText = new EnrichedText();
 	r = pEnrichedText->Construct(Dimension(rect.width, rect.height));
@@ -75,7 +76,7 @@ result MessageTextElement::Construct(const Rectangle & rect) {
 	return r;
 
 CATCH:
-	AppLogException("$${Function:Construct} is failed.", GetErrorMessage(r));
+	AppLogException("MessageTextElement::Construct is failed. %s", GetErrorMessage(r));
 	return r;
 }
 
@@ -90,6 +91,6 @@ result MessageTextElement::OnDraw(void) {
 	return r;
 
 	CATCH:
-	    AppLogException("$${Function:Construct} is failed.", GetErrorMessage(r));
+	    AppLogException("MessageTextElement::OnDraw is failed. %s", GetErrorMessage(r));
 	    return r;
 }

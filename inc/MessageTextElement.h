@@ -19,7 +19,7 @@ class MessageTextElement: public MessageElement {
 public:
 	virtual ~MessageTextElement();
 
-	result Construct(const Tizen::Graphics::Rectangle & rect);
+	virtual result Construct(const Tizen::Graphics::Rectangle & rect);
 
 	result SetText(const Tizen::Base::String & text);
 
