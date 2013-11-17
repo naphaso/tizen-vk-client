@@ -130,6 +130,8 @@ TableViewItem* VKUMessagesListItemProvider::CreateItem(int index, int itemWidth)
 		itemLayout.SetMargin(*pTimeStamp, 10, 0, 0, 30);
 	}
 
+	pItem->RequestRedraw(true);
+
 	AppLog("Returning item");
 	return pItem;
 

@@ -184,26 +184,24 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 	r = pPlaceholderPanel->AddControl(pTimestampLabel);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
 
-	r = pItem->AddControl(pPlaceholderPanel);
-	TryCatch(r == E_SUCCESS, , "Failed pItem->AddControl");
 
 //	/* LAYOUT */
 //
 	AppLog("DialogsTableProvider::CreateItem - avatar layout");
 
 	// avatar layout
-	r = pItemlayout->SetRelation(*pAvatar, *pPlaceholderPanel, RECT_EDGE_RELATION_LEFT_TO_LEFT);
+	r = pItemlayout->SetRelation(*pAvatar, pPlaceholderPanel, RECT_EDGE_RELATION_LEFT_TO_LEFT);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
-	r = pItemlayout->SetRelation(*pAvatar, *pPlaceholderPanel, RECT_EDGE_RELATION_TOP_TO_TOP);
+	r = pItemlayout->SetRelation(*pAvatar, pPlaceholderPanel, RECT_EDGE_RELATION_TOP_TO_TOP);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
 	r = pItemlayout->SetMargin(*pAvatar, 20, 0, 11, 0);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
 
 	AppLog("DialogsTableProvider::CreateItem - name layout");
 
-	r = pItemlayout->SetRelation(*pNameLabel, *pAvatar, RECT_EDGE_RELATION_LEFT_TO_RIGHT);
+	r = pItemlayout->SetRelation(*pNameLabel, pAvatar, RECT_EDGE_RELATION_LEFT_TO_RIGHT);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
-	r = pItemlayout->SetRelation(*pNameLabel, *pPlaceholderPanel, RECT_EDGE_RELATION_TOP_TO_TOP);
+	r = pItemlayout->SetRelation(*pNameLabel, pPlaceholderPanel, RECT_EDGE_RELATION_TOP_TO_TOP);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
 	r = pItemlayout->SetMargin(*pNameLabel, 4, 0, 15, 0);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
@@ -212,11 +210,11 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 
 	AppLog("DialogsTableProvider::CreateItem - preview layout");
 
-	r = pItemlayout->SetRelation(*pPreviewTextLabel, *pNameLabel, RECT_EDGE_RELATION_TOP_TO_BOTTOM);
+	r = pItemlayout->SetRelation(*pPreviewTextLabel, pNameLabel, RECT_EDGE_RELATION_TOP_TO_BOTTOM);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
-	r = pItemlayout->SetRelation(*pPreviewTextLabel, *pAvatar, RECT_EDGE_RELATION_LEFT_TO_RIGHT);
+	r = pItemlayout->SetRelation(*pPreviewTextLabel, pAvatar, RECT_EDGE_RELATION_LEFT_TO_RIGHT);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
-	r = pItemlayout->SetRelation(*pPreviewTextLabel, *pPlaceholderPanel, RECT_EDGE_RELATION_RIGHT_TO_RIGHT);
+	r = pItemlayout->SetRelation(*pPreviewTextLabel, pPlaceholderPanel, RECT_EDGE_RELATION_RIGHT_TO_RIGHT);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
 	r = pItemlayout->SetHorizontalFitPolicy(*pPreviewTextLabel, FIT_POLICY_CONTENT);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
@@ -225,18 +223,23 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 
 	AppLog("DialogsTableProvider::CreateItem - timestamp layout");
 
-	r = pItemlayout->SetRelation(*pTimestampLabel, *pPlaceholderPanel, RECT_EDGE_RELATION_RIGHT_TO_RIGHT);
+	r = pItemlayout->SetRelation(*pTimestampLabel, pPlaceholderPanel, RECT_EDGE_RELATION_RIGHT_TO_RIGHT);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
-	r = pItemlayout->SetRelation(*pTimestampLabel, *pPlaceholderPanel, RECT_EDGE_RELATION_TOP_TO_TOP);
+	r = pItemlayout->SetRelation(*pTimestampLabel, pPlaceholderPanel, RECT_EDGE_RELATION_TOP_TO_TOP);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
 	r = pItemlayout->SetMargin(*pTimestampLabel, 0, 0, 20, 0);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
 	r = pItemlayout->SetHorizontalFitPolicy(*pTimestampLabel, FIT_POLICY_CONTENT);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
 
-	r = pItemlayout->SetRelation(*pNameLabel, *pTimestampLabel, RECT_EDGE_RELATION_RIGHT_TO_LEFT);
+	r = pItemlayout->SetRelation(*pNameLabel, pTimestampLabel, RECT_EDGE_RELATION_RIGHT_TO_LEFT);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
 	AppLog("DialogsTableProvider::CreateItem - after timestamp");
+
+	r = pItem->AddControl(pPlaceholderPanel);
+	TryCatch(r == E_SUCCESS, , "Failed pItem->AddControl");
+
+	pItem->RequestRedraw(true);
 
 	return pItem;
 
@@ -249,7 +252,8 @@ CATCH:
 bool DialogsTableProvider::DeleteItem(int itemIndex, TableViewItem* pItem) {
 	AppLog("DialogsTableProvider::DeleteItem");
 
-	delete pItem;
+	pItem->Destroy();
+	//delete pItem;
 	return true;
 }
 
@@ -347,7 +351,7 @@ void DialogsTableProvider::OnResponseN(Tizen::Web::Json::JsonObject *object) {
 	ProcessJson(object);
 
 	pDialogTableView->UpdateTableView();
-	pDialogTableView->RequestRedraw(true);
+	//pDialogTableView->RequestRedraw(true);
 }
 
 void DialogsTableProvider::LoadData() {
