@@ -20,6 +20,7 @@
 
 class BitmapCache;
 class ICacheEntry;
+Tizen::Base::String CacheFileFromUrl(const Tizen::Base::String &url);
 
 #include "IBitmapReceiver.h"
 #include "BitmapLoader.h"

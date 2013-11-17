@@ -26,6 +26,23 @@ public:
 			const Tizen::Web::Json::JsonObject & object,
 			const Tizen::Base::String & key,
 			int & value);
+	static result GetObject(
+			const Tizen::Web::Json::JsonObject *object,
+			const Tizen::Base::String &key,
+			Tizen::Web::Json::JsonObject *&result
+	);
+
+	static result GetArray(
+			const Tizen::Web::Json::JsonObject *object,
+			const Tizen::Base::String &key,
+			Tizen::Web::Json::JsonArray *&result
+	);
+
+	static result GetObject(
+			const Tizen::Web::Json::JsonArray *array,
+			const int index,
+			Tizen::Web::Json::JsonObject *&result
+	);
 };
 
 #endif /* JSONPARSEUTILS_H_ */

@@ -67,14 +67,14 @@ result RoundedAvatar::Construct(const Tizen::Graphics::Rectangle & rect, const T
 
 	Panel::Construct(rect, GROUP_STYLE_NONE);
 
-//	VKUApp::GetInstance()->GetBitmapCache()->TakeBitmap(imageUrl, this);
+	VKUApp::GetInstance()->GetBitmapCache()->TakeBitmap(imageUrl, this);
 
 	return r;
 }
 
 RoundedAvatar::~RoundedAvatar() {
 	AppLog("rounded avatar destructor");
-//	VKUApp::GetInstance()->GetBitmapCache()->ReleaseBitmap(imageUrl, this);
+	VKUApp::GetInstance()->GetBitmapCache()->ReleaseBitmap(imageUrl, this);
 
 //	if (pAvatarPlaceholder)
 //		delete pAvatarPlaceholder;
