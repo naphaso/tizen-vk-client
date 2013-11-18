@@ -10,6 +10,13 @@
 #include "TimeUtils.h"
 #include "MessageTextElement.h"
 
+#include "MessagePhotoElement.h"
+#include "MessageVideoElement.h"
+#include "MessageWallElement.h"
+#include "MessageAudioElement.h"
+#include "MessageDocElement.h"
+
+
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Graphics;
 using namespace Tizen::Web::Json;
@@ -57,6 +64,8 @@ TableViewItem* VKUMessagesListItemProvider::CreateItem(int index, int itemWidth)
 	TableViewItem* pItem;
 	JsonNumber outNumber;
 
+	ArrayList *pMessageElements;
+
 	Label *pTimeStamp;
 	String timespampText;
 	int timestampValue;
@@ -73,7 +82,6 @@ TableViewItem* VKUMessagesListItemProvider::CreateItem(int index, int itemWidth)
 	TryCatch(r == E_SUCCESS, , "Failed GetAt");
 	itemObject = static_cast<JsonObject *>(itemValue);
 
-	JsonParseUtils::GetString(*itemObject, L"body", messageText);
 	JsonParseUtils::GetInteger(*itemObject, L"out", out);
 	JsonParseUtils::GetInteger(*itemObject, L"date", timestampValue);
 
@@ -89,11 +97,16 @@ TableViewItem* VKUMessagesListItemProvider::CreateItem(int index, int itemWidth)
 	AppLog("RTPanel created and constructed");
 	itemLayout.Construct();
 
+	// get available elements
+	pMessageElements = GetMessageElementsN(itemObject, itemWidth);
+
 	// message text element
-	pMessageTextElement = new MessageTextElement();
-	pMessageTextElement->Construct(Rectangle(0, 0, itemWidth-200, 1000));
-	pMessageTextElement->SetText(messageText);
-	pMessageBubble->AddElement(pMessageTextElement);
+	for (int i=0; i<pMessageElements->GetCount(); i++) {
+		AppLog("Adding element %d to pItem", i);
+		MessageElement *pElement = static_cast<MessageElement *>(pMessageElements->GetAt(i));
+		pMessageBubble->AddElement(pElement);
+		AppLog("Added element %d to pItem", i);
+	}
 
 	// timestamp label
 	pTimeStamp = new Label();
@@ -140,6 +153,7 @@ CATCH:
 	return null;
 }
 
+
 bool VKUMessagesListItemProvider::DeleteItem(int index, TableViewItem* pItem) {
 	delete pItem;
 	return true;
@@ -176,13 +190,120 @@ void VKUMessagesListItemProvider::UpdateItem(int itemIndex, TableViewItem* pItem
 	SetLastResult(r);
 	return;
 
-	CATCH:
-	    AppLogException("$${Function:UpdateItem} is failed.", GetErrorMessage(r));
-	    SetLastResult(r);
+CATCH:
+	AppLogException("$${Function:UpdateItem} is failed.", GetErrorMessage(r));
+	SetLastResult(r);
 }
 
 int VKUMessagesListItemProvider::GetDefaultItemHeight() {
 	return LIST_HEIGHT;
+}
+
+ArrayList * VKUMessagesListItemProvider::GetMessageElementsN(const JsonObject *pMessageJson, int itemWidth) {
+	AppLog("enter VKUMessagesListItemProvider::GetMessageElementsN");
+	result r;
+
+	// general
+	ArrayList* pResultArray;
+
+	// body stuff
+	String messageText;
+	MessageTextElement *pMessageTextElement;
+
+	// attachs stuff
+	IJsonValue *attachs;
+	JsonArray * pAttachArray;
+
+	pResultArray = new ArrayList(SingleObjectDeleter);
+	r = pResultArray->Construct(1);
+	TryCatch(r == E_SUCCESS, , "pResultArray->Construct");
+
+	r = JsonParseUtils::GetString(*pMessageJson, L"body", messageText);
+	TryCatch(r == E_SUCCESS, , "JsonParseUtils::GetString body");
+
+	if (messageText.GetLength() != 0) {
+		AppLog("Message has text entry, receiving");
+		pMessageTextElement = new MessageTextElement();
+		pMessageTextElement->Construct(Rectangle(0, 0, itemWidth-200, 1000));
+		pMessageTextElement->SetText(messageText);
+
+		pResultArray->Add(pMessageTextElement);
+	}
+
+
+	static const String attachConst(L"attachments");
+	r = pMessageJson->GetValue(&attachConst, attachs);
+
+	if (r != E_SUCCESS)
+		return pResultArray;
+
+	pAttachArray = static_cast<JsonArray *>(attachs);
+
+	for (int i=0; i<pAttachArray->GetCount(); i++) {
+		AppLog("Message has %d attachments, receiving %d", pAttachArray->GetCount(), i);
+
+		IJsonValue *pAttachValue;
+		JsonObject *pAttachObject;
+		String attachType;
+
+		MessageElement *pMessageElement;
+
+		pAttachArray->GetAt(i, pAttachValue);
+
+		pAttachObject = static_cast<JsonObject *>(pAttachValue);
+
+		JsonParseUtils::GetString(*pAttachObject, L"type", attachType);
+
+		if (attachType == L"photo") {
+			AppLog("Message has photo, receiving");
+			String imageUrl;
+
+			IJsonValue *pPhotoValue;
+			JsonObject *pPhotoObject;
+
+			static const String photoConst(L"photo");
+
+			pAttachObject->GetValue(&photoConst, pPhotoValue);
+			pPhotoObject = static_cast<JsonObject *>(pPhotoValue);
+
+			JsonParseUtils::GetString(*pPhotoObject, L"photo_604", imageUrl);
+
+			MessagePhotoElement * pPhotoElement = new MessagePhotoElement();
+			pPhotoElement->Construct(Rectangle(0, 0, 320, 240), imageUrl);
+
+			pMessageElement = static_cast<MessageElement *>(pPhotoElement);;
+
+		} else if (attachType == L"video") {
+			AppLog("Message has video, receiving");
+
+			pMessageElement = new MessageVideoElement();
+			pMessageElement->Construct(Rectangle(0, 0, 320, 240));
+
+		} else if (attachType == L"audio") {
+			AppLog("Message has audio, receiving");
+			pMessageElement = new MessageAudioElement();
+			pMessageElement->Construct(Rectangle(0, 0, 320, 240));
+
+		} else if (attachType == L"doc") {
+			AppLog("Message has doc, receiving");
+			pMessageElement = new MessageDocElement();
+			pMessageElement->Construct(Rectangle(0, 0, 320, 240));
+
+		} else if (attachType == L"wall") {
+			AppLog("Message has wall, receiving");
+			pMessageElement = new MessageWallElement();
+			pMessageElement->Construct(Rectangle(0, 0, 320, 240));
+
+		}
+
+		pResultArray->Add(pMessageElement);
+	}
+
+	return pResultArray;
+
+CATCH:
+	AppLogException("VKUMessagesListItemProvider::GetMessageElementsN is failed. %s", GetErrorMessage(r));
+	return pResultArray;
 }
 
 void VKUMessagesListItemProvider::SetMessagesJson(JsonObject *json) {

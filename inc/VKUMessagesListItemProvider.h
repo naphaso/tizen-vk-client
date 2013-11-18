@@ -38,10 +38,13 @@ public:
 	// custom
 	void SetMessagesJson(Tizen::Web::Json::JsonObject *json);
 	void RequestData();
+	Tizen::Base::Collection::ArrayList * GetMessageElementsN(const Tizen::Web::Json::JsonObject *pMessageJson, int itemWidth);
+
 
 	DialogHistoryListener* GetListener();
 	void SetListener(DialogHistoryListener * apListener);
 	void SetUserJson(Tizen::Web::Json::JsonObject* json);
+
 private:
 	Tizen::Web::Json::JsonObject* responseJson;
 	Tizen::Web::Json::JsonObject* userJson;

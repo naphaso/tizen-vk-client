@@ -12,6 +12,8 @@
 
 typedef enum {
 	MESSAGE_TYPE_TEXT,
+	MESSAGE_TYPE_DOC,
+	MESSAGE_TYPE_WALL,
 	MESSAGE_TYPE_PHOTO,
 	MESSAGE_TYPE_VIDEO,
 	MESSAGE_TYPE_LOCATION,
@@ -23,6 +25,8 @@ class MessageElement: public Tizen::Ui::Controls::Panel {
 public:
 	MessageElement() {};
 	virtual ~MessageElement() {};
+
+	virtual result Construct(const Tizen::Graphics::Rectangle & rect) { return E_SUCCESS; };
 
 	virtual MessageElementType GetElementType() = 0;
 };
