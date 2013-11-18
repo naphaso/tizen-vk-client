@@ -45,3 +45,31 @@ result TimeUtils::GetDialogsTime(int time, String & str) {
 
 	return r;
 }
+
+result TimeUtils::SecondsToTimeString(int total, Tizen::Base::String & str) {
+
+	int minutes = total / 60;
+	int seconds = total % 60;
+	int hours = 0;
+
+	if (minutes > 60) {
+		hours = minutes / 60;
+		minutes = minutes % 60;
+	}
+	String nextItem;
+	NumberFormatter* pNumberFormatter = NumberFormatter::CreateNumberFormatterN();
+	if (hours != 0) {
+		pNumberFormatter->Format((long int)hours, nextItem);
+		str.Append(nextItem);
+		str.Append(':');
+	}
+
+	pNumberFormatter->ApplyPattern(L"00", false);
+	pNumberFormatter->Format((long int)minutes, nextItem);
+	str.Append(nextItem);
+	str.Append(':');
+
+	pNumberFormatter->Format((long int)seconds, nextItem);
+	str.Append(nextItem);
+	return E_SUCCESS;
+}

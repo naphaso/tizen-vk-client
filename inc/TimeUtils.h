@@ -18,6 +18,7 @@ public:
 	virtual ~TimeUtils();
 
 	static result GetDialogsTime(int time, Tizen::Base::String & str);
+	static result SecondsToTimeString(int seconds, Tizen::Base::String & str);
 };
 
 #endif /* TIMEUTILS_H_ */

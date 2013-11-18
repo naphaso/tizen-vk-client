@@ -329,8 +329,21 @@ ArrayList * VKUMessagesListItemProvider::GetMessageElementsN(const JsonObject *p
 		} else if (attachType == L"video") {
 			AppLog("Message has video, receiving");
 
-			pMessageElement = new MessageVideoElement();
-			pMessageElement->Construct(Rectangle(0, 0, 320, 240));
+//			IJsonValue *pVideoValue;
+//			JsonObject *pVideoObject;
+//
+//			static const String videoConst(L"video");
+//
+//			pAttachObject->GetValue(&videoConst, pVideoValue);
+//			pVideoObject = static_cast<JsonObject *>(pVideoValue);
+
+			JsonObject *pVideoObject;
+			JsonParseUtils::GetObject(pAttachObject, L"video", pVideoObject);
+
+			MessageVideoElement *pVideoElement = new MessageVideoElement();
+			pVideoElement->Construct(Rectangle(0, 0, 320, 240), pVideoObject);
+
+			pMessageElement = static_cast<MessageElement *>(pVideoElement);
 
 		} else if (attachType == L"audio") {
 			AppLog("Message has audio, receiving");
