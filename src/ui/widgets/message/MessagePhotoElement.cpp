@@ -57,10 +57,14 @@ result MessagePhotoElement::OnDraw() {
 }
 
 bool MessagePhotoElement::OnTouchPressed(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo) {
+	pressAllowed = true;
 	return true;
 }
 
 bool MessagePhotoElement::OnTouchReleased(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo) {
+	if (!pressAllowed)
+		return true;
+
 	SceneManager* pSceneManager = SceneManager::GetInstance();
 
 	ArrayList* pList = new (std::nothrow) ArrayList(SingleObjectDeleter);
@@ -73,3 +77,9 @@ bool MessagePhotoElement::OnTouchReleased(Tizen::Ui::Control& source, const Tize
 
 	return true;
 }
+
+bool MessagePhotoElement::OnTouchMoved(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo) {
+	pressAllowed = false;
+	return false;
+}
+

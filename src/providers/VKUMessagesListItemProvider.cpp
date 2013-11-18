@@ -265,7 +265,7 @@ ArrayList * VKUMessagesListItemProvider::GetMessageElementsN(const JsonObject *p
 	if (messageText.GetLength() != 0) {
 		AppLog("Message has text entry, receiving");
 		pMessageTextElement = new MessageTextElement();
-		pMessageTextElement->Construct(Rectangle(0, 0, itemWidth-200, 1000));
+		pMessageTextElement->Construct(Rectangle(0, 0, itemWidth-200, 10000));
 		pMessageTextElement->SetText(messageText);
 
 		pResultArray->Add(pMessageTextElement);

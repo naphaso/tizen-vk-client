@@ -4,6 +4,7 @@
 #include "VKULogin.h"
 #include "VKUDialog.h"
 #include "GalleryForm.h"
+#include "VideoviewForm.h"
 
 using namespace Tizen::Ui::Scenes;
 
@@ -34,6 +35,10 @@ Tizen::Ui::Controls::Form* VKUFormFactory::CreateFormN(
 		pNewForm = pForm;
 	} else if (formId == IDF_IMAGEVIEW) {
 		GalleryForm *pForm = new (std::nothrow) GalleryForm();
+		pForm->Initialize();
+		pNewForm = pForm;
+	} else if (formId == IDF_VIDEOVIEW) {
+		VideoviewForm *pForm = new (std::nothrow) VideoviewForm();
 		pForm->Initialize();
 		pNewForm = pForm;
 	}

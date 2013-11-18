@@ -8,6 +8,7 @@
 #include "VKUDialogPanel.h"
 #include "LoginPanel.h"
 #include "GalleryPanel.h"
+#include "VideoviewPanel.h"
 
 using namespace Tizen::Ui::Scenes;
 
@@ -55,9 +56,11 @@ VKUPanelFactory::CreatePanelN(const Tizen::Base::String& panelId,
 		GalleryPanel* pPanel = new GalleryPanel();
 		pPanel->Initialize();
 		pNewPanel = pPanel;
+	} else if (panelId == IDC_PANEL_VIDEO) {
+		VideoviewPanel* pPanel = new VideoviewPanel();
+		pPanel->Initialize();
+		pNewPanel = pPanel;
 	}
 
-	// TODO:
-	// Add your panel creation code here
 	return pNewPanel;
 }

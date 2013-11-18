@@ -9,6 +9,7 @@
 #include "JsonParseUtils.h"
 #include "VKU.h"
 #include "TimeUtils.h"
+#include "SceneRegister.h"
 
 using namespace Tizen::Graphics;
 using namespace Tizen::Web::Json;
@@ -16,6 +17,8 @@ using namespace Tizen::Base;
 using namespace Tizen::App;
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
+using namespace Tizen::Ui::Scenes;
+using namespace Tizen::Base::Collection;
 
 MessageVideoElement::MessageVideoElement() {
 	pVideoObject = null;
@@ -50,6 +53,8 @@ result MessageVideoElement::Construct(const Tizen::Graphics::Rectangle & rect, J
 	r = JsonParseUtils::GetInteger(*pVideoObject, L"duration", videoDuration);
 	r = TimeUtils::SecondsToTimeString(videoDuration, videoDurationStr);
 
+	r = JsonParseUtils::GetInteger(*pVideoObject, L"id", videoId);
+
 	pDurationLabel = new Label();
 	pDurationLabel->Construct(Rectangle(0, 0, 35, 40), videoDurationStr);
 	pDurationLabel->SetTextConfig(25, LABEL_TEXT_STYLE_NORMAL);
@@ -74,6 +79,8 @@ result MessageVideoElement::Construct(const Tizen::Graphics::Rectangle & rect, J
 	r = layout.SetRelation(*pDurationLabel, *this, RECT_EDGE_RELATION_BOTTOM_TO_BOTTOM);
 	r = layout.SetMargin(*pDurationLabel, 0, 10, 0, 10);
 
+	SetPropagatedTouchEventListener(this);
+
 	return r;
 }
 
@@ -91,3 +98,23 @@ result MessageVideoElement::Construct(const Tizen::Graphics::Rectangle & rect, J
 //
 //	return r;
 //}
+
+bool MessageVideoElement::OnTouchPressed(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo) {
+	return true;
+}
+
+bool MessageVideoElement::OnTouchReleased(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo) {
+	SceneManager* pSceneManager = SceneManager::GetInstance();
+
+	ArrayList* pList = new (std::nothrow) ArrayList(SingleObjectDeleter);
+	String *pUrl = new String(Integer::ToString(videoId));
+
+	pList->Construct(1);
+	pList->Add(pUrl);
+
+	pSceneManager->GoForward(ForwardSceneTransition(SCENE_VIDEOVIEW, SCENE_TRANSITION_ANIMATION_TYPE_ZOOM_IN, SCENE_HISTORY_OPTION_ADD_HISTORY), pList);
+
+	return true;
+}
+
+
