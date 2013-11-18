@@ -48,6 +48,7 @@ result VKUDialogPanel::OnInitializing(void) {
 	pMessagesListView = static_cast<TableView*>(GetControl(
 			IDC_DIALOG_MESSAGES_LISTVIEW));
 	pMessagesListView->SetItemDividerColor(Color::GetColor(COLOR_ID_BLACK));
+	pMessagesListView->AddTableViewItemEventListener(*provider);
 
 	pDialogHistoryListener = new DialogHistoryListener(pMessagesListView, provider);
 	pMessageSentListener = new MessageSentListener(pMessagesListView, provider);

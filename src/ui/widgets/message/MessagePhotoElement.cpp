@@ -69,7 +69,7 @@ bool MessagePhotoElement::OnTouchReleased(Tizen::Ui::Control& source, const Tize
 	pList->Construct(1);
 	pList->Add(pUrl);
 
-	pSceneManager->GoForward(ForwardSceneTransition(SCENE_GALLERY), pList);
+	pSceneManager->GoForward(ForwardSceneTransition(SCENE_GALLERY, SCENE_TRANSITION_ANIMATION_TYPE_ZOOM_IN, SCENE_HISTORY_OPTION_ADD_HISTORY), pList);
 
 	return true;
 }

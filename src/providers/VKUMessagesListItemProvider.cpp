@@ -8,6 +8,8 @@
 #include "VKUMessagesListItemProvider.h"
 #include "JsonParseUtils.h"
 #include "TimeUtils.h"
+#include "ImageUtils.h"
+
 #include "MessageTextElement.h"
 
 #include "MessagePhotoElement.h"
@@ -28,6 +30,7 @@ using namespace Tizen::Ui;
 
 static const int LIST_HEIGHT = 10000;
 static const int TIMESTAMP_TEXT_COLOR = 0x6d7175;
+static const int LIST_ITEM_UNREAD_COLOR = 0x191f25;
 #define USE_CACHE 1
 
 VKUMessagesListItemProvider::VKUMessagesListItemProvider() {
@@ -56,6 +59,7 @@ TableViewItem* VKUMessagesListItemProvider::CreateItem(int index, int itemWidth)
 
 	MessageBubble* pMessageBubble;
 	RelativeLayout itemLayout;
+	Color bgColor;
 
 	MessageTextElement* pMessageTextElement;
 
@@ -71,7 +75,7 @@ TableViewItem* VKUMessagesListItemProvider::CreateItem(int index, int itemWidth)
 	int timestampValue;
 
 	String messageText(L"no text????");
-	int out = 0;
+	int out = 0, readState = 0;
 
 	// reverse list
 	int reversedIndex = GetItemCount()-1 - index;
@@ -84,6 +88,7 @@ TableViewItem* VKUMessagesListItemProvider::CreateItem(int index, int itemWidth)
 
 	JsonParseUtils::GetInteger(*itemObject, L"out", out);
 	JsonParseUtils::GetInteger(*itemObject, L"date", timestampValue);
+	JsonParseUtils::GetInteger(*itemObject, L"read_state", readState);
 
 	TimeUtils::GetDialogsTime(timestampValue, timespampText);
 
@@ -143,6 +148,17 @@ TableViewItem* VKUMessagesListItemProvider::CreateItem(int index, int itemWidth)
 		itemLayout.SetMargin(*pTimeStamp, 10, 0, 0, 30);
 	}
 
+	// colors
+	if (out == 1 && readState == 0) {
+		bgColor = Color(LIST_ITEM_UNREAD_COLOR, false);
+	} else {
+		bgColor = Color::GetColor(COLOR_ID_BLACK);
+	}
+
+	pItem->SetBackgroundColor(bgColor, TABLE_VIEW_ITEM_DRAWING_STATUS_NORMAL);
+	pItem->SetBackgroundColor(bgColor, TABLE_VIEW_ITEM_DRAWING_STATUS_PRESSED);
+	pItem->SetBackgroundColor(bgColor, TABLE_VIEW_ITEM_DRAWING_STATUS_HIGHLIGHTED);
+
 	pItem->RequestRedraw(true);
 
 	AppLog("Returning item");
@@ -198,6 +214,31 @@ CATCH:
 int VKUMessagesListItemProvider::GetDefaultItemHeight() {
 	return LIST_HEIGHT;
 }
+
+void VKUMessagesListItemProvider::OnTableViewItemStateChanged(
+		Tizen::Ui::Controls::TableView& tableView, int itemIndex,
+		Tizen::Ui::Controls::TableViewItem* pItem,
+		Tizen::Ui::Controls::TableViewItemStatus status) {
+
+	switch(status) {
+	case TABLE_VIEW_ITEM_STATUS_SELECTED:
+		AppLog("TABLE_VIEW_ITEM_STATUS_HIGHLIGHTED");
+		break;
+	case TABLE_VIEW_ITEM_STATUS_HIGHLIGHTED:
+		AppLog("TABLE_VIEW_ITEM_STATUS_HIGHLIGHTED");
+		break;
+	case TABLE_VIEW_ITEM_STATUS_CHECKED:
+		AppLog("TABLE_VIEW_ITEM_STATUS_CHECKED");
+		break;
+	case TABLE_VIEW_ITEM_STATUS_UNCHECKED:
+		AppLog("TABLE_VIEW_ITEM_STATUS_UNCHECKED");
+		break;
+	case TABLE_VIEW_ITEM_STATUS_MORE:
+		AppLog("TABLE_VIEW_ITEM_STATUS_MORE");
+		break;
+	}
+}
+
 
 ArrayList * VKUMessagesListItemProvider::GetMessageElementsN(const JsonObject *pMessageJson, int itemWidth) {
 	AppLog("enter VKUMessagesListItemProvider::GetMessageElementsN");
@@ -261,15 +302,27 @@ ArrayList * VKUMessagesListItemProvider::GetMessageElementsN(const JsonObject *p
 			IJsonValue *pPhotoValue;
 			JsonObject *pPhotoObject;
 
+			Rectangle thumbSize;
+
+			int width = 0, height = 0;
+
 			static const String photoConst(L"photo");
 
 			pAttachObject->GetValue(&photoConst, pPhotoValue);
 			pPhotoObject = static_cast<JsonObject *>(pPhotoValue);
 
 			JsonParseUtils::GetString(*pPhotoObject, L"photo_604", imageUrl);
+			JsonParseUtils::GetInteger(*pPhotoObject, L"width", width);
+			JsonParseUtils::GetInteger(*pPhotoObject, L"height", height);
+
+			if (width != 0 && height != 0) {
+				thumbSize = ImageUtils::ScaleTo(320, Rectangle(0, 0, width, height));
+			} else {
+				thumbSize = Rectangle(0, 0, 320, 240);
+			}
 
 			MessagePhotoElement * pPhotoElement = new MessagePhotoElement();
-			pPhotoElement->Construct(Rectangle(0, 0, 320, 240), imageUrl);
+			pPhotoElement->Construct(thumbSize, imageUrl);
 
 			pMessageElement = static_cast<MessageElement *>(pPhotoElement);;
 

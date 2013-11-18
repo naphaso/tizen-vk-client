@@ -23,7 +23,8 @@ class VKUMessagesListItemProvider;
 
 
 class VKUMessagesListItemProvider :
-	public Tizen::Ui::Controls::ITableViewItemProvider {
+	public Tizen::Ui::Controls::ITableViewItemProvider,
+	public Tizen::Ui::Controls::ITableViewItemEventListener {
 public:
 	VKUMessagesListItemProvider();
 	virtual ~VKUMessagesListItemProvider();
@@ -34,6 +35,21 @@ public:
 	virtual bool DeleteItem(int itemIndex, Tizen::Ui::Controls::TableViewItem* pItem);
 	virtual void UpdateItem(int itemIndex, Tizen::Ui::Controls::TableViewItem* pItem);
 	virtual int GetDefaultItemHeight(void);
+
+	// ITableViewItemEventListener
+	virtual void OnTableViewItemStateChanged(
+			Tizen::Ui::Controls::TableView& tableView, int itemIndex,
+			Tizen::Ui::Controls::TableViewItem* pItem,
+			Tizen::Ui::Controls::TableViewItemStatus status);
+
+	virtual void OnTableViewContextItemActivationStateChanged(
+			Tizen::Ui::Controls::TableView& tableView, int itemIndex,
+			Tizen::Ui::Controls::TableViewContextItem* pContextItem,
+			bool activated) {};
+
+	virtual void OnTableViewItemReordered(
+			Tizen::Ui::Controls::TableView& tableView, int itemIndexFrom,
+			int itemIndexTo) {};
 
 	// custom
 	void SetMessagesJson(Tizen::Web::Json::JsonObject *json);

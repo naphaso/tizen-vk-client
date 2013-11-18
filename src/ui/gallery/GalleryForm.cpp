@@ -47,6 +47,8 @@ bool GalleryForm::Initialize() {
 
 void GalleryForm::OnFormBackRequested(Tizen::Ui::Controls::Form& source) {
 	AppLog("You can't leave Omsk");
+	SceneManager* pSceneManager = SceneManager::GetInstance();
+	pSceneManager->GoBackward(BackwardSceneTransition(SCENE_TRANSITION_ANIMATION_TYPE_ZOOM_OUT));
 }
 
 void GalleryForm::OnSceneActivatedN(const Tizen::Ui::Scenes::SceneId& previousSceneId,

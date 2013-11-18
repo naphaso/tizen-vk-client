@@ -90,8 +90,8 @@ bool VKUApp::OnAppInitialized(void) {
 	if (VKUAuthConfig::IsExists()) {
 		VKUAuthConfig::Read();
 
-		contacts = new Contacts();
-		contacts->Sync();
+//		contacts = new Contacts();
+//		contacts->Sync();
 
 		SceneManager::GetInstance()->GoForward(
 				ForwardSceneTransition(SCENE_MAIN_DIALOGS));
