@@ -12,6 +12,10 @@
 #include <FBase.h>
 #include <FIo.h>
 
+class VKUServiceProxy;
+
+#include "IReadEventListener.h"
+
 class VKUServiceProxy : public Tizen::Io::IMessagePortListener {
 public:
 	VKUServiceProxy(void);
@@ -23,10 +27,15 @@ public:
 	virtual void OnMessageReceivedN(Tizen::Io::RemoteMessagePort* pRemoteMessagePort, Tizen::Base::Collection::IMap* pMessage);
 	void SubscribeNotifications(int userId);
 	void UnsubscribeNotifications(int userId);
+
+	void SubscribeReadEvents(IReadEventListener *readEventListener);
+	void UnsubscribeReadEvents();
 private:
 	Tizen::Io::LocalMessagePort* pLocalMessagePort;
 	Tizen::Io::RemoteMessagePort* pRemoteMessagePort;
 	Tizen::App::AppId appId;
+
+	IReadEventListener *_readEventListener;
 };
 
 #endif /* VKUSERVICEPROXY_H_ */

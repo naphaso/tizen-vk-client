@@ -41,6 +41,8 @@ VKUMessagesListItemProvider::VKUMessagesListItemProvider() {
 VKUMessagesListItemProvider::~VKUMessagesListItemProvider() {
 	AppLog("Destruction of VKUMessagesListItemProvider");
 
+	VKUApp::GetInstance()->GetService()->UnsubscribeReadEvents();
+
 	delete _messagesJson;
 }
 
@@ -54,6 +56,8 @@ result VKUMessagesListItemProvider::Construct(JsonObject *userJson, TableView *t
 	if(GetLastResult() == E_SUCCESS) {
 		_messagesJson = dialogData;
 	}
+
+	VKUApp::GetInstance()->GetService()->SubscribeReadEvents(this);
 
 	SetLastResult(E_SUCCESS);
 	return E_SUCCESS;
@@ -540,5 +544,22 @@ CATCH:
 void VKUMessagesListItemProvider::OnScrollEndReached(Control& source, ScrollEndEvent type) {
 	if(type == SCROLL_END_EVENT_END_TOP) {
 		RequestLoadMore(30);
+	}
+}
+
+void VKUMessagesListItemProvider::OnReadEvent(int messageId) {
+	if(_messagesJson != null) {
+		for(int i = 0; i < _messagesJson->GetCount(); i++) {
+			JsonObject *messageObject;
+			int currentMessageId;
+			JsonParseUtils::GetObject(_messagesJson, i, messageObject);
+			JsonParseUtils::GetInteger(*messageObject, L"id", currentMessageId);
+			if(currentMessageId == messageId) {
+				messageObject->SetValue(new String(L"read_state"), static_cast<IJsonValue*>(new JsonNumber(1)), true);
+				_tableView->UpdateTableView();
+				_tableView->RequestRedraw(true);
+				break;
+			}
+		}
 	}
 }

@@ -22,7 +22,10 @@ static const int CHECK_INTERVAL = 1000; // Checking interval in sec.
 
 static const wchar_t* LOCAL_MESSAGE_PORT_NAME = L"UI_PORT";
 
-VKUServiceProxy::VKUServiceProxy(void) : pLocalMessagePort(null), pRemoteMessagePort(null) {}
+VKUServiceProxy::VKUServiceProxy(void) :
+		pLocalMessagePort(null),
+		pRemoteMessagePort(null),
+		_readEventListener(null) {}
 
 VKUServiceProxy::~VKUServiceProxy(void) {}
 
@@ -110,7 +113,9 @@ void VKUServiceProxy::OnMessageReceivedN(RemoteMessagePort* pRemoteMessagePort, 
 				int messageId;
 				Integer::Parse(*static_cast<String *>(pMessage->GetValue(String(L"msg_id"))), messageId);
 
-				// TODO: mark message as read (if in current dialog)
+				if(_readEventListener != null) {
+					_readEventListener->OnReadEvent(messageId);
+				}
 			} else if(event->CompareTo(L"status") == 0) {
 				int userId;
 				bool online;
@@ -148,4 +153,12 @@ void VKUServiceProxy::UnsubscribeNotifications(int userId) {
 	pMap->Add(new String(L"userid"), new String(Integer::ToString(userId)));
 	r = SendMessage(pMap);
 	delete pMap;
+}
+
+void VKUServiceProxy::SubscribeReadEvents(IReadEventListener *readEventListener) {
+	_readEventListener = readEventListener;
+}
+
+void VKUServiceProxy::UnsubscribeReadEvents() {
+	_readEventListener = null;
 }

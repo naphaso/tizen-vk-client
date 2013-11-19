@@ -18,15 +18,18 @@ class VKUMessagesListItemProvider;
 #include "VKU.h"
 #include "VKUApi.h"
 #include "IAPIRequestListener.h"
+#include "IReadEventListener.h"
 #include "AppResourceId.h"
 #include "MessageBubble.h"
 #include "Requests.h"
+
 
 class VKUMessagesListItemProvider :
 	public Tizen::Ui::Controls::ITableViewItemProvider,
 	public Tizen::Ui::Controls::ITableViewItemEventListener,
 	public Tizen::Ui::Controls::IScrollEventListener,
-	public IAPIRequestListener {
+	public IAPIRequestListener,
+	public IReadEventListener {
 public:
 	VKUMessagesListItemProvider();
 	virtual ~VKUMessagesListItemProvider();
@@ -66,6 +69,8 @@ public:
 	// IScrollEventListener
 	virtual void OnScrollEndReached(Tizen::Ui::Control& source, Tizen::Ui::Controls::ScrollEndEvent type);
 
+	// IReadEventListener
+	virtual void OnReadEvent(int messageId);
 private:
 	Tizen::Web::Json::JsonObject* _userJson;
 	Tizen::Web::Json::JsonArray* _messagesJson;
