@@ -25,7 +25,8 @@ static const wchar_t* LOCAL_MESSAGE_PORT_NAME = L"UI_PORT";
 VKUServiceProxy::VKUServiceProxy(void) :
 		pLocalMessagePort(null),
 		pRemoteMessagePort(null),
-		_readEventListener(null) {}
+		_readEventListener(null),
+		_audioProgressListener(null) {}
 
 VKUServiceProxy::~VKUServiceProxy(void) {}
 
@@ -134,6 +135,15 @@ void VKUServiceProxy::OnMessageReceivedN(RemoteMessagePort* pRemoteMessagePort, 
 
 				// TODO: status processing
 				// current = user in current dialog?
+			} else if(event->CompareTo("audio-progress")) {
+				long duration, position;
+
+				Long::Parse(*static_cast<String *>(pMessage->GetValue(String(L"duration"))), duration);
+				Long::Parse(*static_cast<String *>(pMessage->GetValue(String(L"position"))), position);
+
+				if(_audioProgressListener != null) {
+					_audioProgressListener->OnAudioProgress(duration, position);
+				}
 			}
 		}
 	}
@@ -168,4 +178,12 @@ void VKUServiceProxy::SubscribeReadEvents(IReadEventListener *readEventListener)
 
 void VKUServiceProxy::UnsubscribeReadEvents() {
 	_readEventListener = null;
+}
+
+void VKUServiceProxy::SetAudioProgressListener(IAudioProgressListener *audioProgressListener) {
+	_audioProgressListener = audioProgressListener;
+}
+
+void VKUServiceProxy::UnsetAudioProgressListener() {
+	_audioProgressListener = null;
 }

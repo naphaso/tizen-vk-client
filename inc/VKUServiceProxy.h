@@ -15,6 +15,7 @@
 class VKUServiceProxy;
 
 #include "IReadEventListener.h"
+#include "IAudioProgressListener.h"
 
 class VKUServiceProxy : public Tizen::Io::IMessagePortListener {
 public:
@@ -30,11 +31,15 @@ public:
 
 	void SubscribeReadEvents(IReadEventListener *readEventListener);
 	void UnsubscribeReadEvents();
+
+	void SetAudioProgressListener(IAudioProgressListener *audioProgressListener);
+	void UnsetAudioProgressListener();
 private:
 	Tizen::Io::LocalMessagePort* pLocalMessagePort;
 	Tizen::Io::RemoteMessagePort* pRemoteMessagePort;
 	Tizen::App::AppId appId;
 
+	IAudioProgressListener *_audioProgressListener;
 	IReadEventListener *_readEventListener;
 };
 
