@@ -79,6 +79,8 @@ private:
 	Tizen::Ui::Controls::TableView* pDialogTableView;
 
 	int pendingRemoveId;
+
+	Tizen::Base::String GetAttachmentNameByType(Tizen::Base::String & type);
 };
 
 #endif /* DIALOGSTABLEPROVIDER_H_ */

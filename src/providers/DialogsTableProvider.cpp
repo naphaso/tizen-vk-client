@@ -61,6 +61,26 @@ int DialogsTableProvider::GetItemCount(void) {
 	return dialogsJson->GetCount();
 }
 
+Tizen::Base::String DialogsTableProvider::GetAttachmentNameByType(Tizen::Base::String & type) {
+	String name;
+
+	if (type == L"photo") {
+		name = L"Photo";
+	} else if (type == L"video") {
+		name = L"Video";
+	} else if (type == L"doc") {
+		name = L"Document";
+	} else if (type == L"audio") {
+		name = L"Audio";
+	} else if (type == L"wall") {
+		name = L"Wall post";
+	} else {
+		name = L"Attachment";
+	}
+
+	return name;
+}
+
 // FIXME: leaks
 TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 	result r;
@@ -112,6 +132,24 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 	JsonParseUtils::GetInteger(*pObject, "out", out);
 
 	r = JsonParseUtils::GetString(*pObject, L"body", previewText);
+
+	AppLog("TEXTLENGTH %d", previewText.GetLength());
+	if (previewText.GetLength() == 0) {
+		JsonArray *attachments;
+		result r = JsonParseUtils::GetArray(pObject, L"attachments", attachments);
+//		AppLog("ATTACHLENGTH %d", attachments->GetCount());
+
+		if (r == E_SUCCESS && attachments->GetCount() != 0) {
+			JsonObject *attach;
+			JsonParseUtils::GetObject(attachments, 0, attach);
+
+			String type;
+			JsonParseUtils::GetString(*attach, L"type", type);
+
+			previewText = GetAttachmentNameByType(type);
+		}
+	}
+
 	TryCatch(r == E_SUCCESS, , "Failed JsonParseUtils::GetString");
 	r = JsonParseUtils::GetInteger(*pObject, L"date", timeInSec);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
