@@ -21,7 +21,8 @@ class DialogsTableProvider: public Tizen::Ui::Controls::ITableViewItemProvider,
 		public Tizen::Ui::Controls::ITableViewItemEventListener,
 		public IAPIRequestListener,
 		public Tizen::Ui::ITextEventListener,
-		public Tizen::Ui::Controls::ISearchBarEventListener {
+		public Tizen::Ui::Controls::ISearchBarEventListener,
+		public Tizen::Ui::IActionEventListener {
 public:
 	DialogsTableProvider();
 	result Construct(Tizen::Ui::Controls::TableView* tableView);
@@ -46,11 +47,14 @@ public:
 	virtual void OnTableViewContextItemActivationStateChanged(
 			Tizen::Ui::Controls::TableView& tableView, int itemIndex,
 			Tizen::Ui::Controls::TableViewContextItem* pContextItem,
-			bool activated) {};
+			bool activated);
 
 	virtual void OnTableViewItemReordered(
 			Tizen::Ui::Controls::TableView& tableView, int itemIndexFrom,
-			int itemIndexTo) {};
+			int itemIndexTo) { AppLog("OnTableViewItemReordered"); };
+
+	// IActionEventListener
+	void OnActionPerformed(const Tizen::Ui::Control& source, int actionId);
 
 	void SetDialogsJson(Tizen::Web::Json::JsonObject* obj);
 	void ProcessJson(Tizen::Web::Json::JsonObject* obj);
@@ -72,6 +76,8 @@ private:
 	Tizen::Web::Json::JsonArray* dialogsJson;
 	Tizen::Web::Json::JsonArray* filteredDialogsJson;
 	Tizen::Ui::Controls::TableView* pDialogTableView;
+
+	int pendingRemoveId;
 };
 
 #endif /* DIALOGSTABLEPROVIDER_H_ */

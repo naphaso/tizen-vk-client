@@ -20,6 +20,8 @@ using namespace Tizen::Graphics;
 using namespace Tizen::Base::Collection;
 using namespace Tizen::Ui::Scenes;
 
+static const int CONFIRM_DELETION = 142;
+
 static const int DIALOGS_ITEM_HEIGHT = 130;
 static const int PREVIEW_BACKGROUND_COLOR = 0x191f25;
 static const int PREVIEW_TEXT_COLOR = 0x6d6e75;
@@ -72,6 +74,11 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 	Font nameFont, previewFont;
 	Color nameColor, previewColor;
 	Panel *pPlaceholderPanel;
+
+	TableViewContextItem *pContextItem;
+	RelativeLayout contextPlaceholderLayout;
+	Panel* pContextPlaceholder;
+	Button* pContextConfirmButton;
 
 	IJsonValue *pJsonValue, *pUserInfoValue;
 	JsonObject *pObject, *pUserInfoObject;
@@ -239,6 +246,30 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 	r = pItem->AddControl(pPlaceholderPanel);
 	TryCatch(r == E_SUCCESS, , "Failed pItem->AddControl");
 
+	contextPlaceholderLayout.Construct();
+
+	pContextPlaceholder = new Panel();
+	pContextPlaceholder->Construct(contextPlaceholderLayout, Rectangle(0, 0, itemWidth, GetDefaultItemHeight()));
+
+	pContextItem = new TableViewContextItem();
+	pContextItem->Construct(pItem->GetSize());
+
+	pContextConfirmButton = new Button();
+	pContextConfirmButton->Construct(Rectangle(0, 0, 200, 90), L"Remove");
+	pContextConfirmButton->SetColor(BUTTON_STATUS_NORMAL, Color::GetColor(COLOR_ID_RED));
+	pContextConfirmButton->SetActionId(CONFIRM_DELETION);
+	pContextConfirmButton->AddActionEventListener(*this);
+
+	pContextPlaceholder->AddControl(pContextConfirmButton);
+
+	contextPlaceholderLayout.SetCenterAligned(*pContextConfirmButton, CENTER_ALIGN_HORIZONTAL);
+	contextPlaceholderLayout.SetCenterAligned(*pContextConfirmButton, CENTER_ALIGN_VERTICAL);
+
+	pContextItem->AddControl(pContextPlaceholder);
+
+	pItem->SetContextItem(pContextItem);
+
+
 	pItem->RequestRedraw(true);
 
 	return pItem;
@@ -363,6 +394,8 @@ void DialogsTableProvider::OnTableViewItemStateChanged(
 		Tizen::Ui::Controls::TableViewItem* pItem,
 		Tizen::Ui::Controls::TableViewItemStatus status) {
 
+	AppLog("Item state changed");
+
 	switch(status) {
 	case TABLE_VIEW_ITEM_STATUS_SELECTED:
 		OpenDialog(itemIndex);
@@ -379,6 +412,27 @@ void DialogsTableProvider::OnTableViewItemStateChanged(
 	case TABLE_VIEW_ITEM_STATUS_MORE:
 		AppLog("TABLE_VIEW_ITEM_STATUS_MORE");
 		break;
+	}
+}
+
+void DialogsTableProvider::OnTableViewContextItemActivationStateChanged(
+		Tizen::Ui::Controls::TableView& tableView, int itemIndex,
+		Tizen::Ui::Controls::TableViewContextItem* pContextItem,
+		bool activated) {
+	if (!activated)
+		return;
+
+
+	IJsonValue *itemValue;
+	dialogsJson->GetAt(itemIndex, itemValue);
+	JsonObject *itemObject = static_cast<JsonObject *>(itemValue);
+
+	JsonParseUtils::GetInteger(*itemObject, L"user_id", pendingRemoveId);
+}
+
+void DialogsTableProvider::OnActionPerformed(const Tizen::Ui::Control& source, int actionId) {
+	if (actionId == CONFIRM_DELETION) {
+		VKUApi::GetInstance().CreateRequest("messages.deleteDialog", this)->Put(L"user_id", Integer::ToString(pendingRemoveId))->Submit();
 	}
 }
 
