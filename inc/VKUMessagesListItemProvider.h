@@ -56,7 +56,7 @@ public:
 
 	// custom
 	Tizen::Base::Collection::ArrayList * GetMessageElementsN(const Tizen::Web::Json::JsonObject *pMessageJson, int itemWidth);
-	void RequestNewMessages();
+	void RequestUpdateHistory();
 	void RequestNewMessage(int messageId);
 	void RequestLoadMore(int count);
 

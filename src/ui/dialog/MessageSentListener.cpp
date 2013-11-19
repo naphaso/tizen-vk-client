@@ -31,7 +31,7 @@ void MessageSentListener::OnResponseN(RequestId requestId, JsonObject *response)
 		TryReturnVoid(_provider != null, "MessageSentListener: Provider cannot be null");
 		TryReturnVoid(_userJson != null, "MessageSentListener: pUserJson is empty");
 
-		_provider->RequestNewMessages();
+		//_provider->RequestUpdateHistory();
 	}
 
 	delete response;

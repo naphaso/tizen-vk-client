@@ -61,7 +61,7 @@ result VKUDialogPanel::OnInitializing(void) {
 void VKUDialogPanel::LoadMessages() {
 	AppLog("VKUDialogPanel::LoadMessages");
 
-	_provider->RequestNewMessages();
+	_provider->RequestUpdateHistory();
 }
 
 void VKUDialogPanel::LoadNewMessage(int messageId) {
@@ -78,6 +78,7 @@ void VKUDialogPanel::SetUserJson(JsonObject* userJson) {
 	_messagesTableView->SetItemProvider(_provider);
 	_messagesTableView->AddTableViewItemEventListener(*_provider);
 	_messagesTableView->AddScrollEventListener(*_provider);
+	_messagesTableView->ScrollToItem(_provider->GetItemCount() - 1);
 
 	_messageSentListener->Construct(_messagesTableView, _provider, userJson);
 
