@@ -6,7 +6,9 @@
 
 #include "ContactsRetrieveListener.h"
 #include "ContactsTableProvider.h"
-#include "../src/api/VKUAuthConfig.h"
+#include "VKUAuthConfig.h"
+#include "Requests.h"
+
 
 class VKUContactsPanel: public Tizen::Ui::Controls::Panel,
 		public Tizen::Ui::Scenes::ISceneEventListener {

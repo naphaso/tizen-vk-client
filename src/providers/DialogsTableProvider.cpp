@@ -6,9 +6,9 @@
  */
 
 #include "DialogsTableProvider.h"
-#include "../api/VKUApi.h"
+#include "VKUApi.h"
 #include "JsonParseUtils.h"
-#include "../api/VKUAuthConfig.h"
+#include "VKUAuthConfig.h"
 #include "SceneRegister.h"
 
 using namespace Tizen::Ui;
@@ -378,15 +378,17 @@ void DialogsTableProvider::ProcessJson(Tizen::Web::Json::JsonObject* obj) {
 	delete obj;
 }
 
-void DialogsTableProvider::OnResponseN(Tizen::Web::Json::JsonObject *object) {
-	ProcessJson(object);
+void DialogsTableProvider::OnResponseN(RequestId requestId, Tizen::Web::Json::JsonObject *object) {
+	if(requestId == REQUEST_GET_DIALOGS) {
+		ProcessJson(object);
 
-	pDialogTableView->UpdateTableView();
-	//pDialogTableView->RequestRedraw(true);
+		pDialogTableView->UpdateTableView();
+		//pDialogTableView->RequestRedraw(true);
+	}
 }
 
 void DialogsTableProvider::LoadData() {
-	VKUApi::GetInstance().CreateRequest("execute.getDialogsWithUsers", this)->Submit();
+	VKUApi::GetInstance().CreateRequest("execute.getDialogsWithUsers", this)->Submit(REQUEST_GET_DIALOGS);
 }
 
 void DialogsTableProvider::OnTableViewItemStateChanged(

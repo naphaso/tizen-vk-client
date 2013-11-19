@@ -25,7 +25,7 @@ public:
 	VKURequestBuilder(VKUApi *api, Tizen::Base::String method, IAPIRequestListener *listener);
 	virtual ~VKURequestBuilder();
 	VKURequestBuilder *Put(const Tizen::Base::String &arg, const Tizen::Base::String &value);
-	void Submit();
+	void Submit(RequestId requestId);
 private:
 	VKUApi *api;
 	VKURequestData *requestData;

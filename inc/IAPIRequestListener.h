@@ -10,8 +10,8 @@ private:
 public:
 	IAPIRequestListener();
 	void AddPendingRequest(const Tizen::Base::UuId &requestId);
-	void ProcessResponseN(const Tizen::Base::UuId &requestId, Tizen::Web::Json::JsonObject *object);
-	virtual void OnResponseN(Tizen::Web::Json::JsonObject *object) = 0;
+	void ProcessResponseN(const Tizen::Base::UuId &requestId, Tizen::Web::Json::JsonObject *object, RequestId targetRequestId);
+	virtual void OnResponseN(RequestId requestId, Tizen::Web::Json::JsonObject *object) = 0;
 	virtual ~IAPIRequestListener();
 };
 

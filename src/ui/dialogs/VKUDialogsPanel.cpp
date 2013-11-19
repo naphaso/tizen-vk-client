@@ -1,7 +1,7 @@
 #include "VKUDialogsPanel.h"
 #include "AppResourceId.h"
 
-#include "../../api/VKUApi.h"
+#include "VKUApi.h"
 
 using namespace Tizen::Graphics;
 using namespace Tizen::Ui;
@@ -83,10 +83,6 @@ void VKUDialogsPanel::OnSceneDeactivated(
 	// TODO:
 	// Add your scene deactivate code here
 	AppLog("OnSceneDeactivated");
-}
-
-void VKUDialogsPanel::OnResponseN(Tizen::Web::Json::JsonObject *object) {
-
 }
 
 

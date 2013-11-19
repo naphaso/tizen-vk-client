@@ -84,7 +84,7 @@ void VKURequestData::OnTransactionCompleted(HttpSession& httpSession, HttpTransa
 	IJsonValue *pJson = JsonParser::ParseN(data);
 	if(pJson != null) {
 		if(pJson->GetType() == JSON_TYPE_OBJECT) {
-			listener->ProcessResponseN(requestId, static_cast< JsonObject* >(pJson));
+			listener->ProcessResponseN(requestId, static_cast< JsonObject* >(pJson), targetRequestId);
 		} else {
 			delete pJson;
 		}
@@ -103,6 +103,7 @@ void VKURequestData::OnTransactionCertVerificationRequiredN(HttpSession& httpSes
 	delete pCert;
 }
 
-void VKURequestData::OnSend() {
+void VKURequestData::OnSend(RequestId inputRequestId) {
+	targetRequestId = inputRequestId;
 	listener->AddPendingRequest(requestId);
 }

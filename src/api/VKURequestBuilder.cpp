@@ -69,7 +69,7 @@ VKURequestBuilder *VKURequestBuilder::Put(const String &arg, const String &value
 }
 
 
-void VKURequestBuilder::Submit() {
+void VKURequestBuilder::Submit(RequestId requestId) {
 	result r;
 
 	r = pRequest->SetEntity(*pHttpUrlEncodedEntity);
@@ -77,10 +77,9 @@ void VKURequestBuilder::Submit() {
 	r = pTransaction->Submit();
 
 	if(r == E_SUCCESS) {
-		requestData->OnSend();
+		requestData->OnSend(requestId);
 	}
 
 	delete this;
-	//TryCatch(r == E_SUCCESS, , "Failed to submit the HttpTransaction.");
 }
 

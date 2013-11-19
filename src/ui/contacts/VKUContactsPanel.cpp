@@ -1,6 +1,6 @@
 #include "AppResourceId.h"
 #include "VKUContactsPanel.h"
-#include "../../api/VKUApi.h"
+#include "VKUApi.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
@@ -34,7 +34,7 @@ result VKUContactsPanel::OnInitializing(void) {
 	VKUApi::GetInstance().CreateRequest("friends.get", pContactsRetrieveListener)
 			->Put(L"user_id", userIdInt.ToString())
 			->Put(L"fields", L"photo_100")
-			->Submit();
+			->Submit(REQUEST_GET_CONTACTS);
 	return r;
 }
 

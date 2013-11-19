@@ -13,6 +13,7 @@ using namespace Tizen::Graphics;
 using namespace Tizen::Web::Json;
 
 VKUDialog::VKUDialog(void) {
+	userJson = null;
 }
 
 VKUDialog::~VKUDialog(void) {
@@ -64,18 +65,12 @@ void VKUDialog::OnSceneActivatedN(
 		pDialogPanel->SetUserJson(userJson);
 		AppLog("Doing pDialogPanel->LoadMessages");
 		pDialogPanel->LoadMessages();
-
-		int userId;
-		JsonParseUtils::GetInteger(*userJson, L"id", userId);
-		JsonObject *dialogData = static_cast<JsonObject *>(JsonParser::ParseN(VKUApp::GetInstance()->GetCacheDir() + "dialog" + Integer::ToString(userId) + ".json"));
-		if(GetLastResult() == E_SUCCESS) {
-			pDialogPanel->SetDialogData(dialogData);
-		}
 	}
 
 	if (userJson != null) {
 		int userId;
 		JsonParseUtils::GetInteger(*userJson, L"id", userId);
+		AppLog("subscribe to events with user %d", userId);
 		VKUApp::GetInstance()->GetService()->SubscribeNotifications(userId);
 	}
 }

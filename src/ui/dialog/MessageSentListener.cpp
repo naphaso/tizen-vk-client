@@ -9,26 +9,30 @@
 
 using namespace Tizen::Base;
 using namespace Tizen::Web::Json;
+using namespace Tizen::Ui::Controls;
 
-MessageSentListener::MessageSentListener(Tizen::Ui::Controls::TableView * apTableView,
-		VKUMessagesListItemProvider * apProvider) {
-	pTableView = apTableView;
-	pProvider = apProvider;
+MessageSentListener::MessageSentListener() {
 
 }
 
-void MessageSentListener::SetUserJson(JsonObject * userJson) {
-	pUserJson = userJson;
+result MessageSentListener::Construct(TableView *tableView, VKUMessagesListItemProvider * provider, JsonObject *userJson) {
+	_tableView = tableView;
+	_provider = provider;
+	_userJson = userJson;
+	return E_SUCCESS;
 }
 
 MessageSentListener::~MessageSentListener() {
 	// TODO Auto-generated destructor stub
 }
 
-void MessageSentListener::OnResponseN(JsonObject *object) {
-	TryReturnVoid(pProvider != null, "MessageSentListener: Provider cannot be null");
-	TryReturnVoid(pUserJson != null, "MessageSentListener: pUserJson is empty");
+void MessageSentListener::OnResponseN(RequestId requestId, JsonObject *response) {
+	if(requestId == REQUEST_SEND_MESSAGE) {
+		TryReturnVoid(_provider != null, "MessageSentListener: Provider cannot be null");
+		TryReturnVoid(_userJson != null, "MessageSentListener: pUserJson is empty");
 
-	pProvider->RequestData();
-	delete object;
+		_provider->RequestNewMessages();
+	}
+
+	delete response;
 }
