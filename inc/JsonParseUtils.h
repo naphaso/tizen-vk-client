@@ -43,6 +43,11 @@ public:
 			const int index,
 			Tizen::Web::Json::JsonObject *&result
 	);
+
+	static result GetDialogPeerId(
+			const Tizen::Web::Json::JsonObject * object,
+			int & value
+	);
 };
 
 #endif /* JSONPARSEUTILS_H_ */

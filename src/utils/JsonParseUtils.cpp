@@ -42,8 +42,14 @@ result JsonParseUtils::GetInteger(const JsonObject & object, const String & key,
 	result r = E_SUCCESS;
 
 	IJsonValue * value;
+	AppLog("Getting JSON_TYPE_NUMBER");
+
 	if (object.GetValue(&key, value) == E_SUCCESS) {
+		AppLog("GetValue E_SUCCESS");
+
 		if (value->GetType() == JSON_TYPE_NUMBER) {
+			AppLog("Static casting JSON_TYPE_NUMBER");
+
 			JsonNumber jsonValNum = *static_cast<JsonNumber *>(value);
 			resVal = jsonValNum.ToInt();
 		} else {
@@ -96,4 +102,26 @@ result JsonParseUtils::GetObject(const JsonArray *array, const int index, JsonOb
 	} else {
 		return E_PARSING_FAILED;
 	}
+}
+
+result JsonParseUtils::GetDialogPeerId(
+		const Tizen::Web::Json::JsonObject * dialog,
+		int & value) {
+	int chatId;
+	result r = JsonParseUtils::GetInteger(*dialog, L"chat_id", chatId);
+
+	if (r == E_SUCCESS) {
+		value = chatId + 2000000000;
+		return r;
+	}
+
+	int userId;
+	r = JsonParseUtils::GetInteger(*dialog, L"user_id", userId);
+
+	if (r == E_SUCCESS) {
+		value = userId;
+		return r;
+	}
+
+	return E_PARSING_FAILED;
 }

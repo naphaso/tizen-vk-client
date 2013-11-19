@@ -15,7 +15,7 @@ using namespace Tizen::System;
 VKUDialogPanel::VKUDialogPanel(void) {
 	_provider = new VKUMessagesListItemProvider();
 	_messagesTableView = null;
-	_userJson = null;
+	_dialogJson = null;
 	_lastTypingTime = 0;
 }
 
@@ -70,22 +70,30 @@ void VKUDialogPanel::LoadNewMessage(int messageId) {
 	_provider->RequestNewMessage(messageId);
 }
 
-void VKUDialogPanel::SetUserJson(JsonObject* userJson) {
+void VKUDialogPanel::SetDialogJson(JsonObject* dialogJson) {
 	AppLog("VKUDialogPanel::SetUserJson");
+	AppAssert(dialogJson);
+	JsonParseUtils::GetDialogPeerId(dialogJson, _peerId);
 
 	TryReturnVoid(_messageSentListener != null, "VKUDialogPanel: Fatal - pMessageSentListener is null");
-	_provider->Construct(userJson, _messagesTableView);
+
+	JsonObject *chatJson;
+
+	result r = JsonParseUtils::GetObject(dialogJson, L"chat_json", chatJson);
+	if (r != E_SUCCESS)
+		chatJson = null;
+
+	_provider->Construct(_peerId, chatJson, _messagesTableView);
 	_messagesTableView->SetItemProvider(_provider);
 	_messagesTableView->AddTableViewItemEventListener(*_provider);
 	_messagesTableView->AddScrollEventListener(*_provider);
 
-	_messageSentListener->Construct(_messagesTableView, _provider, userJson);
+	_messageSentListener->Construct(_messagesTableView, _provider, dialogJson);
 
-	SetHeaderUser(userJson);
+	SetHeaderUser(dialogJson);
 
-	_userJson = userJson;
+	_dialogJson = dialogJson;
 
-	JsonParseUtils::GetInteger(*userJson, L"id", userId);
 }
 
 void VKUDialogPanel::SetUserTyping(bool typing) {
@@ -95,34 +103,60 @@ void VKUDialogPanel::SetUserTyping(bool typing) {
 		pStatuslabel->SetText(L"Typing...");
 	} else {
 		int online;
-		JsonParseUtils::GetInteger(*_userJson, L"online", online);
-		pStatuslabel->SetText( (online == 1) ? "Online" : "Offline" );
+
+		JsonObject *userJson;
+		JsonParseUtils::GetObject(_dialogJson, L"user_json", userJson);
+
+		JsonParseUtils::GetInteger(*userJson, L"online", online);
+		pStatuslabel->SetText( (online == 1) ? L"Online" : L"Offline" );
 	}
 }
 
-void VKUDialogPanel::SetHeaderUser(JsonObject * userJson) {
+void VKUDialogPanel::SetHeaderUser(JsonObject * dialogJson) {
 	Label *pNameLabel = static_cast<Label*>(_headerPanel->GetControl(IDC_DIALOG_HEADER_NAME));
 	Panel *pAvatarHolder = static_cast<Panel*>(_headerPanel->GetControl(IDC_PANEL_DIALOG_AVATAR));
 	Label *pStatuslabel = static_cast<Label*>(_headerPanel->GetControl(IDC_DIALOG_HEADER_STATUS));
 
-	String fname, sname, status, avararUrl;
-	int online;
+	JsonObject *userJson;
+	JsonParseUtils::GetObject(dialogJson, L"user_json", userJson);
 
-	JsonParseUtils::GetInteger(*userJson, L"online", online);
-	JsonParseUtils::GetString(*userJson, "first_name", fname);
-	JsonParseUtils::GetString(*userJson, "last_name", sname);
-	JsonParseUtils::GetString(*userJson, "photo_100", avararUrl);
+	JsonObject *chatJson;
+	result r = JsonParseUtils::GetObject(dialogJson, L"chat_json", chatJson);
 
-	fname.Append(L" ");
-	fname.Append(sname);
+	// if we failed to get chat, so this is user
+	if (r != E_SUCCESS) {
+		String fname, sname, status, avararUrl;
+		int online;
 
-	pStatuslabel->SetText( (online == 1) ? "Online" : "Offline");
-	pNameLabel->SetText(fname);
+		JsonParseUtils::GetInteger(*userJson, L"online", online);
+		JsonParseUtils::GetString(*userJson, L"first_name", fname);
+		JsonParseUtils::GetString(*userJson, L"last_name", sname);
+		JsonParseUtils::GetString(*userJson, L"photo_100", avararUrl);
 
-	RoundedAvatar * pRoundedAvatar = new RoundedAvatar(HEADER_BLUE);
-	pRoundedAvatar->Construct(Rectangle(0, 0, 80, 80), avararUrl);
+		fname.Append(L" ");
+		fname.Append(sname);
 
-	pAvatarHolder->AddControl(pRoundedAvatar);
+		pStatuslabel->SetText( (online == 1) ? L"Online" : L"Offline");
+		pNameLabel->SetText(fname);
+
+		RoundedAvatar * pRoundedAvatar = new RoundedAvatar(HEADER_BLUE);
+		pRoundedAvatar->Construct(Rectangle(0, 0, 80, 80), avararUrl);
+
+		pAvatarHolder->AddControl(pRoundedAvatar);
+	} else { // this is chat
+		String name, status, avatarTemp;
+
+		JsonParseUtils::GetString(*chatJson, L"title", name);
+		JsonParseUtils::GetString(*chatJson, L"type", status);
+		JsonParseUtils::GetString(*userJson, L"photo_100", avatarTemp);
+
+		pStatuslabel->SetText(status);
+		pNameLabel->SetText(name);
+
+		RoundedAvatar * pRoundedAvatar = new RoundedAvatar(HEADER_BLUE);
+		pRoundedAvatar->Construct(Rectangle(0, 0, 80, 80), avatarTemp);
+		pAvatarHolder->AddControl(pRoundedAvatar);
+	}
 }
 
 result VKUDialogPanel::OnTerminating(void) {
@@ -159,10 +193,17 @@ void VKUDialogPanel::OnKeypadActionPerformed(Control &source,
 
 	if (keypadAction == KEYPAD_ACTION_SEND) {
 		String text = _editField->GetText();
-		VKUApi::GetInstance().CreateRequest(L"messages.send", _messageSentListener)
-				->Put(L"user_id", Integer::ToString(userId))
-				->Put(L"message", text)
-				->Submit(REQUEST_SEND_MESSAGE);
+		if (_peerId < 2000000000) {
+			VKUApi::GetInstance().CreateRequest(L"messages.send", _messageSentListener)
+					->Put(L"user_id", Integer::ToString(_peerId))
+					->Put(L"message", text)
+					->Submit(REQUEST_SEND_MESSAGE);
+		} else {
+			VKUApi::GetInstance().CreateRequest(L"messages.send", _messageSentListener)
+					->Put(L"chat_id", Integer::ToString(_peerId-2000000000))
+					->Put(L"message", text)
+					->Submit(REQUEST_SEND_MESSAGE);
+		}
 
 		_editField->Clear();
 		_editField->RequestRedraw(true);
@@ -202,7 +243,7 @@ void VKUDialogPanel::OnTextValueChanged(const Tizen::Ui::Control& source) {
 
 	if (currentTime - _lastTypingTime > 5000) {
 		VKUApi::GetInstance().CreateRequest(L"messages.setActivity", this)
-				->Put(L"user_id", Integer::ToString(userId))
+				->Put(L"user_id", Integer::ToString(_peerId))
 				->Put(L"type", L"typing")
 				->Submit(REQUEST_SET_ACTIVITY);
 		_lastTypingTime = currentTime;

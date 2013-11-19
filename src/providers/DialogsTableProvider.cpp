@@ -344,6 +344,9 @@ void DialogsTableProvider::ProcessJson(Tizen::Web::Json::JsonObject* obj) {
 	HashMap usersMap(SingleObjectDeleter);
 	usersMap.Construct(); // FIXME: we know map size!
 
+	HashMap chatsMap(SingleObjectDeleter);
+	chatsMap.Construct();
+
 	JsonArray *usersJsonArray = static_cast<JsonArray *>(users);
 	AppLog("constructing map");
 
@@ -359,6 +362,19 @@ void DialogsTableProvider::ProcessJson(Tizen::Web::Json::JsonObject* obj) {
 		usersMap.Add(new Integer(userId), userJson->CloneN());
 	}
 
+	JsonArray *chatsJsonArray;
+	r = JsonParseUtils::GetArray(responseJson, L"chats", chatsJsonArray);
+
+	for (int i=0; i<chatsJsonArray->GetCount(); i++) {
+		JsonObject *chatJson;
+		JsonParseUtils::GetObject(chatsJsonArray, i, chatJson);
+
+		int chatId;
+		JsonParseUtils::GetInteger(*chatJson, L"id", chatId);
+
+		chatsMap.Add(new Integer(chatId), chatJson->CloneN());
+	}
+
 	AppLog("building new json");
 	for (int i=0; i<dialogsJsonArray->GetCount(); i++) {
 		IJsonValue* dialog;
@@ -369,6 +385,15 @@ void DialogsTableProvider::ProcessJson(Tizen::Web::Json::JsonObject* obj) {
 		int userId;
 		JsonParseUtils::GetInteger(*dialogJson, L"user_id", userId);
 
+		// try to get chat...
+		int chatId;
+		result r = JsonParseUtils::GetInteger(*dialogJson, L"chat_id", chatId);
+		if (r == E_SUCCESS) {
+			JsonObject* chatsJson = static_cast<JsonObject *>(chatsMap.GetValue(Integer(chatId)));
+			dialogJson->Add(new String(L"chat_json"), chatsJson->CloneN());
+		}
+
+		// in the end, we know at least user
 		JsonObject* userJson = static_cast<JsonObject *>(usersMap.GetValue(Integer(userId)));
 		dialogJson->Add(new String(L"user_json"), userJson->CloneN());
 	}
@@ -390,7 +415,7 @@ void DialogsTableProvider::OnResponseN(RequestId requestId, Tizen::Web::Json::Js
 }
 
 void DialogsTableProvider::LoadData() {
-	VKUApi::GetInstance().CreateRequest("execute.getDialogsWithUsers", this)->Submit(REQUEST_GET_DIALOGS);
+	VKUApi::GetInstance().CreateRequest("execute.getDialogsWithUsersAndChats", this)->Submit(REQUEST_GET_DIALOGS);
 }
 
 void DialogsTableProvider::OnTableViewItemStateChanged(
@@ -444,20 +469,19 @@ void DialogsTableProvider::OpenDialog(int index) {
 	SceneManager* pSceneManager = SceneManager::GetInstance();
 	AppAssert(pSceneManager);
 
-	IJsonValue *itemValue;
-	dialogsJson->GetAt(index, itemValue);
-	JsonObject *itemObject = static_cast<JsonObject *>(itemValue);
+	JsonObject *itemObject;
+	JsonParseUtils::GetObject(dialogsJson, index, itemObject);
 
-	static const String userJsonConst(L"user_json");
-	IJsonValue *userJsonValue;
-	itemObject->GetValue(&userJsonConst, userJsonValue);
+//	static const String userJsonConst(L"user_json");
+//	IJsonValue *userJsonValue;
+//	itemObject->GetValue(&userJsonConst, userJsonValue);
 
-	JsonObject *userJsonObject = static_cast<JsonObject *>(userJsonValue);
+//	JsonObject *userJsonObject = static_cast<JsonObject *>(userJsonValue);
 
 	ArrayList* pList = new (std::nothrow) ArrayList(SingleObjectDeleter);
 
 	pList->Construct(1);
-	pList->Add(userJsonObject);
+	pList->Add(itemObject);
 
 	pSceneManager->GoForward(ForwardSceneTransition(SCENE_DIALOG), pList);
 }

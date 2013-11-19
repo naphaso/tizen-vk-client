@@ -13,7 +13,7 @@ using namespace Tizen::Graphics;
 using namespace Tizen::Web::Json;
 
 VKUDialog::VKUDialog(void) {
-	userJson = null;
+	dialogJson = null;
 }
 
 VKUDialog::~VKUDialog(void) {
@@ -58,20 +58,20 @@ void VKUDialog::OnSceneActivatedN(
 	AppLog("Scene activated");
 
 	if (pArgs != null) {
-		userJson = static_cast<JsonObject* > (pArgs->GetAt(0));
+		dialogJson = static_cast<JsonObject* > (pArgs->GetAt(0));
 //		AppLog("Received arg %ls", userJson.GetPointer());
 
 		VKUDialogPanel* pDialogPanel = static_cast<VKUDialogPanel*>(GetControl(IDC_PANEL_DIALOG));
-		pDialogPanel->SetUserJson(userJson);
+		pDialogPanel->SetDialogJson(dialogJson);
 		AppLog("Doing pDialogPanel->LoadMessages");
 		pDialogPanel->LoadMessages();
 	}
 
-	if (userJson != null) {
-		int userId;
-		JsonParseUtils::GetInteger(*userJson, L"id", userId);
-		AppLog("subscribe to events with user %d", userId);
-		VKUApp::GetInstance()->GetService()->SubscribeNotifications(userId);
+	if (dialogJson != null) {
+		int peerId;
+		JsonParseUtils::GetDialogPeerId(dialogJson, peerId);
+		AppLog("subscribe to events with user %d", peerId);
+		VKUApp::GetInstance()->GetService()->SubscribeNotifications(peerId);
 	}
 }
 
@@ -79,9 +79,9 @@ void VKUDialog::OnSceneDeactivated(
 		const Tizen::Ui::Scenes::SceneId& currentSceneId,
 		const Tizen::Ui::Scenes::SceneId& nextSceneId) {
 
-	int userId;
-	JsonParseUtils::GetInteger(*userJson, L"id", userId);
-	VKUApp::GetInstance()->GetService()->UnsubscribeNotifications(userId);
+	int peerId;
+	JsonParseUtils::GetDialogPeerId(dialogJson, peerId);
+	VKUApp::GetInstance()->GetService()->UnsubscribeNotifications(peerId);
 }
 
 void VKUDialog::OnKeyLongPressed(const Tizen::Ui::Control& source,

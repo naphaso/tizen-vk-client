@@ -31,7 +31,7 @@ public:
 	VKUMessagesListItemProvider();
 	virtual ~VKUMessagesListItemProvider();
 
-	result Construct(Tizen::Web::Json::JsonObject *userJson, Tizen::Ui::Controls::TableView *tableView);
+	result Construct(int peerId, Tizen::Web::Json::JsonObject *chatJson, Tizen::Ui::Controls::TableView *tableView);
 	// ITableViewItemProvider
 	virtual int GetItemCount(void);
 	virtual Tizen::Ui::Controls::TableViewItem* CreateItem(int itemIndex, int itemWidth);
@@ -67,9 +67,11 @@ public:
 	virtual void OnScrollEndReached(Tizen::Ui::Control& source, Tizen::Ui::Controls::ScrollEndEvent type);
 
 private:
-	Tizen::Web::Json::JsonObject* _userJson;
+	Tizen::Web::Json::JsonObject* _chatJson; // NOTE: may be null
 	Tizen::Web::Json::JsonArray* _messagesJson;
 	Tizen::Ui::Controls::TableView * _tableView;
+
+	int _peerId;
 
 };
 

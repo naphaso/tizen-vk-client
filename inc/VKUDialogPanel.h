@@ -43,7 +43,7 @@ public:
 	// custom methods
 	void LoadMessages();
 	void LoadNewMessage(int messageId);
-	void SetUserJson(Tizen::Web::Json::JsonObject * userJson);
+	void SetDialogJson(Tizen::Web::Json::JsonObject * userJson);
 	void SetHeaderUser(Tizen::Web::Json::JsonObject * userJson);
 	void SetUserTyping(bool typing);
 
@@ -58,12 +58,12 @@ private:
 	Tizen::Ui::Controls::EditField* _editField;
 	VKUMessagesListItemProvider* _provider;
 	MessageSentListener* _messageSentListener;
-	Tizen::Web::Json::JsonObject* _userJson;
+	Tizen::Web::Json::JsonObject* _dialogJson;
 	Tizen::Ui::Controls::TableView* _messagesTableView;
 	Tizen::Ui::Controls::Panel * _headerPanel;
 
 	long long _lastTypingTime;
-	int userId;
+	int _peerId;
 };
 
 #endif

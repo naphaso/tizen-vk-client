@@ -44,13 +44,12 @@ VKUMessagesListItemProvider::~VKUMessagesListItemProvider() {
 	delete _messagesJson;
 }
 
-result VKUMessagesListItemProvider::Construct(JsonObject *userJson, TableView *tableView) {
-	_userJson = userJson;
+result VKUMessagesListItemProvider::Construct(int peerId, JsonObject *chatJson, TableView *tableView) {
+	_chatJson = chatJson;
 	_tableView = tableView;
+	_peerId = peerId;
 
-	int userId;
-	JsonParseUtils::GetInteger(*userJson, L"id", userId);
-	JsonArray *dialogData = static_cast<JsonArray *>(JsonParser::ParseN(VKUApp::GetInstance()->GetCacheDir() + "dialog" + Integer::ToString(userId) + ".json"));
+	JsonArray *dialogData = static_cast<JsonArray *>(JsonParser::ParseN(VKUApp::GetInstance()->GetCacheDir() + "dialog" + Integer::ToString(_peerId) + ".json"));
 	if(GetLastResult() == E_SUCCESS) {
 		_messagesJson = dialogData;
 	}
@@ -387,16 +386,14 @@ CATCH:
 
 void VKUMessagesListItemProvider::RequestLoadMore(int count) {
 	int firstMessageId;
-	int userId;
 	JsonObject *firstMessage;
 
-	JsonParseUtils::GetInteger(*_userJson, L"id", userId);
 	JsonParseUtils::GetObject(_messagesJson, _messagesJson->GetCount() - 1, firstMessage);
 	JsonParseUtils::GetInteger(*firstMessage, L"id", firstMessageId);
 
 	VKUApi::GetInstance().CreateRequest("messages.getHistory", this)
 		->Put(L"count", Integer::ToString(count))
-		->Put(L"user_id", Integer::ToString(userId))
+		->Put(L"user_id", Integer::ToString(_peerId))
 		->Put(L"start_message_id", Integer::ToString(firstMessageId - 1))
 		->Put(L"rev", L"1")
 		->Submit(REQUEST_LOAD_MORE);
@@ -410,11 +407,9 @@ void VKUMessagesListItemProvider::RequestNewMessage(int messageId) {
 }
 
 void VKUMessagesListItemProvider::RequestNewMessages() {
-	int userId;
 	int lastMessageId;
 	JsonObject *lastMessage;
 
-	JsonParseUtils::GetInteger(*_userJson, L"id", userId);
 	if(_messagesJson != null) {
 
 
@@ -433,7 +428,7 @@ void VKUMessagesListItemProvider::RequestNewMessages() {
 		AppLog("request new messages json");
 		VKUApi::GetInstance().CreateRequest("messages.getHistory", this)
 			->Put(L"count", PRELOAD_MESSAGES)
-			->Put(L"user_id", Integer::ToString(userId))
+			->Put(L"user_id", Integer::ToString(_peerId))
 			->Submit(REQUEST_GET_HISTORY);
 	}
 }
@@ -441,9 +436,7 @@ void VKUMessagesListItemProvider::RequestNewMessages() {
 
 void VKUMessagesListItemProvider::OnResponseN(RequestId requestId, JsonObject *object) {
 	result r = E_SUCCESS;
-	int userId;
-	JsonParseUtils::GetInteger(*_userJson, L"id", userId);
-	String cacheFile(VKUApp::GetInstance()->GetCacheDir() + "dialog" + Integer::ToString(userId) + ".json");
+	String cacheFile(VKUApp::GetInstance()->GetCacheDir() + "dialog" + Integer::ToString(_peerId) + ".json");
 	JsonObject *response;
 	JsonArray *items;
 
