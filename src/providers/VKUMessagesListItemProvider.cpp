@@ -388,6 +388,18 @@ CATCH:
 void VKUMessagesListItemProvider::RequestLoadMore(int count) {
 	int firstMessageId;
 	int userId;
+	JsonObject *firstMessage;
+
+	JsonParseUtils::GetInteger(*_userJson, L"id", userId);
+	JsonParseUtils::GetObject(_messagesJson, _messagesJson->GetCount() - 1, firstMessage);
+	JsonParseUtils::GetInteger(*firstMessage, L"id", firstMessageId);
+
+	VKUApi::GetInstance().CreateRequest("messages.getHistory", this)
+		->Put(L"count", Integer::ToString(count))
+		->Put(L"user_id", Integer::ToString(userId))
+		->Put(L"start_message_id", Integer::ToString(firstMessageId - 1))
+		->Put(L"rev", L"1")
+		->Submit(REQUEST_LOAD_MORE);
 }
 
 void VKUMessagesListItemProvider::RequestNewMessage(int messageId) {
@@ -404,7 +416,8 @@ void VKUMessagesListItemProvider::RequestNewMessages() {
 
 	JsonParseUtils::GetInteger(*_userJson, L"id", userId);
 	if(_messagesJson != null) {
-//
+
+
 //		AppLog("updating messages json: count %d", _messagesJson->GetCount());
 //		JsonParseUtils::GetObject(_messagesJson, 0, lastMessage);
 //		JsonParseUtils::GetInteger(*lastMessage, L"id", lastMessageId);
@@ -414,6 +427,7 @@ void VKUMessagesListItemProvider::RequestNewMessages() {
 //			->Put(L"user_id", Integer::ToString(userId))
 //			->Put(L"start_message_id", Integer::ToString(lastMessageId))
 //			->Submit();
+
 		AppLog("error - messagesJson already exists");
 	} else {
 		AppLog("request new messages json");
@@ -427,23 +441,22 @@ void VKUMessagesListItemProvider::RequestNewMessages() {
 
 void VKUMessagesListItemProvider::OnResponseN(RequestId requestId, JsonObject *object) {
 	result r = E_SUCCESS;
+	int userId;
+	JsonParseUtils::GetInteger(*_userJson, L"id", userId);
+	String cacheFile(VKUApp::GetInstance()->GetCacheDir() + "dialog" + Integer::ToString(userId) + ".json");
+	JsonObject *response;
+	JsonArray *items;
+
+	AppLog("processing messages json");
+
+	r = JsonParseUtils::GetObject(object, L"response", response);
+	TryCatch(r == E_SUCCESS, , "failed get response from object");
+
+	r = JsonParseUtils::GetArray(response, L"items", items);
+	TryCatch(r == E_SUCCESS, , "failed get items from response");
+
 
 	if(requestId == REQUEST_GET_HISTORY || requestId == REQUEST_GET_NEW_MESSAGE) {
-		// save cache
-		int userId;
-		JsonParseUtils::GetInteger(*_userJson, L"id", userId);
-		String cacheFile(VKUApp::GetInstance()->GetCacheDir() + "dialog" + Integer::ToString(userId) + ".json");
-
-		JsonObject *response;
-		JsonArray *items;
-
-		AppLog("processing messages json");
-
-		r = JsonParseUtils::GetObject(object, L"response", response);
-		TryCatch(r == E_SUCCESS, , "failed get response from object");
-
-		r = JsonParseUtils::GetArray(response, L"items", items);
-		TryCatch(r == E_SUCCESS, , "failed get items from response");
 
 		if(_messagesJson == null) {
 			AppLog("Assigned %d items", items->GetCount());
@@ -468,7 +481,28 @@ void VKUMessagesListItemProvider::OnResponseN(RequestId requestId, JsonObject *o
 
 		JsonWriter::Compose(_messagesJson, cacheFile);
 	} else if(requestId == REQUEST_LOAD_MORE) {
-		// TODO: implement response processing
+		if(_messagesJson != null) {
+			AppLog("added %d items", items->GetCount());
+			//_messagesJson->Add(items);
+
+			for(int i = items->GetCount() - 1; i >= 0; i--) {
+				IJsonValue *value;
+				items->GetAt(i, value);
+
+				_messagesJson->Add(static_cast<JsonObject *>(value)->CloneN());
+			}
+		}
+
+		_tableView->UpdateTableView();
+		TryCatch(GetLastResult() == E_SUCCESS, r = GetLastResult() , "Failed pTableView->UpdateTableView");
+
+		_tableView->RequestRedraw(true);
+		TryCatch(GetLastResult() == E_SUCCESS, r = GetLastResult() , "Failed pTableView->RequestRedraw");
+
+		r = _tableView->ScrollToItem(items->GetCount());
+		TryCatch(r == E_SUCCESS, , "Failed pTableView->ScrollToItem");
+
+		JsonWriter::Compose(_messagesJson, cacheFile);
 	}
 
 	delete object;
@@ -481,3 +515,8 @@ CATCH:
 	return;
 }
 
+void VKUMessagesListItemProvider::OnScrollEndReached(Control& source, ScrollEndEvent type) {
+	if(type == SCROLL_END_EVENT_END_TOP) {
+		RequestLoadMore(30);
+	}
+}

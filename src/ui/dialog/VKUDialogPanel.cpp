@@ -77,6 +77,7 @@ void VKUDialogPanel::SetUserJson(JsonObject* userJson) {
 	_provider->Construct(userJson, _messagesTableView);
 	_messagesTableView->SetItemProvider(_provider);
 	_messagesTableView->AddTableViewItemEventListener(*_provider);
+	_messagesTableView->AddScrollEventListener(*_provider);
 
 	_messageSentListener->Construct(_messagesTableView, _provider, userJson);
 

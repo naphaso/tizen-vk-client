@@ -25,6 +25,7 @@ class VKUMessagesListItemProvider;
 class VKUMessagesListItemProvider :
 	public Tizen::Ui::Controls::ITableViewItemProvider,
 	public Tizen::Ui::Controls::ITableViewItemEventListener,
+	public Tizen::Ui::Controls::IScrollEventListener,
 	public IAPIRequestListener {
 public:
 	VKUMessagesListItemProvider();
@@ -61,6 +62,9 @@ public:
 
 	// IAPIRequestListener
 	virtual void OnResponseN(RequestId requestId, Tizen::Web::Json::JsonObject *object);
+
+	// IScrollEventListener
+	virtual void OnScrollEndReached(Tizen::Ui::Control& source, Tizen::Ui::Controls::ScrollEndEvent type);
 
 private:
 	Tizen::Web::Json::JsonObject* _userJson;
