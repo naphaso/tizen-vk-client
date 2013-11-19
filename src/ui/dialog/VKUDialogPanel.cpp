@@ -6,6 +6,7 @@
 #include "RoundedAvatar.h"
 
 using namespace Tizen::Base;
+using namespace Tizen::Base::Runtime;
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Graphics;
@@ -53,6 +54,8 @@ result VKUDialogPanel::OnInitializing(void) {
 
 	_messageSentListener = new MessageSentListener();
 
+	typingTimer.Construct(*this);
+
 	AppLog("End VKUDialogPanel::OnInitializing");
 
 	return r;
@@ -95,10 +98,9 @@ void VKUDialogPanel::SetUserTyping(bool typing) {
 	if (typing) {
 		pStatuslabel->SetText(L"Typing...");
 	} else {
-		int online;
-		JsonParseUtils::GetInteger(*_userJson, L"online", online);
 		pStatuslabel->SetText( (online == 1) ? "Online" : "Offline" );
 	}
+	pStatuslabel->RequestRedraw(true);
 }
 
 void VKUDialogPanel::SetHeaderUser(JsonObject * userJson) {
@@ -107,7 +109,6 @@ void VKUDialogPanel::SetHeaderUser(JsonObject * userJson) {
 	Label *pStatuslabel = static_cast<Label*>(_headerPanel->GetControl(IDC_DIALOG_HEADER_STATUS));
 
 	String fname, sname, status, avararUrl;
-	int online;
 
 	JsonParseUtils::GetInteger(*userJson, L"online", online);
 	JsonParseUtils::GetString(*userJson, "first_name", fname);
@@ -212,5 +213,16 @@ void VKUDialogPanel::OnTextValueChanged(const Tizen::Ui::Control& source) {
 
 void VKUDialogPanel::OnTextValueChangeCanceled(const Tizen::Ui::Control& source) {
 
+}
+
+void VKUDialogPanel::OnTimerExpired(Timer& timer) {
+	SetUserTyping(false);
+}
+
+void VKUDialogPanel::OnTyping() {
+	SetUserTyping(true);
+
+	typingTimer.Cancel();
+	typingTimer.Start(10000);
 }
 

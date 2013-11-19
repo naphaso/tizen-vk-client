@@ -108,7 +108,14 @@ void VKUServiceProxy::OnMessageReceivedN(RemoteMessagePort* pRemoteMessagePort, 
 					}
 				}
 			} else if(event->CompareTo(L"typing") == 0) {
-				// TODO: add show typing event
+				Frame* frame = pApp->GetFrame(FRAME_NAME);
+				Form* form = frame->GetCurrentForm();
+				if (form->GetName() == IDF_DIALOG) {
+					VKUDialogPanel* pDialogPanel = static_cast<VKUDialogPanel*>(form->GetControl(IDC_PANEL_DIALOG));
+					if (pDialogPanel != null) {
+						pDialogPanel->OnTyping();
+					}
+				}
 			} else if(event->CompareTo("read") == 0) {
 				int messageId;
 				Integer::Parse(*static_cast<String *>(pMessage->GetValue(String(L"msg_id"))), messageId);
