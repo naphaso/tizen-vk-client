@@ -35,7 +35,7 @@ public:
 	virtual void OnSceneDeactivated(const Tizen::Ui::Scenes::SceneId& currentSceneId,
 									const Tizen::Ui::Scenes::SceneId& nextSceneId);
 
-	virtual void OnResponseN(Tizen::Web::Json::JsonObject *object);
+	virtual void OnResponseN(RequestId requestId, Tizen::Web::Json::JsonObject *object);
 	virtual void OnError();
 
 private:

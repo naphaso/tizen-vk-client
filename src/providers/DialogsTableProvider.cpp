@@ -384,6 +384,8 @@ void DialogsTableProvider::OnResponseN(RequestId requestId, Tizen::Web::Json::Js
 
 		pDialogTableView->UpdateTableView();
 		//pDialogTableView->RequestRedraw(true);
+	} else if (requestId == REQUEST_DELETE_DIALOG) {
+		LoadData();
 	}
 }
 
@@ -434,7 +436,7 @@ void DialogsTableProvider::OnTableViewContextItemActivationStateChanged(
 
 void DialogsTableProvider::OnActionPerformed(const Tizen::Ui::Control& source, int actionId) {
 	if (actionId == CONFIRM_DELETION) {
-		VKUApi::GetInstance().CreateRequest("messages.deleteDialog", this)->Put(L"user_id", Integer::ToString(pendingRemoveId))->Submit();
+		VKUApi::GetInstance().CreateRequest("messages.deleteDialog", this)->Put(L"user_id", Integer::ToString(pendingRemoveId))->Submit(REQUEST_DELETE_DIALOG);
 	}
 }
 

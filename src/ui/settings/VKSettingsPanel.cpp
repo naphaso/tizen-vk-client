@@ -1,9 +1,10 @@
 #include "AppResourceId.h"
 #include "VKSettingsPanel.h"
-#include "../../api/VKUAuthConfig.h"
+#include "VKUAuthConfig.h"
 #include "JsonParseUtils.h"
 #include "WebImageView.h"
-#include "../../api/VKUApi.h"
+#include "VKUApi.h"
+#include "Requests.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
@@ -31,7 +32,7 @@ result VKSettingsPanel::OnInitializing(void) {
 	pAvatarPanel = static_cast<Panel *>(GetControl(IDC_PANEL_SETTINGS_AVATAR, true));
 	pLabelName = static_cast<Label *>(GetControl(IDC_LABEL_SETTINGS_NAME, true));
 
-	VKUApi::GetInstance().CreateRequest("users.get", this)->Put(L"fields", "photo_max")->Submit();
+	VKUApi::GetInstance().CreateRequest("users.get", this)->Put(L"fields", "photo_max")->Submit(REQUEST_GET_MYSELF);
 
 	return r;
 }
@@ -59,34 +60,36 @@ void VKSettingsPanel::OnSceneDeactivated(
 
 }
 
-void VKSettingsPanel::OnResponseN(Tizen::Web::Json::JsonObject *object) {
-	JsonArray* resp;
+void VKSettingsPanel::OnResponseN(RequestId requestId, Tizen::Web::Json::JsonObject *object) {
+	if (requestId == REQUEST_GET_MYSELF) {
+		JsonArray* resp;
 
-	JsonParseUtils::GetArray(object, L"response", resp);
+		JsonParseUtils::GetArray(object, L"response", resp);
 
-	WebImageView *pWebImage;
+		WebImageView *pWebImage;
 
-	JsonObject* item;
+		JsonObject* item;
 
-	IJsonValue *itemValue;
-	resp->GetAt(0, itemValue);
-	item = static_cast<JsonObject *>(itemValue);
+		IJsonValue *itemValue;
+		resp->GetAt(0, itemValue);
+		item = static_cast<JsonObject *>(itemValue);
 
-	String firstName, lastName, photoMax;
+		String firstName, lastName, photoMax;
 
-	JsonParseUtils::GetString(*item, L"first_name", firstName);
-	JsonParseUtils::GetString(*item, L"last_name", lastName);
-	JsonParseUtils::GetString(*item, L"photo_max", photoMax);
+		JsonParseUtils::GetString(*item, L"first_name", firstName);
+		JsonParseUtils::GetString(*item, L"last_name", lastName);
+		JsonParseUtils::GetString(*item, L"photo_max", photoMax);
 
-	AppLog("Avatar URL %ls", photoMax.GetPointer());
+		AppLog("Avatar URL %ls", photoMax.GetPointer());
 
-	pWebImage = new WebImageView();
-	pWebImage->Construct(Tizen::Graphics::Rectangle(0, 0, 200, 200), photoMax);
+		pWebImage = new WebImageView();
+		pWebImage->Construct(Tizen::Graphics::Rectangle(0, 0, 200, 200), photoMax);
 
-	pAvatarPanel->AddControl(pWebImage);
-	pAvatarPanel->RequestRedraw(true);
+		pAvatarPanel->AddControl(pWebImage);
+		pAvatarPanel->RequestRedraw(true);
 
-	pLabelName->SetText(firstName + L" " + lastName);
+		pLabelName->SetText(firstName + L" " + lastName);
+	}
 }
 
 void VKSettingsPanel::OnError() {
