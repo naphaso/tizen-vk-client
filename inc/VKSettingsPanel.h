@@ -4,12 +4,15 @@
 
 #include <FBase.h>
 #include <FUi.h>
+#include <FWebJson.h>
 
-
+#include "IAPIRequestListener.h"
+#include "SettingsSectionTableProvider.h"
 
 class VKSettingsPanel :
 	public Tizen::Ui::Controls::Panel,
- 	public Tizen::Ui::Scenes::ISceneEventListener
+ 	public Tizen::Ui::Scenes::ISceneEventListener,
+ 	public IAPIRequestListener
 {
 
 // Construction
@@ -31,6 +34,17 @@ public:
 								   const Tizen::Ui::Scenes::SceneId& currentSceneId, Tizen::Base::Collection::IList* pArgs);
 	virtual void OnSceneDeactivated(const Tizen::Ui::Scenes::SceneId& currentSceneId,
 									const Tizen::Ui::Scenes::SceneId& nextSceneId);
+
+	virtual void OnResponseN(Tizen::Web::Json::JsonObject *object);
+	virtual void OnError();
+
+private:
+
+	Tizen::Ui::Controls::Label* pLabelName;
+	Tizen::Ui::Controls::Panel* pAvatarPanel;
+
+	SettingsSectionTableProvider* pProvider;
+
 };
 
 #endif

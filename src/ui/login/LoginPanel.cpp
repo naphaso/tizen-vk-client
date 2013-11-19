@@ -56,8 +56,6 @@ result LoginPanel::OnInitializing(void) {
 }
 
 void LoginPanel::OnActionPerformed(const Control& source, int actionId) {
-	SceneManager* pSceneManager = SceneManager::GetInstance();
-
 	switch(actionId) {
 	case ACTION_LOGIN:
 		AppLog("Logging in in");
@@ -67,8 +65,6 @@ void LoginPanel::OnActionPerformed(const Control& source, int actionId) {
 		pPopup->StartSignup(this);
 	break;
 	}
-
-	//pSceneManager->GoForward(SceneTransitionId(ID_SCNT_4));
 
 }
 
