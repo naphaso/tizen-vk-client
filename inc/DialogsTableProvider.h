@@ -16,6 +16,7 @@
 #include "JsonParseUtils.h"
 #include "TimeUtils.h"
 #include "IAPIRequestListener.h"
+#include "Requests.h"
 
 class DialogsTableProvider: public Tizen::Ui::Controls::ITableViewItemProvider,
 		public Tizen::Ui::Controls::ITableViewItemEventListener,
@@ -58,7 +59,7 @@ public:
 	void OpenDialog(int itemId);
 
 	// IAPIRequestListener
-	virtual void OnResponseN(Tizen::Web::Json::JsonObject *object);
+	virtual void OnResponseN(RequestId requestId, Tizen::Web::Json::JsonObject *object);
 
 	// ITextEventListener
 	virtual void OnTextValueChanged(const Tizen::Ui::Control& source);

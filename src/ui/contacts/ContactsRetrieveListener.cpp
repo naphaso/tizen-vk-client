@@ -19,17 +19,18 @@ ContactsRetrieveListener::~ContactsRetrieveListener() {
 
 }
 
-void ContactsRetrieveListener::OnResponseN(JsonObject *object) {
+void ContactsRetrieveListener::OnResponseN(RequestId requestId, JsonObject *object) {
 	result r = E_SUCCESS;
-	AppLog("ContactsRetrieveListener::OnResponseN");
-	pProvider->SetUsersJson(object);
+	if(requestId == REQUEST_GET_CONTACTS) {
+		AppLog("ContactsRetrieveListener::OnResponseN");
+		pProvider->SetUsersJson(object);
 
-	pGroupedTableView->UpdateTableView();
-	TryCatch(GetLastResult() == E_SUCCESS, r = GetLastResult() , "Failed pGroupedTableView->UpdateTableView");
+		pGroupedTableView->UpdateTableView();
+		TryCatch(GetLastResult() == E_SUCCESS, r = GetLastResult() , "Failed pGroupedTableView->UpdateTableView");
 
-	pGroupedTableView->RequestRedraw(true);
-	TryCatch(GetLastResult() == E_SUCCESS, r = GetLastResult() , "Failed pGroupedTableView->RequestRedraw");
-
+		pGroupedTableView->RequestRedraw(true);
+		TryCatch(GetLastResult() == E_SUCCESS, r = GetLastResult() , "Failed pGroupedTableView->RequestRedraw");
+	}
 	delete object;
 	SetLastResult(r);
 	return;

@@ -21,8 +21,9 @@ public:
 	Tizen::Net::Http::HttpTransaction *httpTransaction;
 	IAPIRequestListener *listener;
 	Tizen::Base::UuId requestId;
+	RequestId targetRequestId;
 
-	void OnSend();
+	void OnSend(RequestId requestId);
 
 	// IHttpTransactionEventListener
 	virtual void OnTransactionReadyToRead(Tizen::Net::Http::HttpSession& httpSession, Tizen::Net::Http::HttpTransaction& httpTransaction, int availableBodyLen);

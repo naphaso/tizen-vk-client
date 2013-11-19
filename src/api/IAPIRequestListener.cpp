@@ -30,12 +30,12 @@ IAPIRequestListener::~IAPIRequestListener() {
     delete enumerator;
 }
 
-void IAPIRequestListener::ProcessResponseN(const UuId &requestId, JsonObject *object) {
+void IAPIRequestListener::ProcessResponseN(const UuId &requestId, JsonObject *object, RequestId targetRequestId) {
 	result r;
 	r = pendingRequests.Remove(requestId);
 	if(r == E_SUCCESS) {
 		AppLog("successful remove pending request");
-		OnResponseN(object);
+		OnResponseN(targetRequestId, object);
 	} else {
 		AppLog("failed remove pending request");
 	}

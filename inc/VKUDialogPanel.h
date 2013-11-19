@@ -6,8 +6,8 @@
 #include <FUi.h>
 #include "IAPIRequestListener.h"
 #include "VKUMessagesListItemProvider.h"
-#include "DialogHistoryListener.h"
 #include "MessageSentListener.h"
+#include "Requests.h"
 
 class VKUDialogPanel :
 	public Tizen::Ui::Controls::Panel,
@@ -34,7 +34,7 @@ public:
 	virtual void OnKeypadWillOpen (Tizen::Ui::Control &source);
 
 	// IAPIRequestListener
-	virtual void OnResponseN(Tizen::Web::Json::JsonObject *object);
+	virtual void OnResponseN(RequestId requestId, Tizen::Web::Json::JsonObject *object);
 
 	// ITextEventListener
 	virtual void OnTextValueChanged(const Tizen::Ui::Control& source);
@@ -42,11 +42,12 @@ public:
 
 	// custom methods
 	void LoadMessages();
+	void LoadNewMessage(int messageId);
 	void SetUserJson(Tizen::Web::Json::JsonObject * userJson);
 	void SetHeaderUser(Tizen::Web::Json::JsonObject * userJson);
 	void SetUserTyping(bool typing);
 
-	void SetDialogData(Tizen::Web::Json::JsonObject *dialogData);
+	void SetDialogData(Tizen::Web::Json::JsonArray *dialogData);
 // Implementation
 protected:
 
@@ -54,15 +55,14 @@ protected:
 public:
 
 private:
-	Tizen::Ui::Controls::EditField* pEditField;
-	VKUMessagesListItemProvider* provider;
-	DialogHistoryListener* pDialogHistoryListener;
-	MessageSentListener* pMessageSentListener;
-	Tizen::Web::Json::JsonObject* userJson = null;
-	Tizen::Ui::Controls::TableView* pMessagesListView;
-	Tizen::Ui::Controls::Panel * pHeaderPanel;
+	Tizen::Ui::Controls::EditField* _editField;
+	VKUMessagesListItemProvider* _provider;
+	MessageSentListener* _messageSentListener;
+	Tizen::Web::Json::JsonObject* _userJson;
+	Tizen::Ui::Controls::TableView* _messagesTableView;
+	Tizen::Ui::Controls::Panel * _headerPanel;
 
-	long long lastTypingTime = 0;
+	long long _lastTypingTime;
 	int userId;
 };
 

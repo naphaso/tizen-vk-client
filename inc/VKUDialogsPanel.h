@@ -16,7 +16,6 @@
 class VKUDialogsPanel
 	: public Tizen::Ui::Controls::Panel
 	, public Tizen::Ui::Scenes::ISceneEventListener
-	, public IAPIRequestListener
 {
 public:
 	VKUDialogsPanel(void);
@@ -31,8 +30,6 @@ public:
 	virtual void OnSceneDeactivated(const Tizen::Ui::Scenes::SceneId& currentSceneId,
 									const Tizen::Ui::Scenes::SceneId& nextSceneId);
 
-	// IAPIRequestListener
-	virtual void OnResponseN(Tizen::Web::Json::JsonObject *object);
 
 private:
 	DialogsTableProvider* pProvider;

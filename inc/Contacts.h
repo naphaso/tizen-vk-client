@@ -16,6 +16,7 @@
 class Contacts;
 
 #include "IAPIRequestListener.h"
+#include "Requests.h"
 
 class Contacts : public IAPIRequestListener {
 public:

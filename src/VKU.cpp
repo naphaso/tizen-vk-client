@@ -10,8 +10,8 @@
 #include "AppResourceId.h"
 #include "SampleRequest.h"
 #include "SceneRegister.h"
-#include "api/VKUAuthConfig.h"
-#include "api/VKUApi.h"
+#include "VKUAuthConfig.h"
+#include "VKUApi.h"
 
 using namespace Tizen::App;
 using namespace Tizen::Base;

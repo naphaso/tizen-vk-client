@@ -1,6 +1,6 @@
 #include "AppResourceId.h"
 #include "VKULogin.h"
-#include "../../api/VKUAuthConfig.h"
+#include "VKUAuthConfig.h"
 #include "SceneRegister.h"
 #include "VKU.h"
 

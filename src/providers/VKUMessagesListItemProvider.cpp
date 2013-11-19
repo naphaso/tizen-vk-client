@@ -18,39 +18,54 @@
 #include "MessageAudioElement.h"
 #include "MessageDocElement.h"
 
-
+using namespace Tizen::Ui;
+using namespace Tizen::Ui::Scenes;
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Graphics;
 using namespace Tizen::Web::Json;
 using namespace Tizen::Base;
-//using namespace Tizen::App;
 using namespace Tizen::Base::Collection;
-using namespace Tizen::Ui::Scenes;
-using namespace Tizen::Ui;
+
 
 static const int LIST_HEIGHT = 10000;
 static const int TIMESTAMP_TEXT_COLOR = 0x6d7175;
 static const int LIST_ITEM_UNREAD_COLOR = 0x191f25;
 #define USE_CACHE 1
 
+static const wchar_t *PRELOAD_MESSAGES = L"20";
+
 VKUMessagesListItemProvider::VKUMessagesListItemProvider() {
-	messagesJson = null;
+	_messagesJson = null;
 }
 
 VKUMessagesListItemProvider::~VKUMessagesListItemProvider() {
 	AppLog("Destruction of VKUMessagesListItemProvider");
 
-	delete messagesJson;
-	delete responseJson;
+	delete _messagesJson;
+}
+
+result VKUMessagesListItemProvider::Construct(JsonObject *userJson, TableView *tableView) {
+	_userJson = userJson;
+	_tableView = tableView;
+
+	int userId;
+	JsonParseUtils::GetInteger(*userJson, L"id", userId);
+	JsonArray *dialogData = static_cast<JsonArray *>(JsonParser::ParseN(VKUApp::GetInstance()->GetCacheDir() + "dialog" + Integer::ToString(userId) + ".json"));
+	if(GetLastResult() == E_SUCCESS) {
+		_messagesJson = dialogData;
+	}
+
+	SetLastResult(E_SUCCESS);
+	return E_SUCCESS;
 }
 
 // IListViewItemProvider
 int VKUMessagesListItemProvider::GetItemCount() {
 	AppLog("GetItemCount call");
-	if (messagesJson == null)
+	if (_messagesJson == null)
 		return 0;
 
-	return messagesJson->GetCount();
+	return _messagesJson->GetCount();
 }
 
 TableViewItem* VKUMessagesListItemProvider::CreateItem(int index, int itemWidth) {
@@ -60,8 +75,6 @@ TableViewItem* VKUMessagesListItemProvider::CreateItem(int index, int itemWidth)
 	MessageBubble* pMessageBubble;
 	RelativeLayout itemLayout;
 	Color bgColor;
-
-	MessageTextElement* pMessageTextElement;
 
 	JsonObject *itemObject;
 	IJsonValue *itemValue;
@@ -78,11 +91,11 @@ TableViewItem* VKUMessagesListItemProvider::CreateItem(int index, int itemWidth)
 	int out = 0, readState = 0;
 
 	// reverse list
-	int reversedIndex = GetItemCount()-1 - index;
+	int reversedIndex = _messagesJson->GetCount() - 1 - index;
 	AppLog("Item %d of %d", reversedIndex, GetItemCount());
 
 	// get message string
-	r = messagesJson->GetAt(reversedIndex, itemValue);
+	r = _messagesJson->GetAt(reversedIndex, itemValue);
 	TryCatch(r == E_SUCCESS, , "Failed GetAt");
 	itemObject = static_cast<JsonObject *>(itemValue);
 
@@ -372,57 +385,99 @@ CATCH:
 	return pResultArray;
 }
 
-void VKUMessagesListItemProvider::SetMessagesJson(JsonObject *json) {
+void VKUMessagesListItemProvider::RequestLoadMore(int count) {
+	int firstMessageId;
+	int userId;
+}
+
+void VKUMessagesListItemProvider::RequestNewMessage(int messageId) {
+	VKUApi::GetInstance().CreateRequest("messages.getById", this)
+		->Put(L"message_ids", Integer::ToString(messageId))
+		->Submit(REQUEST_GET_NEW_MESSAGE);
+	//RequestNewMessages();
+}
+
+void VKUMessagesListItemProvider::RequestNewMessages() {
+	int userId;
+	int lastMessageId;
+	JsonObject *lastMessage;
+
+	JsonParseUtils::GetInteger(*_userJson, L"id", userId);
+	if(_messagesJson != null) {
+//
+//		AppLog("updating messages json: count %d", _messagesJson->GetCount());
+//		JsonParseUtils::GetObject(_messagesJson, 0, lastMessage);
+//		JsonParseUtils::GetInteger(*lastMessage, L"id", lastMessageId);
+//
+//		VKUApi::GetInstance().CreateRequest("messages.getHistory", this)
+//			->Put(L"count", PRELOAD_MESSAGES)
+//			->Put(L"user_id", Integer::ToString(userId))
+//			->Put(L"start_message_id", Integer::ToString(lastMessageId))
+//			->Submit();
+		AppLog("error - messagesJson already exists");
+	} else {
+		AppLog("request new messages json");
+		VKUApi::GetInstance().CreateRequest("messages.getHistory", this)
+			->Put(L"count", PRELOAD_MESSAGES)
+			->Put(L"user_id", Integer::ToString(userId))
+			->Submit(REQUEST_GET_HISTORY);
+	}
+}
+
+
+void VKUMessagesListItemProvider::OnResponseN(RequestId requestId, JsonObject *object) {
 	result r = E_SUCCESS;
 
-	// save cache
-	int userId;
-	JsonParseUtils::GetInteger(*userJson, L"id", userId);
-	String cacheFile(VKUApp::GetInstance()->GetCacheDir() + "dialog" + Integer::ToString(userId) + ".json");
-	JsonWriter::Compose(json, cacheFile);
+	if(requestId == REQUEST_GET_HISTORY || requestId == REQUEST_GET_NEW_MESSAGE) {
+		// save cache
+		int userId;
+		JsonParseUtils::GetInteger(*_userJson, L"id", userId);
+		String cacheFile(VKUApp::GetInstance()->GetCacheDir() + "dialog" + Integer::ToString(userId) + ".json");
 
-	responseJson = json;
-	AppLog("Setting messaging json");
+		JsonObject *response;
+		JsonArray *items;
 
-	IJsonValue *response;
-	static const String responseConst(L"response");
-	r = responseJson->GetValue(&responseConst, response);
-	TryCatch(r == E_SUCCESS, , "Failed GetValue");
+		AppLog("processing messages json");
 
+		r = JsonParseUtils::GetObject(object, L"response", response);
+		TryCatch(r == E_SUCCESS, , "failed get response from object");
 
-	IJsonValue *items;
-	static const String itemsConst(L"items");
-	r = (static_cast<JsonObject *>(response))->GetValue(&itemsConst, items);
-	TryCatch(r == E_SUCCESS, , "Failed GetValue");
+		r = JsonParseUtils::GetArray(response, L"items", items);
+		TryCatch(r == E_SUCCESS, , "failed get items from response");
 
-	messagesJson = static_cast<JsonArray *>(items);
-	AppLog("Assigned %d items", messagesJson->GetCount());
+		if(_messagesJson == null) {
+			AppLog("Assigned %d items", items->GetCount());
+			_messagesJson = items->CloneN();
+		} else {
+			AppLog("added %d items", items->GetCount());
+			for(int i = 0; i < items->GetCount(); i++) {
+				IJsonValue *value;
+				items->GetAt(i, value);
+				_messagesJson->InsertAt(static_cast<JsonObject *>(value)->CloneN(), 0);
+			}
+		}
 
+		_tableView->UpdateTableView();
+		TryCatch(GetLastResult() == E_SUCCESS, r = GetLastResult() , "Failed pTableView->UpdateTableView");
+
+		_tableView->RequestRedraw(true);
+		TryCatch(GetLastResult() == E_SUCCESS, r = GetLastResult() , "Failed pTableView->RequestRedraw");
+
+		r = _tableView->ScrollToItem(_tableView->GetItemCount() - 1);
+		TryCatch(r == E_SUCCESS, , "Failed pTableView->ScrollToItem");
+
+		JsonWriter::Compose(_messagesJson, cacheFile);
+	} else if(requestId == REQUEST_LOAD_MORE) {
+		// TODO: implement response processing
+	}
+
+	delete object;
 	SetLastResult(r);
 	return;
-
-	CATCH:
-	    AppLogException("$${Function:UpdateItem} is failed.", GetErrorMessage(r));
-	    SetLastResult(r);
+CATCH:
+	AppLogException("DialogHistoryListener::OnResponseN is failed.", GetErrorMessage(r));
+	delete object;
+	SetLastResult(r);
+	return;
 }
 
-void VKUMessagesListItemProvider::SetListener(DialogHistoryListener * apListener) {
-	pListener = apListener;
-}
-
-DialogHistoryListener* VKUMessagesListItemProvider::GetListener() {
-	return pListener;
-}
-
-void VKUMessagesListItemProvider::SetUserJson(JsonObject *json) {
-	userJson = json;
-}
-
-void VKUMessagesListItemProvider::RequestData() {
-	TryReturnVoid(pListener != null, "IAPIRequestListener cannot be null, response will be omitted");
-	int userId;
-	JsonParseUtils::GetInteger(*userJson, L"id", userId);
-
-	VKUApi::GetInstance().CreateRequest("messages.getHistory", GetListener())->Put(
-			L"count", L"20")->Put(L"user_id", Integer::ToString(userId))->Submit();
-}

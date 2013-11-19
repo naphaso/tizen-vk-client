@@ -93,12 +93,15 @@ void VKUServiceProxy::OnMessageReceivedN(RemoteMessagePort* pRemoteMessagePort, 
 		if (event != null) {
 
 			if(event->CompareTo(L"newmessage") == 0) {
+				int messageId;
+				Integer::Parse(*static_cast<String *>(pMessage->GetValue(String(L"messageid"))), messageId);
+
 				Frame* frame = pApp->GetFrame(FRAME_NAME);
 				Form* form = frame->GetCurrentForm();
 				if (form->GetName() == IDF_DIALOG) {
 					VKUDialogPanel* pDialogPanel = static_cast<VKUDialogPanel*>(form->GetControl(IDC_PANEL_DIALOG));
 					if (pDialogPanel != null) {
-						pDialogPanel->LoadMessages();
+						pDialogPanel->LoadNewMessage(messageId);
 					}
 				}
 			} else if(event->CompareTo(L"typing") == 0) {

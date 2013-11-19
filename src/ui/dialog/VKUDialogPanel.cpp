@@ -1,6 +1,6 @@
 #include "AppResourceId.h"
 #include "VKUDialogPanel.h"
-#include "../../api/VKUApi.h"
+#include "VKUApi.h"
 #include "VKUDialog.h"
 #include "JsonParseUtils.h"
 #include "RoundedAvatar.h"
@@ -13,8 +13,10 @@ using namespace Tizen::Web::Json;
 using namespace Tizen::System;
 
 VKUDialogPanel::VKUDialogPanel(void) {
-	provider = new VKUMessagesListItemProvider();
-	pMessagesListView = null;
+	_provider = new VKUMessagesListItemProvider();
+	_messagesTableView = null;
+	_userJson = null;
+	_lastTypingTime = 0;
 }
 
 VKUDialogPanel::~VKUDialogPanel(void) {
@@ -33,29 +35,23 @@ result VKUDialogPanel::OnInitializing(void) {
 
 	FitToScreen();
 
-	pEditField = static_cast<EditField*>(GetControl(IDC_DIALOGTEXT_EDITFIELD));
-	pEditField->AddKeypadEventListener(*this);
-	pEditField->AddTextEventListener(*this);
-	pEditField->SetFocus();
+	_editField = static_cast<EditField*>(GetControl(IDC_DIALOGTEXT_EDITFIELD));
+	_editField->AddKeypadEventListener(*this);
+	_editField->AddTextEventListener(*this);
+	_editField->SetFocus();
 
 	/* ! HEADER ITEMS INIT ! */
 
-	pHeaderPanel = static_cast<Panel*>(GetControl(IDC_PANEL_DIALOG_HEADER));
+	_headerPanel = static_cast<Panel*>(GetControl(IDC_PANEL_DIALOG_HEADER));
 
 	/* ! END HEADER ITEMS INIT ! */
 
 	// table view init
-	pMessagesListView = static_cast<TableView*>(GetControl(
+	_messagesTableView = static_cast<TableView*>(GetControl(
 			IDC_DIALOG_MESSAGES_LISTVIEW));
-	pMessagesListView->SetItemDividerColor(Color::GetColor(COLOR_ID_BLACK));
-	pMessagesListView->AddTableViewItemEventListener(*provider);
+	_messagesTableView->SetItemDividerColor(Color::GetColor(COLOR_ID_BLACK));
 
-	pDialogHistoryListener = new DialogHistoryListener(pMessagesListView, provider);
-	pMessageSentListener = new MessageSentListener(pMessagesListView, provider);
-
-	AppLog("Setting pDialogHistoryListener");
-	provider->SetListener(pDialogHistoryListener);
-	pMessagesListView->SetItemProvider(provider);
+	_messageSentListener = new MessageSentListener();
 
 	AppLog("End VKUDialogPanel::OnInitializing");
 
@@ -65,42 +61,48 @@ result VKUDialogPanel::OnInitializing(void) {
 void VKUDialogPanel::LoadMessages() {
 	AppLog("VKUDialogPanel::LoadMessages");
 
-	TryReturnVoid(userJson != null, "VKUDialogPanel: LoadMessages cannot be completed until userId is not set");
-	AppLog("Doing VKUDialogPanel::LoadMessages");
-
-	provider->RequestData();
+	_provider->RequestNewMessages();
 }
 
-void VKUDialogPanel::SetUserJson(JsonObject* apJson) {
+void VKUDialogPanel::LoadNewMessage(int messageId) {
+	AppLog("VKUDialogPaden::LoadNewMessage(%d)", messageId);
+
+	_provider->RequestNewMessage(messageId);
+}
+
+void VKUDialogPanel::SetUserJson(JsonObject* userJson) {
 	AppLog("VKUDialogPanel::SetUserJson");
 
-	TryReturnVoid(pMessageSentListener != null, "VKUDialogPanel: Fatal - pMessageSentListener is null");
-	pMessageSentListener->SetUserJson(apJson);
-	provider->SetUserJson(apJson);
+	TryReturnVoid(_messageSentListener != null, "VKUDialogPanel: Fatal - pMessageSentListener is null");
+	_provider->Construct(userJson, _messagesTableView);
+	_messagesTableView->SetItemProvider(_provider);
+	_messagesTableView->AddTableViewItemEventListener(*_provider);
 
-	SetHeaderUser(apJson);
+	_messageSentListener->Construct(_messagesTableView, _provider, userJson);
 
-	userJson = apJson;
+	SetHeaderUser(userJson);
+
+	_userJson = userJson;
 
 	JsonParseUtils::GetInteger(*userJson, L"id", userId);
 }
 
 void VKUDialogPanel::SetUserTyping(bool typing) {
-	Label * pStatuslabel = static_cast<Label*>(pHeaderPanel->GetControl(IDC_DIALOG_HEADER_STATUS));
+	Label * pStatuslabel = static_cast<Label*>(_headerPanel->GetControl(IDC_DIALOG_HEADER_STATUS));
 
 	if (typing) {
 		pStatuslabel->SetText(L"Typing...");
 	} else {
 		int online;
-		JsonParseUtils::GetInteger(*userJson, L"online", online);
+		JsonParseUtils::GetInteger(*_userJson, L"online", online);
 		pStatuslabel->SetText( (online == 1) ? "Online" : "Offline" );
 	}
 }
 
 void VKUDialogPanel::SetHeaderUser(JsonObject * userJson) {
-	Label * pNameLabel = static_cast<Label*>(pHeaderPanel->GetControl(IDC_DIALOG_HEADER_NAME));
-	Panel * pAvatarHolder = static_cast<Panel*>(pHeaderPanel->GetControl(IDC_PANEL_DIALOG_AVATAR));
-	Label * pStatuslabel = static_cast<Label*>(pHeaderPanel->GetControl(IDC_DIALOG_HEADER_STATUS));
+	Label *pNameLabel = static_cast<Label*>(_headerPanel->GetControl(IDC_DIALOG_HEADER_NAME));
+	Panel *pAvatarHolder = static_cast<Panel*>(_headerPanel->GetControl(IDC_PANEL_DIALOG_AVATAR));
+	Label *pStatuslabel = static_cast<Label*>(_headerPanel->GetControl(IDC_DIALOG_HEADER_STATUS));
 
 	String fname, sname, status, avararUrl;
 	int online;
@@ -142,9 +144,9 @@ void VKUDialogPanel::FitToScreen() {
 		SetBounds(rect);
 	}
 
-	if (pMessagesListView != null) {
-		pMessagesListView->ScrollToItem(pMessagesListView->GetItemCount() - 1);
-		pMessagesListView->RequestRedraw(true);
+	if (_messagesTableView != null) {
+		_messagesTableView->ScrollToItem(_messagesTableView->GetItemCount() - 1);
+		_messagesTableView->RequestRedraw(true);
 	}
 
 	Invalidate(true);
@@ -152,19 +154,17 @@ void VKUDialogPanel::FitToScreen() {
 
 void VKUDialogPanel::OnKeypadActionPerformed(Control &source,
 		KeypadAction keypadAction) {
-	int userId;
 
-	JsonParseUtils::GetInteger(*userJson, L"id", userId);
 
 	if (keypadAction == KEYPAD_ACTION_SEND) {
-		String text = pEditField->GetText();
-		VKUApi::GetInstance().CreateRequest(L"messages.send", pMessageSentListener)
+		String text = _editField->GetText();
+		VKUApi::GetInstance().CreateRequest(L"messages.send", _messageSentListener)
 				->Put(L"user_id", Integer::ToString(userId))
 				->Put(L"message", text)
-				->Submit();
+				->Submit(REQUEST_SEND_MESSAGE);
 
-		pEditField->Clear();
-		pEditField->RequestRedraw(true);
+		_editField->Clear();
+		_editField->RequestRedraw(true);
 	}
 }
 
@@ -186,7 +186,10 @@ void VKUDialogPanel::OnKeypadWillOpen(Control &source) {
 
 }
 
-void VKUDialogPanel::OnResponseN(Tizen::Web::Json::JsonObject *object) {
+void VKUDialogPanel::OnResponseN(RequestId requestId, Tizen::Web::Json::JsonObject *object) {
+	if(requestId == REQUEST_SET_ACTIVITY) {
+
+	}
 	delete object;
 }
 
@@ -196,12 +199,12 @@ void VKUDialogPanel::OnTextValueChanged(const Tizen::Ui::Control& source) {
 
 	long long currentTime = currentDt.GetTicks();
 
-	if (currentTime - lastTypingTime > 5000) {
+	if (currentTime - _lastTypingTime > 5000) {
 		VKUApi::GetInstance().CreateRequest(L"messages.setActivity", this)
 				->Put(L"user_id", Integer::ToString(userId))
 				->Put(L"type", L"typing")
-				->Submit();
-		lastTypingTime = currentTime;
+				->Submit(REQUEST_SET_ACTIVITY);
+		_lastTypingTime = currentTime;
 	}
 }
 
@@ -209,6 +212,3 @@ void VKUDialogPanel::OnTextValueChangeCanceled(const Tizen::Ui::Control& source)
 
 }
 
-void VKUDialogPanel::SetDialogData(JsonObject *dialogData) {
-	pDialogHistoryListener->OnResponseN(dialogData);
-}

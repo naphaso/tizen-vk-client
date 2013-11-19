@@ -8,7 +8,7 @@
 #include "Contacts.h"
 #include "VKU.h"
 #include "JsonParseUtils.h"
-#include "api/VKUApi.h"
+#include "VKUApi.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Base::Collection;
@@ -40,7 +40,7 @@ result Contacts::Sync() {
 	}
 
 	//addressbookManager->AddContact(null, addressbookId);
-	VKUApi::GetInstance().CreateRequest("friends.get", this)->Put(L"fields", L"contacts,photo_100")->Submit();
+	VKUApi::GetInstance().CreateRequest("friends.get", this)->Put(L"fields", L"contacts,photo_100")->Submit(REQUEST_SYNC_CONTACTS);
 
 
 	return r;

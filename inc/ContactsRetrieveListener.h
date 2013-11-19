@@ -11,16 +11,19 @@
 #include <FUi.h>
 #include <FBase.h>
 #include <FWebJson.h>
-#include "ContactsTableProvider.h"
 
+class ContactsRetrieveListener;
+
+#include "ContactsTableProvider.h"
 #include "IAPIRequestListener.h"
+#include "Requests.h"
 
 class ContactsRetrieveListener: public IAPIRequestListener {
 public:
 	ContactsRetrieveListener(Tizen::Ui::Controls::GroupedTableView * apTableView,
 			ContactsTableProvider * apProvider);
 	virtual ~ContactsRetrieveListener();
-	virtual void OnResponseN(Tizen::Web::Json::JsonObject *object);
+	virtual void OnResponseN(RequestId requestId, Tizen::Web::Json::JsonObject *object);
 
 private:
 	ContactsTableProvider * pProvider;

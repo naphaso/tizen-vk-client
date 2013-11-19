@@ -7,7 +7,7 @@
 
 #include "LoginPanel.h"
 #include "AppResourceId.h"
-#include "../../api/VKUAuthConfig.h"
+#include "VKUAuthConfig.h"
 #include "SceneRegister.h"
 
 static const int ACTION_LOGIN = 101;
