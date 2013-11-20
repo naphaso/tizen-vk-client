@@ -10,6 +10,7 @@
 #include "JsonParseUtils.h"
 #include "VKUAuthConfig.h"
 #include "SceneRegister.h"
+#include "MultipleAvatar.h"
 
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
@@ -88,7 +89,7 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 	AppLog("DialogsTableProvider::CreateItem");
 
 	TableViewItem* pItem;
-	RoundedAvatar* pAvatar;
+	Panel* pAvatar;
 	RelativeLayout* pItemlayout;
 	Label* pNameLabel, *pPreviewTextLabel, *pTimestampLabel;
 	Font nameFont, previewFont;
@@ -105,7 +106,7 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 
 	String firstName, lastName, fullName;
 	String previewText, timestampText, avatarUrl;
-	int timeInSec, readState, myUserId, out;
+	int timeInSec, readState, myUserId, out, chatId;
 	AvatarType avType = AVATAR_NORMAL;
 
 	myUserId = VKUAuthConfig::GetUserId();
@@ -172,9 +173,49 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 		avType = AVATAR_UNREAD;
 	}
 
-	pAvatar = new RoundedAvatar(avType);
-	r = pAvatar->Construct(Rectangle(0, 0, 108, 108), avatarUrl);
-	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
+	r = JsonParseUtils::GetInteger(*pObject, L"chat_id", chatId);
+
+	if (r == E_SUCCESS) { // THIS IS CHAT
+		JsonObject *chatJson;
+		JsonParseUtils::GetObject(pObject, L"chat_json", chatJson);
+
+		JsonArray *chatUsers;
+		JsonParseUtils::GetArray(chatJson, L"users", chatUsers);
+
+		int userCount = chatUsers->GetCount();
+
+		ArrayList *pUserAvatarsArray = new ArrayList();
+		pUserAvatarsArray->Construct();
+
+		for (int j=0; j<userCount; j++) {
+			JsonObject *userItem;
+			JsonParseUtils::GetObject(chatUsers, j, userItem);
+
+			int chatUserId;
+			JsonParseUtils::GetInteger(*userItem, L"id", chatUserId);
+
+			if (chatUserId == myUserId)
+				continue;
+
+			String userPhotoUrl;
+			JsonParseUtils::GetString(*userItem, L"photo_100", userPhotoUrl);
+			pUserAvatarsArray->Add(new String(userPhotoUrl));
+		}
+
+		MultipleAvatar *pMultipleAvatar = new MultipleAvatar();
+		r = pMultipleAvatar->Constrcut(Rectangle(0, 0, 108, 108), avType, pUserAvatarsArray);
+		TryCatch(r == E_SUCCESS, , "Failed pMultipleAvatar->Constrcut");
+
+		pAvatar = static_cast<Panel *>(pMultipleAvatar);
+
+
+	} else { // THIS IS A DIALOG
+		RoundedAvatar *pRoundedAvatar = new RoundedAvatar(avType);
+		r = pRoundedAvatar->Construct(Rectangle(0, 0, 108, 108), avatarUrl);
+		TryCatch(r == E_SUCCESS, , "Failed pRoundedAvatar->Construct");
+
+		pAvatar = static_cast<Panel *>(pRoundedAvatar);
+	}
 
 	r = nameFont.Construct(FONT_STYLE_PLAIN, 40);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
