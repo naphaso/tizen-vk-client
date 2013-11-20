@@ -12,7 +12,10 @@ public:
 	void AddPendingRequest(const Tizen::Base::UuId &requestId);
 	void ProcessResponseN(const Tizen::Base::UuId &requestId, Tizen::Web::Json::JsonObject *object, RequestId targetRequestId);
 	virtual void OnResponseN(RequestId requestId, Tizen::Web::Json::JsonObject *object) = 0;
+	virtual void OnError(result r) {};
 	virtual ~IAPIRequestListener();
+
+	void ProcessError(const Tizen::Base::UuId &requestId, result r);
 };
 
 #endif

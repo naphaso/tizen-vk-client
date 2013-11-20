@@ -35,7 +35,6 @@ VKURequestData::~VKURequestData() {
 // interface implementation
 
 void VKURequestData::OnTransactionReadyToRead(HttpSession& httpSession, HttpTransaction& httpTransaction, int availableBodyLen) {
-	result r;
 	AppLog("OnTransactionReadyToRead");
 
 	HttpResponse* pHttpResponse = httpTransaction.GetResponse();
@@ -64,6 +63,8 @@ void VKURequestData::OnTransactionReadyToRead(HttpSession& httpSession, HttpTran
 
 void VKURequestData::OnTransactionAborted(HttpSession& httpSession, HttpTransaction& httpTransaction, result r) {
 	AppLog("OnTransactionAborted(%s) :: TODO: check on memory leak, call on drop request", GetErrorMessage(r));
+
+	listener->ProcessError(requestId, r);
 
 	delete this;
 }

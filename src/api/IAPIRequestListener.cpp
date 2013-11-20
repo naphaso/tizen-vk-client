@@ -40,3 +40,12 @@ void IAPIRequestListener::ProcessResponseN(const UuId &requestId, JsonObject *ob
 		AppLog("failed remove pending request");
 	}
 }
+
+void IAPIRequestListener::ProcessError(const UuId &requestId, result r) {
+	if(pendingRequests.Remove(requestId) == E_SUCCESS) {
+		AppLog("successful remove pending request");
+		OnError(r);
+	} else {
+		AppLog("failed remove pending request");
+	}
+}
