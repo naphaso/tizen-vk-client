@@ -12,6 +12,7 @@
 #include "SceneRegister.h"
 #include "VKUAuthConfig.h"
 #include "VKUApi.h"
+#include "UserCache.h"
 
 using namespace Tizen::App;
 using namespace Tizen::Base;
@@ -48,7 +49,7 @@ VKUApp *VKUApp::GetInstance() {
 bool VKUApp::OnAppInitializing(AppRegistry& appRegistry) {
 	result r = E_SUCCESS;
 	PowerManager::SetScreenEventListener(*this);
-
+	UserCache::_usersCache.Construct(100);
 
 	cacheDir = GetAppDataPath() + L"cache/";
 

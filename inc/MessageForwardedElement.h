@@ -31,6 +31,7 @@ public:
 	virtual MessageElementType GetElementType() { return MESSAGE_TYPE_FORWARD; }
 private:
 	void RequestUser(int userId);
+	void ProcessUserJson(Tizen::Web::Json::JsonObject * userObject);
 
 	Tizen::Web::Json::JsonObject * _forwardedMessage;
 

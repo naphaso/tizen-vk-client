@@ -13,6 +13,7 @@
 #include "Requests.h"
 #include <cstdlib>
 #include <ctime>
+#include "UserCache.h"
 
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
@@ -149,7 +150,15 @@ result MessageForwardedElement::Construct(const Rectangle & rect, Tizen::Web::Js
 	r = SetSize(500, totalHeight);
 	TryCatch(r == E_SUCCESS, , "Failed AddControl");
 
-	RequestUser(userId);
+	JsonObject *userObject;
+	userObject = UserCache::Get(userId);
+
+	if (userObject == null) {
+		RequestUser(userId);
+	} else {
+		ProcessUserJson(userObject);
+	}
+
 	return r;
 
 CATCH:
@@ -161,27 +170,33 @@ void MessageForwardedElement::RequestUser(int userId) {
 	_requestId = rand() % 999999 + 200;
 	VKUApi::GetInstance().CreateRequest("users.get", this)
 		->Put(L"user_id", Integer::ToString(userId))
-		->Put(L"fields", L"photo_100")
+		->Put(L"fields", L"photo_100,online")
 		->Submit(_requestId);
 }
 
 void MessageForwardedElement::OnResponseN(RequestId requestId, Tizen::Web::Json::JsonObject *object) {
 	if (requestId == _requestId) {
 		JsonArray *userArray;
-
 		JsonParseUtils::GetArray(object, L"response", userArray);
-
 		JsonObject *userObject;
 		JsonParseUtils::GetObject(userArray, 0, userObject);
 
-		String firstName, photoUrl;
-		JsonParseUtils::GetString(*userObject, L"first_name", firstName);
-		JsonParseUtils::GetString(*userObject, L"photo_100", photoUrl);
+		int userId;
+		JsonParseUtils::GetInteger(*userObject, L"id", userId);
+		UserCache::Put(userId, userObject);
 
-		_avatar->SetUrl(photoUrl);
-		_nameLabel->SetText(firstName);
-		_nameLabel->RequestRedraw(true);
+		ProcessUserJson(userObject);
 	}
+}
+
+void MessageForwardedElement::ProcessUserJson(JsonObject * userObject) {
+	String firstName, photoUrl;
+	JsonParseUtils::GetString(*userObject, L"first_name", firstName);
+	JsonParseUtils::GetString(*userObject, L"photo_100", photoUrl);
+
+	_avatar->SetUrl(photoUrl);
+	_nameLabel->SetText(firstName);
+	_nameLabel->RequestRedraw(true);
 }
 
 void MessageForwardedElement::OnError() {

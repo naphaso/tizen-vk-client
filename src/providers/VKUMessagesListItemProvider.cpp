@@ -424,9 +424,14 @@ ArrayList * VKUMessagesListItemProvider::GetMessageElementsN(const JsonObject *p
 
 		} else if (attachType == L"doc") {
 			AppLog("Message has doc, receiving");
-			pMessageElement = new MessageDocElement();
-			pMessageElement->Construct(Rectangle(0, 0, 320, 240));
 
+			JsonObject *pDocObject;
+			JsonParseUtils::GetObject(pAttachObject, L"doc", pDocObject);
+
+			MessageDocElement * pDocElement = new MessageDocElement();
+			pDocElement->Construct(Rectangle(0, 0, 500, 90), pDocObject, out);
+
+			pMessageElement = static_cast<MessageElement * >(pDocElement);
 		} else if (attachType == L"wall") {
 			AppLog("Message has wall, receiving");
 			pMessageElement = new MessageWallElement();
