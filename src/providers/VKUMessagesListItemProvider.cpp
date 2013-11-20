@@ -10,6 +10,8 @@
 #include "TimeUtils.h"
 #include "ImageUtils.h"
 
+#include "RoundedAvatar.h"
+
 #include "MessageTextElement.h"
 
 #include "MessagePhotoElement.h"
@@ -41,6 +43,8 @@ VKUMessagesListItemProvider::VKUMessagesListItemProvider() {
 VKUMessagesListItemProvider::~VKUMessagesListItemProvider() {
 	AppLog("Destruction of VKUMessagesListItemProvider");
 
+	VKUApp::GetInstance()->GetService()->UnsubscribeReadEvents();
+
 	delete _messagesJson;
 }
 
@@ -49,13 +53,46 @@ result VKUMessagesListItemProvider::Construct(int peerId, JsonObject *chatJson, 
 	_tableView = tableView;
 	_peerId = peerId;
 
+	if (chatJson != null) {
+		ProcessChatUsers(chatJson);
+	}
+
 	JsonArray *dialogData = static_cast<JsonArray *>(JsonParser::ParseN(VKUApp::GetInstance()->GetCacheDir() + "dialog" + Integer::ToString(_peerId) + ".json"));
 	if(GetLastResult() == E_SUCCESS) {
 		_messagesJson = dialogData;
 	}
 
+	VKUApp::GetInstance()->GetService()->SubscribeReadEvents(this);
+
 	SetLastResult(E_SUCCESS);
 	return E_SUCCESS;
+}
+
+result VKUMessagesListItemProvider::ProcessChatUsers(const JsonObject * chatJson) {
+	AppLog("VKUMessagesListItemProvider::ProcessChatUsers");
+	result r = E_SUCCESS;
+
+	JsonArray *chatUsers;
+	JsonParseUtils::GetArray(chatJson, L"users", chatUsers);
+
+	_pUserIdAvatarMap = new HashMap(SingleObjectDeleter);
+	_pUserIdAvatarMap->Construct(chatUsers->GetCount(), 1);
+
+	for (int i=0; i<chatUsers->GetCount(); i++) {
+		JsonObject *userJson;
+		JsonParseUtils::GetObject(chatUsers, i, userJson);
+
+		int userId;
+		String avatarUrl;
+
+		JsonParseUtils::GetInteger(*userJson, L"id", userId);
+		JsonParseUtils::GetString(*userJson, L"photo_100", avatarUrl);
+
+		AppLog("Adding avatar for %d : %ls", userId, avatarUrl.GetPointer());
+		_pUserIdAvatarMap->Add(new Integer(userId), new String(avatarUrl));
+	}
+
+	return r;
 }
 
 // IListViewItemProvider
@@ -71,6 +108,7 @@ TableViewItem* VKUMessagesListItemProvider::CreateItem(int index, int itemWidth)
 	result r;
 	AppLog("VKUMessagesListItemProvider::CreateItem");
 
+	RoundedAvatar *pAvatar; // NOTE: used only if chat and message is out==0
 	MessageBubble* pMessageBubble;
 	RelativeLayout itemLayout;
 	Color bgColor;
@@ -136,6 +174,21 @@ TableViewItem* VKUMessagesListItemProvider::CreateItem(int index, int itemWidth)
 	r = pItem->Construct(itemLayout, Dimension(itemWidth, pMessageBubble->GetHeight() + 2*BUBBLE_VERTICAL_MARGIN));
 	TryCatch(r == E_SUCCESS, , "Failed GetAt");
 
+	if (out == 0 && _peerId > 2000000000) {
+		int fromId;
+		JsonParseUtils::GetInteger(*itemObject, L"from_id", fromId);
+		AppLog("Finding avatar for %d", fromId);
+
+		pAvatar = new RoundedAvatar(AVATAR_NORMAL);
+		String * avatarUrl = static_cast<String *>(_pUserIdAvatarMap->GetValue(Integer(fromId)));
+
+		pAvatar->Construct(Rectangle(0, 0, 80, 80), *avatarUrl);
+		r = pItem->AddControl(pAvatar);
+		itemLayout.SetRelation(*pAvatar, pItem, RECT_EDGE_RELATION_LEFT_TO_LEFT);
+		itemLayout.SetRelation(*pAvatar, pItem, RECT_EDGE_RELATION_TOP_TO_TOP);
+		itemLayout.SetMargin(*pAvatar, 10, 0, 10, 0);
+	}
+
 	// add rich text panel to table item
 	r = pItem->AddControl(pMessageBubble);
 	TryCatch(r == E_SUCCESS, , "Failed AddControl");
@@ -152,8 +205,13 @@ TableViewItem* VKUMessagesListItemProvider::CreateItem(int index, int itemWidth)
 		itemLayout.SetRelation(*pTimeStamp, *pItem, RECT_EDGE_RELATION_BOTTOM_TO_BOTTOM);
 		itemLayout.SetMargin(*pTimeStamp, 0, 10, 0, 30);
 	} else {
-		itemLayout.SetRelation(*pMessageBubble, *pItem, RECT_EDGE_RELATION_LEFT_TO_LEFT);
-		itemLayout.SetMargin(*pMessageBubble, 10, 0, 0, 0);
+		if (_peerId > 2000000000) {
+			itemLayout.SetRelation(*pMessageBubble, pAvatar, RECT_EDGE_RELATION_LEFT_TO_RIGHT);
+			itemLayout.SetMargin(*pMessageBubble, 10, 0, 0, 0);
+		} else {
+			itemLayout.SetRelation(*pMessageBubble, *pItem, RECT_EDGE_RELATION_LEFT_TO_LEFT);
+			itemLayout.SetMargin(*pMessageBubble, 10, 0, 0, 0);
+		}
 
 		itemLayout.SetRelation(*pTimeStamp, *pMessageBubble, RECT_EDGE_RELATION_LEFT_TO_RIGHT);
 		itemLayout.SetRelation(*pTimeStamp, *pItem, RECT_EDGE_RELATION_BOTTOM_TO_BOTTOM);
@@ -406,31 +464,12 @@ void VKUMessagesListItemProvider::RequestNewMessage(int messageId) {
 	//RequestNewMessages();
 }
 
-void VKUMessagesListItemProvider::RequestNewMessages() {
-	int lastMessageId;
-	JsonObject *lastMessage;
-
-	if(_messagesJson != null) {
-
-
-//		AppLog("updating messages json: count %d", _messagesJson->GetCount());
-//		JsonParseUtils::GetObject(_messagesJson, 0, lastMessage);
-//		JsonParseUtils::GetInteger(*lastMessage, L"id", lastMessageId);
-//
-//		VKUApi::GetInstance().CreateRequest("messages.getHistory", this)
-//			->Put(L"count", PRELOAD_MESSAGES)
-//			->Put(L"user_id", Integer::ToString(userId))
-//			->Put(L"start_message_id", Integer::ToString(lastMessageId))
-//			->Submit();
-
-		AppLog("error - messagesJson already exists");
-	} else {
-		AppLog("request new messages json");
-		VKUApi::GetInstance().CreateRequest("messages.getHistory", this)
-			->Put(L"count", PRELOAD_MESSAGES)
-			->Put(L"user_id", Integer::ToString(_peerId))
-			->Submit(REQUEST_GET_HISTORY);
-	}
+void VKUMessagesListItemProvider::RequestUpdateHistory() {
+	AppLog("request new messages json");
+	VKUApi::GetInstance().CreateRequest("messages.getHistory", this)
+		->Put(L"count", PRELOAD_MESSAGES)
+		->Put(L"user_id", Integer::ToString(_peerId))
+		->Submit(REQUEST_UPDATE_HISTORY);
 }
 
 
@@ -449,7 +488,7 @@ void VKUMessagesListItemProvider::OnResponseN(RequestId requestId, JsonObject *o
 	TryCatch(r == E_SUCCESS, , "failed get items from response");
 
 
-	if(requestId == REQUEST_GET_HISTORY || requestId == REQUEST_GET_NEW_MESSAGE) {
+	if(requestId == REQUEST_GET_NEW_MESSAGE) {
 
 		if(_messagesJson == null) {
 			AppLog("Assigned %d items", items->GetCount());
@@ -462,6 +501,19 @@ void VKUMessagesListItemProvider::OnResponseN(RequestId requestId, JsonObject *o
 				_messagesJson->InsertAt(static_cast<JsonObject *>(value)->CloneN(), 0);
 			}
 		}
+
+		_tableView->UpdateTableView();
+		TryCatch(GetLastResult() == E_SUCCESS, r = GetLastResult() , "Failed pTableView->UpdateTableView");
+
+		_tableView->RequestRedraw(true);
+		TryCatch(GetLastResult() == E_SUCCESS, r = GetLastResult() , "Failed pTableView->RequestRedraw");
+
+		r = _tableView->ScrollToItem(_tableView->GetItemCount() - 1);
+		TryCatch(r == E_SUCCESS, , "Failed pTableView->ScrollToItem");
+
+		JsonWriter::Compose(_messagesJson, cacheFile);
+	} else if(requestId == REQUEST_UPDATE_HISTORY) {
+		_messagesJson = items->CloneN();
 
 		_tableView->UpdateTableView();
 		TryCatch(GetLastResult() == E_SUCCESS, r = GetLastResult() , "Failed pTableView->UpdateTableView");
@@ -495,7 +547,7 @@ void VKUMessagesListItemProvider::OnResponseN(RequestId requestId, JsonObject *o
 		r = _tableView->ScrollToItem(items->GetCount());
 		TryCatch(r == E_SUCCESS, , "Failed pTableView->ScrollToItem");
 
-		JsonWriter::Compose(_messagesJson, cacheFile);
+		//JsonWriter::Compose(_messagesJson, cacheFile);
 	}
 
 	delete object;
@@ -511,5 +563,22 @@ CATCH:
 void VKUMessagesListItemProvider::OnScrollEndReached(Control& source, ScrollEndEvent type) {
 	if(type == SCROLL_END_EVENT_END_TOP) {
 		RequestLoadMore(30);
+	}
+}
+
+void VKUMessagesListItemProvider::OnReadEvent(int messageId) {
+	if(_messagesJson != null) {
+		for(int i = 0; i < _messagesJson->GetCount(); i++) {
+			JsonObject *messageObject;
+			int currentMessageId;
+			JsonParseUtils::GetObject(_messagesJson, i, messageObject);
+			JsonParseUtils::GetInteger(*messageObject, L"id", currentMessageId);
+			if(currentMessageId == messageId) {
+				messageObject->SetValue(new String(L"read_state"), static_cast<IJsonValue*>(new JsonNumber(1)), true);
+				_tableView->UpdateTableView();
+				_tableView->RequestRedraw(true);
+				break;
+			}
+		}
 	}
 }

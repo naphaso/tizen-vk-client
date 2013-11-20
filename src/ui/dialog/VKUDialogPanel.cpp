@@ -6,6 +6,7 @@
 #include "RoundedAvatar.h"
 
 using namespace Tizen::Base;
+using namespace Tizen::Base::Runtime;
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Graphics;
@@ -53,6 +54,8 @@ result VKUDialogPanel::OnInitializing(void) {
 
 	_messageSentListener = new MessageSentListener();
 
+	typingTimer.Construct(*this);
+
 	AppLog("End VKUDialogPanel::OnInitializing");
 
 	return r;
@@ -61,7 +64,7 @@ result VKUDialogPanel::OnInitializing(void) {
 void VKUDialogPanel::LoadMessages() {
 	AppLog("VKUDialogPanel::LoadMessages");
 
-	_provider->RequestNewMessages();
+	_provider->RequestUpdateHistory();
 }
 
 void VKUDialogPanel::LoadNewMessage(int messageId) {
@@ -77,7 +80,7 @@ void VKUDialogPanel::SetDialogJson(JsonObject* dialogJson) {
 
 	TryReturnVoid(_messageSentListener != null, "VKUDialogPanel: Fatal - pMessageSentListener is null");
 
-	JsonObject *chatJson;
+	JsonObject *chatJson = null;
 
 	result r = JsonParseUtils::GetObject(dialogJson, L"chat_json", chatJson);
 	if (r != E_SUCCESS)
@@ -87,6 +90,7 @@ void VKUDialogPanel::SetDialogJson(JsonObject* dialogJson) {
 	_messagesTableView->SetItemProvider(_provider);
 	_messagesTableView->AddTableViewItemEventListener(*_provider);
 	_messagesTableView->AddScrollEventListener(*_provider);
+	_messagesTableView->ScrollToItem(_provider->GetItemCount() - 1);
 
 	_messageSentListener->Construct(_messagesTableView, _provider, dialogJson);
 
@@ -110,6 +114,7 @@ void VKUDialogPanel::SetUserTyping(bool typing) {
 		JsonParseUtils::GetInteger(*userJson, L"online", online);
 		pStatuslabel->SetText( (online == 1) ? L"Online" : L"Offline" );
 	}
+	pStatuslabel->RequestRedraw(true);
 }
 
 void VKUDialogPanel::SetHeaderUser(JsonObject * dialogJson) {
@@ -252,5 +257,16 @@ void VKUDialogPanel::OnTextValueChanged(const Tizen::Ui::Control& source) {
 
 void VKUDialogPanel::OnTextValueChangeCanceled(const Tizen::Ui::Control& source) {
 
+}
+
+void VKUDialogPanel::OnTimerExpired(Timer& timer) {
+	SetUserTyping(false);
+}
+
+void VKUDialogPanel::OnTyping() {
+	SetUserTyping(true);
+
+	typingTimer.Cancel();
+	typingTimer.Start(10000);
 }
 

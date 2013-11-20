@@ -42,14 +42,8 @@ result JsonParseUtils::GetInteger(const JsonObject & object, const String & key,
 	result r = E_SUCCESS;
 
 	IJsonValue * value;
-	AppLog("Getting JSON_TYPE_NUMBER");
-
 	if (object.GetValue(&key, value) == E_SUCCESS) {
-		AppLog("GetValue E_SUCCESS");
-
 		if (value->GetType() == JSON_TYPE_NUMBER) {
-			AppLog("Static casting JSON_TYPE_NUMBER");
-
 			JsonNumber jsonValNum = *static_cast<JsonNumber *>(value);
 			resVal = jsonValNum.ToInt();
 		} else {

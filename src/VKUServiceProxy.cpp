@@ -22,7 +22,11 @@ static const int CHECK_INTERVAL = 1000; // Checking interval in sec.
 
 static const wchar_t* LOCAL_MESSAGE_PORT_NAME = L"UI_PORT";
 
-VKUServiceProxy::VKUServiceProxy(void) : pLocalMessagePort(null), pRemoteMessagePort(null) {}
+VKUServiceProxy::VKUServiceProxy(void) :
+		pLocalMessagePort(null),
+		pRemoteMessagePort(null),
+		_readEventListener(null),
+		_audioProgressListener(null) {}
 
 VKUServiceProxy::~VKUServiceProxy(void) {}
 
@@ -105,12 +109,21 @@ void VKUServiceProxy::OnMessageReceivedN(RemoteMessagePort* pRemoteMessagePort, 
 					}
 				}
 			} else if(event->CompareTo(L"typing") == 0) {
-				// TODO: add show typing event
+				Frame* frame = pApp->GetFrame(FRAME_NAME);
+				Form* form = frame->GetCurrentForm();
+				if (form->GetName() == IDF_DIALOG) {
+					VKUDialogPanel* pDialogPanel = static_cast<VKUDialogPanel*>(form->GetControl(IDC_PANEL_DIALOG));
+					if (pDialogPanel != null) {
+						pDialogPanel->OnTyping();
+					}
+				}
 			} else if(event->CompareTo("read") == 0) {
 				int messageId;
 				Integer::Parse(*static_cast<String *>(pMessage->GetValue(String(L"msg_id"))), messageId);
 
-				// TODO: mark message as read (if in current dialog)
+				if(_readEventListener != null) {
+					_readEventListener->OnReadEvent(messageId);
+				}
 			} else if(event->CompareTo(L"status") == 0) {
 				int userId;
 				bool online;
@@ -122,6 +135,15 @@ void VKUServiceProxy::OnMessageReceivedN(RemoteMessagePort* pRemoteMessagePort, 
 
 				// TODO: status processing
 				// current = user in current dialog?
+			} else if(event->CompareTo("audio-progress")) {
+				long duration, position;
+
+				Long::Parse(*static_cast<String *>(pMessage->GetValue(String(L"duration"))), duration);
+				Long::Parse(*static_cast<String *>(pMessage->GetValue(String(L"position"))), position);
+
+				if(_audioProgressListener != null) {
+					_audioProgressListener->OnAudioProgress(duration, position);
+				}
 			}
 		}
 	}
@@ -148,4 +170,20 @@ void VKUServiceProxy::UnsubscribeNotifications(int userId) {
 	pMap->Add(new String(L"userid"), new String(Integer::ToString(userId)));
 	r = SendMessage(pMap);
 	delete pMap;
+}
+
+void VKUServiceProxy::SubscribeReadEvents(IReadEventListener *readEventListener) {
+	_readEventListener = readEventListener;
+}
+
+void VKUServiceProxy::UnsubscribeReadEvents() {
+	_readEventListener = null;
+}
+
+void VKUServiceProxy::SetAudioProgressListener(IAudioProgressListener *audioProgressListener) {
+	_audioProgressListener = audioProgressListener;
+}
+
+void VKUServiceProxy::UnsetAudioProgressListener() {
+	_audioProgressListener = null;
 }

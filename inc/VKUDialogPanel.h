@@ -13,6 +13,7 @@ class VKUDialogPanel :
 	public Tizen::Ui::Controls::Panel,
 	public Tizen::Ui::IKeypadEventListener,
 	public Tizen::Ui::ITextEventListener,
+	public Tizen::Base::Runtime::ITimerEventListener,
 	public IAPIRequestListener
 {
 
@@ -40,6 +41,9 @@ public:
 	virtual void OnTextValueChanged(const Tizen::Ui::Control& source);
 	virtual void OnTextValueChangeCanceled(const Tizen::Ui::Control& source);
 
+	// ITimerEventListener
+	virtual void OnTimerExpired(Tizen::Base::Runtime::Timer& timer);
+
 	// custom methods
 	void LoadMessages();
 	void LoadNewMessage(int messageId);
@@ -48,6 +52,8 @@ public:
 	void SetUserTyping(bool typing);
 
 	void SetDialogData(Tizen::Web::Json::JsonArray *dialogData);
+
+	void OnTyping();
 // Implementation
 protected:
 
@@ -62,8 +68,11 @@ private:
 	Tizen::Ui::Controls::TableView* _messagesTableView;
 	Tizen::Ui::Controls::Panel * _headerPanel;
 
+	Tizen::Base::Runtime::Timer typingTimer;
+
 	long long _lastTypingTime;
 	int _peerId;
+	int online;
 };
 
 #endif

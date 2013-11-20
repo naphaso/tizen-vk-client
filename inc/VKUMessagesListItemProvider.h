@@ -18,15 +18,18 @@ class VKUMessagesListItemProvider;
 #include "VKU.h"
 #include "VKUApi.h"
 #include "IAPIRequestListener.h"
+#include "IReadEventListener.h"
 #include "AppResourceId.h"
 #include "MessageBubble.h"
 #include "Requests.h"
+
 
 class VKUMessagesListItemProvider :
 	public Tizen::Ui::Controls::ITableViewItemProvider,
 	public Tizen::Ui::Controls::ITableViewItemEventListener,
 	public Tizen::Ui::Controls::IScrollEventListener,
-	public IAPIRequestListener {
+	public IAPIRequestListener,
+	public IReadEventListener {
 public:
 	VKUMessagesListItemProvider();
 	virtual ~VKUMessagesListItemProvider();
@@ -56,7 +59,7 @@ public:
 
 	// custom
 	Tizen::Base::Collection::ArrayList * GetMessageElementsN(const Tizen::Web::Json::JsonObject *pMessageJson, int itemWidth);
-	void RequestNewMessages();
+	void RequestUpdateHistory();
 	void RequestNewMessage(int messageId);
 	void RequestLoadMore(int count);
 
@@ -66,12 +69,18 @@ public:
 	// IScrollEventListener
 	virtual void OnScrollEndReached(Tizen::Ui::Control& source, Tizen::Ui::Controls::ScrollEndEvent type);
 
+	// IReadEventListener
+	virtual void OnReadEvent(int messageId);
 private:
 	Tizen::Web::Json::JsonObject* _chatJson; // NOTE: may be null
 	Tizen::Web::Json::JsonArray* _messagesJson;
 	Tizen::Ui::Controls::TableView * _tableView;
 
+	Tizen::Base::Collection::HashMap * _pUserIdAvatarMap;
+
 	int _peerId;
+
+	result ProcessChatUsers(const Tizen::Web::Json::JsonObject * chatJson);
 
 };
 
