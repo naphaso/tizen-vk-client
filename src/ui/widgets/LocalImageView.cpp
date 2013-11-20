@@ -29,7 +29,10 @@ result LocalImageView::Construct(const Rectangle & rect, const String & resImage
 	result r = E_SUCCESS;
 	AppResource* pAppResource = VKUApp::GetInstance()->GetAppResource();
 
-	Panel::Construct(rect, GROUP_STYLE_NONE);
+	r = Panel::Construct(rect, GROUP_STYLE_NONE);
+
+	if (resImageName.GetLength() == 0)
+		return r;
 
 	pNormalBitmap = pAppResource->GetBitmapN(resImageName);
 	TryCatch(GetLastResult() == E_SUCCESS, r = GetLastResult(), "Failed GetBitmapN %ls", resImageName.GetPointer());
@@ -45,7 +48,7 @@ result LocalImageView::OnDraw(void) {
 
 	Canvas *pCanvas = GetCanvasN();
 
-	if (pCanvas) {
+	if (pCanvas && pNormalBitmap) {
 		r = pCanvas->DrawBitmap(pCanvas->GetBounds(), *pNormalBitmap);
 	}
 

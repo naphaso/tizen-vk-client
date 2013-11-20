@@ -11,6 +11,7 @@
 #include "VKUAuthConfig.h"
 #include "SceneRegister.h"
 #include "MultipleAvatar.h"
+#include "LocalImageView.h"
 
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
@@ -89,12 +90,16 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 	AppLog("DialogsTableProvider::CreateItem");
 
 	TableViewItem* pItem;
+
+	bool isChat = false;
+
 	Panel* pAvatar;
 	RelativeLayout* pItemlayout;
 	Label* pNameLabel, *pPreviewTextLabel, *pTimestampLabel;
 	Font nameFont, previewFont;
 	Color nameColor, previewColor;
 	Panel *pPlaceholderPanel;
+	LocalImageView *pStatusImage;
 
 	TableViewContextItem *pContextItem;
 	RelativeLayout contextPlaceholderLayout;
@@ -106,7 +111,9 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 
 	String firstName, lastName, fullName;
 	String previewText, timestampText, avatarUrl;
-	int timeInSec, readState, myUserId, out, chatId;
+	String onlineImageName = L"";
+
+	int timeInSec, readState, myUserId, out, chatId, online;
 	AvatarType avType = AVATAR_NORMAL;
 
 	myUserId = VKUAuthConfig::GetUserId();
@@ -132,13 +139,15 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 	JsonParseUtils::GetInteger(*pObject, "read_state", readState);
 	JsonParseUtils::GetInteger(*pObject, "out", out);
 
-	r = JsonParseUtils::GetString(*pObject, L"body", previewText);
+	// much, much complex for chat
+	JsonParseUtils::GetInteger(*pUserInfoObject, L"online", online);
 
-	AppLog("TEXTLENGTH %d", previewText.GetLength());
+	r = JsonParseUtils::GetString(*pObject, L"body", previewText);
+	TryCatch(r == E_SUCCESS, , "Failed JsonParseUtils::GetString");
+
 	if (previewText.GetLength() == 0) {
 		JsonArray *attachments;
 		result r = JsonParseUtils::GetArray(pObject, L"attachments", attachments);
-//		AppLog("ATTACHLENGTH %d", attachments->GetCount());
 
 		if (r == E_SUCCESS && attachments->GetCount() != 0) {
 			JsonObject *attach;
@@ -151,7 +160,6 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 		}
 	}
 
-	TryCatch(r == E_SUCCESS, , "Failed JsonParseUtils::GetString");
 	r = JsonParseUtils::GetInteger(*pObject, L"date", timeInSec);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
 	r = TimeUtils::GetDialogsTime(timeInSec, timestampText);
@@ -174,8 +182,8 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 	}
 
 	r = JsonParseUtils::GetInteger(*pObject, L"chat_id", chatId);
-
-	if (r == E_SUCCESS) { // THIS IS CHAT
+	isChat = r == E_SUCCESS;
+	if (isChat) { // THIS IS CHAT
 		JsonObject *chatJson;
 		JsonParseUtils::GetObject(pObject, L"chat_json", chatJson);
 
@@ -208,6 +216,9 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 
 		pAvatar = static_cast<Panel *>(pMultipleAvatar);
 
+		String chatName;
+		JsonParseUtils::GetString(*chatJson, L"title", chatName);
+		firstName = chatName;
 
 	} else { // THIS IS A DIALOG
 		RoundedAvatar *pRoundedAvatar = new RoundedAvatar(avType);
@@ -231,6 +242,14 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 	pNameLabel->SetTextConfig(nameFont.GetSize(), LABEL_TEXT_STYLE_NORMAL);
 	r = pNameLabel->SetMargin(0, 16);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
+
+
+	if (online == 1) {
+		onlineImageName = L"online_list.png";
+	}
+
+	pStatusImage = new LocalImageView();
+	pStatusImage->Construct(Rectangle(0, 0, 45, 45), onlineImageName);
 
 	pPreviewTextLabel = new Label();
 	r = pPreviewTextLabel->Construct(Rectangle(0, 0, 300, 50), previewText);
@@ -269,6 +288,7 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
 	r = pPlaceholderPanel->AddControl(pTimestampLabel);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
+	r = pPlaceholderPanel->AddControl(pStatusImage);
 
 
 //	/* LAYOUT */
@@ -293,6 +313,11 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
 	r = pItemlayout->SetHorizontalFitPolicy(*pNameLabel, FIT_POLICY_CONTENT);
 	TryCatch(r == E_SUCCESS, , "Failed pTableItem->AddControl");
+
+	r = pItemlayout->SetRelation(*pStatusImage, pNameLabel, RECT_EDGE_RELATION_LEFT_TO_RIGHT);
+	r = pItemlayout->SetRelation(*pStatusImage, pPlaceholderPanel, RECT_EDGE_RELATION_TOP_TO_TOP);
+	TryCatch(r == E_SUCCESS, , "Failed pItemlayout->SetRelation");
+	r = pItemlayout->SetMargin(*pStatusImage, 0, 0, 17, 0);
 
 	AppLog("DialogsTableProvider::CreateItem - preview layout");
 
