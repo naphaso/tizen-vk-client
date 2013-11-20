@@ -33,6 +33,12 @@ RoundedAvatar::RoundedAvatar(const AvatarType & type, const PlaceholderType & pl
 	case HEADER_BLUE:
 		bitmapName = L"thumbnail_header.png";
 		break;
+	case BUBBLE_IN:
+		bitmapName = L"thumbnail_bubble_in.png";
+		break;
+	case BUBBLE_OUT:
+		bitmapName = L"thumbnail_bubble_out.png";
+		break;
 	}
 
 	switch (placeholderType) {
@@ -66,21 +72,22 @@ result RoundedAvatar::Construct(const Tizen::Graphics::Rectangle & rect, const T
 
 	Panel::Construct(rect, GROUP_STYLE_NONE);
 
-	VKUApp::GetInstance()->GetBitmapCache()->TakeBitmap(imageUrl, this);
+	if (imageUrl.GetLength() != 0)
+		VKUApp::GetInstance()->GetBitmapCache()->TakeBitmap(imageUrl, this);
 
 	return r;
 }
 
+void RoundedAvatar::SetUrl(const Tizen::Base::String & str) {
+	imageUrl = str;
+	if (str.GetLength() != 0)
+		VKUApp::GetInstance()->GetBitmapCache()->TakeBitmap(imageUrl, this);
+}
+
 RoundedAvatar::~RoundedAvatar() {
 	AppLog("rounded avatar destructor");
-	VKUApp::GetInstance()->GetBitmapCache()->ReleaseBitmap(imageUrl, this);
-
-//	if (pAvatarPlaceholder)
-//		delete pAvatarPlaceholder;
-
-//	if (pAvatarRounding)
-//		delete pAvatarRounding;
-	//delete pAvatarRounding;
+	if (imageUrl.GetLength() != 0)
+		VKUApp::GetInstance()->GetBitmapCache()->ReleaseBitmap(imageUrl, this);
 }
 
 result RoundedAvatar::OnDraw(void) {
@@ -112,17 +119,6 @@ CATCH:
 
 void RoundedAvatar::OnUserEventReceivedN(RequestId requestId, IList* pArgs) {
 	AppLog("rounded avatar event received");
-//	if(requestId == AVATAR_LOAD_REQUEST) {
-//		if (pArgs->GetAt(0) == null)
-//			return;
-//
-//		AppLog("rounded avatar new bitmap received: list size %d", pArgs->GetCount());
-//		pAvatar = static_cast<Bitmap *>(pArgs->GetAt(0));
-//		AppLog("bitmap pointer: %x", pAvatar);
-//		AppLog("Bitmap size %dx%d", pAvatar->GetWidth(), pAvatar->GetHeight());
-//		RequestRedraw();
-//		delete pAvatarPlaceholder;
-//	}
 
 	if(requestId == BITMAP_LOADED) {
 		AppLog("bitmap loaded event");

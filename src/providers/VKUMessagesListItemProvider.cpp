@@ -19,6 +19,7 @@
 #include "MessageWallElement.h"
 #include "MessageAudioElement.h"
 #include "MessageDocElement.h"
+#include "MessageForwardedElement.h"
 
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Scenes;
@@ -160,7 +161,7 @@ TableViewItem* VKUMessagesListItemProvider::CreateItem(int index, int itemWidth)
 		AppLog("Adding element %d to pItem", i);
 		MessageElement *pElement = static_cast<MessageElement *>(pMessageElements->GetAt(i));
 		pMessageBubble->AddElement(pElement);
-		AppLog("Added element %d to pItem", i);
+		AppLog("Added element %d to pItem with size of %dx%d", i, pElement->GetWidth(), pElement->GetHeight());
 	}
 
 	// timestamp label
@@ -324,10 +325,13 @@ ArrayList * VKUMessagesListItemProvider::GetMessageElementsN(const JsonObject *p
 	// attachs stuff
 	IJsonValue *attachs;
 	JsonArray * pAttachArray;
+	int out;
 
 	pResultArray = new ArrayList(SingleObjectDeleter);
 	r = pResultArray->Construct(1);
 	TryCatch(r == E_SUCCESS, , "pResultArray->Construct");
+
+	JsonParseUtils::GetInteger(*pMessageJson, L"out", out);
 
 	r = JsonParseUtils::GetString(*pMessageJson, L"body", messageText);
 	TryCatch(r == E_SUCCESS, , "JsonParseUtils::GetString body");
@@ -345,12 +349,10 @@ ArrayList * VKUMessagesListItemProvider::GetMessageElementsN(const JsonObject *p
 	static const String attachConst(L"attachments");
 	r = pMessageJson->GetValue(&attachConst, attachs);
 
-	if (r != E_SUCCESS)
-		return pResultArray;
+	if (r == E_SUCCESS)
+		pAttachArray = static_cast<JsonArray *>(attachs);
 
-	pAttachArray = static_cast<JsonArray *>(attachs);
-
-	for (int i=0; i<pAttachArray->GetCount(); i++) {
+	for (int i=0; r == E_SUCCESS && i<pAttachArray->GetCount(); i++) {
 		AppLog("Message has %d attachments, receiving %d", pAttachArray->GetCount(), i);
 
 		IJsonValue *pAttachValue;
@@ -434,6 +436,27 @@ ArrayList * VKUMessagesListItemProvider::GetMessageElementsN(const JsonObject *p
 
 		pResultArray->Add(pMessageElement);
 	}
+
+	JsonArray *forwardedMessages;
+	r = JsonParseUtils::GetArray(pMessageJson, L"fwd_messages", forwardedMessages);
+	AppLog("Message has forwardedMessages?");
+	for (int i=0; r == E_SUCCESS && i<forwardedMessages->GetCount(); i++) {
+		AppLog("Message has forwardedMessages, receiving %d", i);
+
+		JsonObject *fwdMessage;
+
+		JsonParseUtils::GetObject(forwardedMessages, i, fwdMessage);
+
+		MessageForwardedElement *pForwardedElement = new MessageForwardedElement();
+		pForwardedElement->Construct(Rectangle(0, 0, 500, 40000), fwdMessage, out);
+
+		MessageElement *pMessageElement;
+		pMessageElement = static_cast<MessageForwardedElement *>(pForwardedElement);
+
+		pResultArray->Add(pMessageElement);
+	}
+
+	AppLog("Message has done");
 
 	return pResultArray;
 

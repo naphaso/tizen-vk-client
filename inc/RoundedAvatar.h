@@ -16,7 +16,9 @@
 enum AvatarType {
 	AVATAR_NORMAL,
 	AVATAR_UNREAD,
-	HEADER_BLUE
+	HEADER_BLUE,
+	BUBBLE_OUT,
+	BUBBLE_IN
 };
 
 enum PlaceholderType {
@@ -30,8 +32,8 @@ public:
 	RoundedAvatar(const AvatarType & type, const PlaceholderType & placeholderType = PLACEHOLDER_USER);
 	virtual ~RoundedAvatar();
 
-	result Construct(const Tizen::Graphics::Rectangle & rect, const Tizen::Base::String &avatarPath);
-
+	result Construct(const Tizen::Graphics::Rectangle & rect, const Tizen::Base::String &avatarPath = L"");
+	void SetUrl(const Tizen::Base::String & str);
 
 	virtual void OnUserEventReceivedN(RequestId requestId, Tizen::Base::Collection::IList* pArgs);
 	// Panel

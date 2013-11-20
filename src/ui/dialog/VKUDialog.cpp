@@ -17,6 +17,7 @@ VKUDialog::VKUDialog(void) {
 }
 
 VKUDialog::~VKUDialog(void) {
+
 }
 
 bool VKUDialog::Initialize() {

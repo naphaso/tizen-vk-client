@@ -21,10 +21,10 @@ VKUDialogPanel::VKUDialogPanel(void) {
 }
 
 VKUDialogPanel::~VKUDialogPanel(void) {
-	delete _provider;
+//	delete _provider;
 
-	if (_dialogJson)
-		delete _dialogJson;
+//	if (_dialogJson)
+//		delete _dialogJson;
 }
 
 bool VKUDialogPanel::Initialize() {
