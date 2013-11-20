@@ -72,7 +72,7 @@ result MessageForwardedElement::Construct(const Rectangle & rect, Tizen::Web::Js
 	TryCatch(r == E_SUCCESS, , "Failed pTimeLabel->Construct");
 
 	_avatar = new RoundedAvatar(out == 1 ? BUBBLE_OUT : BUBBLE_IN);
-	r = _avatar->Construct(Rectangle(0, 0, 80, 80));
+	r = _avatar->Construct(Rectangle(0, 0, 100, 100));
 	TryCatch(r == E_SUCCESS, , "Failed _avatar->Construct");
 
 	pMarker = new Panel();
