@@ -10,7 +10,9 @@
 #include "Requests.h"
 
 
-class VKUContactsPanel: public Tizen::Ui::Controls::Panel {
+class VKUContactsPanel:
+	public Tizen::Ui::Controls::Panel,
+	public Tizen::Ui::Scenes::ISceneEventListener {
 
 // Construction
 public:
@@ -20,7 +22,11 @@ public:
 	result OnInitializing(void);
 	result OnTerminating(void);
 
-// Implementation
+	virtual void OnSceneActivatedN(const Tizen::Ui::Scenes::SceneId& previousSceneId,
+								   const Tizen::Ui::Scenes::SceneId& currentSceneId, Tizen::Base::Collection::IList* pArgs);
+	virtual void OnSceneDeactivated(const Tizen::Ui::Scenes::SceneId& currentSceneId,
+									const Tizen::Ui::Scenes::SceneId& nextSceneId);
+
 protected:
 
 // Generated call-back functions
@@ -29,8 +35,8 @@ public:
 	void ClearItems();
 
 private:
-	ContactsRetrieveListener* pContactsRetrieveListener;
-	ContactsTableProvider* pProvider;
+//	ContactsRetrieveListener* pContactsRetrieveListener;
+//	ContactsTableProvider* pProvider;
 };
 
 #endif
