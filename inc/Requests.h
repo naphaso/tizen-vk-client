@@ -21,5 +21,6 @@
 #define REQUEST_UPDATE_HISTORY    110
 #define REQUEST_GET_UPLOAD_SERVER 111
 #define REQUEST_SAVE_PHOTO        112
+#define REQUEST_COUNTERS          113
 
 #endif /* REQUESTS_H_ */

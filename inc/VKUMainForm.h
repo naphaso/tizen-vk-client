@@ -8,12 +8,19 @@
 #include <FUiIme.h>
 #include <FGraphics.h>
 #include <gl.h>
+#include <FWebJson.h>
 
-class VKUMainForm
-	: public Tizen::Ui::Controls::Form
-	, public Tizen::Ui::IActionEventListener
-	, public Tizen::Ui::Controls::IFormBackEventListener,
- 	public Tizen::Ui::Scenes::ISceneEventListener
+class VKUMainForm;
+
+#include "IAPIRequestListener.h"
+
+class VKUMainForm :
+	public Tizen::Ui::Controls::Form,
+	public Tizen::Ui::IActionEventListener,
+	public Tizen::Ui::Controls::IFormBackEventListener,
+ 	public Tizen::Ui::Scenes::ISceneEventListener,
+ 	public IAPIRequestListener
+
 {
 public:
 	VKUMainForm(void);
@@ -39,6 +46,9 @@ protected:
 
 
 	void ClearContacts();
+
+	void UpdateCounters();
+	virtual void OnResponseN(RequestId requestId, Tizen::Web::Json::JsonObject *object);
 };
 
 #endif	//_VKU_MAIN_FORM_H_

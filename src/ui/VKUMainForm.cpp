@@ -3,6 +3,8 @@
 #include "SceneRegister.h"
 #include "VKUColors.h"
 #include "VKUContactsPanel.h"
+#include "VKUApi.h"
+#include "JsonParseUtils.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::App;
@@ -10,6 +12,7 @@ using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Ui::Scenes;
 using namespace Tizen::Graphics;
+using namespace Tizen::Web::Json;
 
 VKUMainForm::VKUMainForm(void) {
 }
@@ -55,6 +58,7 @@ void VKUMainForm::OnActionPerformed(const Tizen::Ui::Control& source,
 
 	AppAssert(pSceneManager);
 
+	UpdateCounters();
 	switch (actionId) {
 	case ID_HEADER_MESSAGES:
 		ClearContacts();
@@ -88,7 +92,7 @@ void VKUMainForm::OnSceneActivatedN(
 		const Tizen::Ui::Scenes::SceneId& currentSceneId,
 		Tizen::Base::Collection::IList* pArgs) {
 	// TODO: Add your implementation codes here
-
+	UpdateCounters();
 }
 
 void VKUMainForm::OnSceneDeactivated(
@@ -107,4 +111,34 @@ void VKUMainForm::ClearContacts() {
 		contactsPanel->ClearItems();
 	}
 	//}
+}
+
+void VKUMainForm::UpdateCounters() {
+	VKUApi::GetInstance().CreateRequest("account.getCounters", this)->Put(L"filter", L"messages,friends")->Submit(REQUEST_COUNTERS);
+}
+
+void VKUMainForm::OnResponseN(RequestId requestId, JsonObject *object) {
+	result r;
+	if(requestId != REQUEST_COUNTERS) {
+		return;
+	}
+
+	JsonObject *response;
+	int messages, friends;
+	Header *header = GetHeader();
+
+	r = JsonParseUtils::GetObject(object, L"response", response);
+	if(r != E_SUCCESS) { return; }
+
+
+
+	r = JsonParseUtils::GetInteger(*response, L"messages", messages);
+	if(r == E_SUCCESS) {
+		header->SetItemNumberedBadgeIcon(0, messages);
+	}
+
+	r = JsonParseUtils::GetInteger(*response, L"friends", friends);
+	if(r == E_SUCCESS) {
+		header->SetItemNumberedBadgeIcon(2, friends);
+	}
 }
