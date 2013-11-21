@@ -35,6 +35,7 @@ VKUPanelFactory::CreatePanelN(const Tizen::Base::String& panelId,
 	} else if (panelId == IDC_PANEL_CONTACTS) {
 		VKUContactsPanel* pPanel = new VKUContactsPanel();
 		pPanel->Initialize();
+		pSceneManager->AddSceneEventListener(sceneId, *pPanel);
 		pNewPanel = pPanel;
 	} else if (panelId == IDC_PANEL_SETTINGS) {
 		VKSettingsPanel* pPanel = new VKSettingsPanel();
