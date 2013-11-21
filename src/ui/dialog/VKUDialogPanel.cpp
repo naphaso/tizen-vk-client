@@ -101,6 +101,8 @@ void VKUDialogPanel::SetDialogJson(JsonObject* dialogJson) {
 
 	_dialogJson = dialogJson;
 
+	_messagesTableView->UpdateTableView();
+	_messagesTableView->ScrollToItem(_messagesTableView->GetItemCount() - 1);
 }
 
 void VKUDialogPanel::SetUserTyping(bool typing) {

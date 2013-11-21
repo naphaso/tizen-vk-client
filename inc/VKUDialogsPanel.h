@@ -12,10 +12,12 @@
 #include "VKUDialogListItemProvider.h"
 #include "IAPIRequestListener.h"
 #include "DialogsTableProvider.h"
+#include "PullToRefreshTrait.h"
 
 class VKUDialogsPanel
-	: public Tizen::Ui::Controls::Panel
-	, public Tizen::Ui::Scenes::ISceneEventListener
+	: public Tizen::Ui::Controls::Panel,
+	  public Tizen::Ui::Scenes::ISceneEventListener,
+	  public IRefreshable
 {
 public:
 	VKUDialogsPanel(void);
@@ -31,10 +33,14 @@ public:
 									const Tizen::Ui::Scenes::SceneId& nextSceneId);
 
 
+	// IRefreshable
+	virtual void OnRefresh();
 private:
 	DialogsTableProvider* pProvider;
 	Tizen::Ui::Controls::TableView* pDialogTableView;
 	Tizen::Ui::Controls::SearchBar *_searchBar;
+
+	PullToRefreshTrait _pullToRefresh;
 };
 
 #endif // _VKU_TAB1_H_

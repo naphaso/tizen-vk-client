@@ -19,7 +19,7 @@ VKUDialogsPanel::~VKUDialogsPanel(void) {
 }
 
 bool VKUDialogsPanel::Initialize(void) {
-	result r = Construct(IDC_PANEL_DIALOGS);
+	result r = Panel::Construct(IDC_PANEL_DIALOGS);
 	if (IsFailed(r))
 		return false;
 
@@ -42,8 +42,7 @@ result VKUDialogsPanel::OnInitializing(void) {
 	pRelativeLayout->SetVerticalFitPolicy(*this, FIT_POLICY_PARENT);
 	delete pRelativeLayout;
 
-	pDialogTableView = static_cast<TableView*>(GetControl(
-			IDC_TABLEVIEW_DIALOGS));
+	pDialogTableView = static_cast<TableView*>(GetControl(IDC_TABLEVIEW_DIALOGS));
 
 
 	_searchBar = static_cast<SearchBar*>(GetControl(IDC_SEARCHBAR1));
@@ -56,6 +55,9 @@ result VKUDialogsPanel::OnInitializing(void) {
 	pDialogTableView->AddTableViewItemEventListener(*pProvider);
 
 	pProvider->LoadData();
+
+	_pullToRefresh.Construct(pDialogTableView, _searchBar, this);
+	SetPropagatedTouchEventListener(&_pullToRefresh);
 
 	return r;
 }
@@ -85,4 +87,7 @@ void VKUDialogsPanel::OnSceneDeactivated(
 	AppLog("OnSceneDeactivated");
 }
 
+void VKUDialogsPanel::OnRefresh() {
+	pProvider->LoadData();
+}
 

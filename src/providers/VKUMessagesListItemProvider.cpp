@@ -477,7 +477,7 @@ void VKUMessagesListItemProvider::RequestLoadMore(int count) {
 	JsonParseUtils::GetObject(_messagesJson, _messagesJson->GetCount() - 1, firstMessage);
 	JsonParseUtils::GetInteger(*firstMessage, L"id", firstMessageId);
 
-	VKUApi::GetInstance().CreateRequest("messages.getHistory", this)
+	VKUApi::GetInstance().CreateRequest("execute.getHistoryAndMarkRead", this)
 		->Put(L"count", Integer::ToString(count))
 		->Put(L"user_id", Integer::ToString(_peerId))
 		->Put(L"start_message_id", Integer::ToString(firstMessageId - 1))
@@ -486,7 +486,7 @@ void VKUMessagesListItemProvider::RequestLoadMore(int count) {
 }
 
 void VKUMessagesListItemProvider::RequestNewMessage(int messageId) {
-	VKUApi::GetInstance().CreateRequest("messages.getById", this)
+	VKUApi::GetInstance().CreateRequest("execute.getMessagesAndMarkRead", this)
 		->Put(L"message_ids", Integer::ToString(messageId))
 		->Submit(REQUEST_GET_NEW_MESSAGE);
 	//RequestNewMessages();
@@ -494,7 +494,7 @@ void VKUMessagesListItemProvider::RequestNewMessage(int messageId) {
 
 void VKUMessagesListItemProvider::RequestUpdateHistory() {
 	AppLog("request new messages json");
-	VKUApi::GetInstance().CreateRequest("messages.getHistory", this)
+	VKUApi::GetInstance().CreateRequest("execute.getHistoryAndMarkRead", this)
 		->Put(L"count", PRELOAD_MESSAGES)
 		->Put(L"user_id", Integer::ToString(_peerId))
 		->Submit(REQUEST_UPDATE_HISTORY);
