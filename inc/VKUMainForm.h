@@ -36,6 +36,9 @@ protected:
 								   const Tizen::Ui::Scenes::SceneId& currentSceneId, Tizen::Base::Collection::IList* pArgs);
 	virtual void OnSceneDeactivated(const Tizen::Ui::Scenes::SceneId& currentSceneId,
 									const Tizen::Ui::Scenes::SceneId& nextSceneId);
+
+
+	void ClearContacts();
 };
 
 #endif	//_VKU_MAIN_FORM_H_

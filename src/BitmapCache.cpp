@@ -108,6 +108,8 @@ public:
 	}
 
 	void AddSubscriber(Control *control) {
+		AppLog("BITMAPCACHE: add subscriber %ls", _url.GetPointer());
+
 		_subscribers.Add(control);
 		switch(_state) {
 		case CACHE_ENTRY_STATE_NOT_FOUND:
@@ -131,7 +133,13 @@ public:
 		result r;
 		r = _subscribers.Remove(*control);
 		if(r != E_SUCCESS) {
-			AppLog("WARNING: unsubscribe unsubscribed!!!!!!!!!!!!!!");
+			AppLog("BITMAPCACHE WARNING: %ls unsubscribe unsubscribed!!!!!!!!!!!!!!", _url.GetPointer());
+		}
+
+		if(_state == CACHE_ENTRY_STATE_MEMORY && _subscribers.GetCount() == 0) {
+			AppLog("BITMAPCACHE: free memory %ls", _url.GetPointer());
+			delete _bitmap;
+			_state = CACHE_ENTRY_STATE_FILE;
 		}
 	}
 
@@ -245,6 +253,7 @@ BitmapCache::~BitmapCache() {
 
 //  Tizen::Graphics::BitmapPixelFormat pixelFormat, int destWidth, int destHeight, RequestId& reqId, const IImageDecodeUrlEventListener& listener, long timeout
 void BitmapCache::TakeBitmap(const String &address, Control *control) {
+	AppLog("BITMAPCACHE: take bitmap %ls", address.GetPointer());
 	AppLog("getting cache entry %ls from bitmap cache", address.GetPointer());
 	CacheEntry *cacheEntry = static_cast<CacheEntry *>(bitmapCache->GetValue(address));
 	if(cacheEntry == null) {
@@ -258,6 +267,7 @@ void BitmapCache::TakeBitmap(const String &address, Control *control) {
 
 void BitmapCache::ReleaseBitmap(const String &address, Control *control) {
 	AppLog("release bitmap");
+	AppLog("BITMAPCACHE: release bitmap %ls", address.GetPointer());
 	CacheEntry *cacheEntry = static_cast<CacheEntry *>(bitmapCache->GetValue(address));
 	if(cacheEntry == null) {
 		AppLog("WARNING: release unknown cache entry!!!!!!!!!!!");

@@ -73,3 +73,11 @@ void VKUApi::DropRequest(const UuId &requestId) {
 		AppLog("drop unknown request with id %ls", requestId.ToString().GetPointer());
 	}
 }
+
+void VKUApi::SaveRequest(const UuId &requestId, VKURequestData *requestData) {
+	requestsMap.Add(new UuId(requestId), requestData);
+}
+
+void VKUApi::EndRequest(const UuId &requestId) {
+	requestsMap.Remove(requestId, true);
+}

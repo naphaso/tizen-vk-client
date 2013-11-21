@@ -66,7 +66,7 @@ void VKURequestData::OnTransactionAborted(HttpSession& httpSession, HttpTransact
 
 	listener->ProcessError(requestId, r);
 
-	delete this;
+	VKUApi::GetInstance().EndRequest(requestId);
 }
 
 void VKURequestData::OnTransactionReadyToWrite(HttpSession& httpSession, HttpTransaction& httpTransaction, int recommendedChunkSize) {
@@ -93,7 +93,7 @@ void VKURequestData::OnTransactionCompleted(HttpSession& httpSession, HttpTransa
 		AppLogException("Parse JSON is failed.", GetErrorMessage(r));
 	}
 
-	delete this;
+	VKUApi::GetInstance().EndRequest(requestId);
 }
 
 void VKURequestData::OnTransactionCertVerificationRequiredN(HttpSession& httpSession, HttpTransaction& httpTransaction, Tizen::Base::String* pCert) {
@@ -106,5 +106,6 @@ void VKURequestData::OnTransactionCertVerificationRequiredN(HttpSession& httpSes
 
 void VKURequestData::OnSend(RequestId inputRequestId) {
 	targetRequestId = inputRequestId;
+	VKUApi::GetInstance().SaveRequest(requestId, this);
 	listener->AddPendingRequest(requestId);
 }

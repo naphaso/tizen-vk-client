@@ -8,10 +8,14 @@
 #ifndef VKUREQUESTDATA_H_
 #define VKUREQUESTDATA_H_
 
-#include "FBase.h"
-#include "FNet.h"
-#include "FWebJson.h"
+#include <FBase.h>
+#include <FNet.h>
+#include <FWebJson.h>
+
+class VKURequestData;
+
 #include "IAPIRequestListener.h"
+#include "VKUApi.h"
 
 class VKURequestData : public Tizen::Base::Object, public Tizen::Net::Http::IHttpTransactionEventListener {
 public:

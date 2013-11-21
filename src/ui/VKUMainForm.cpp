@@ -2,6 +2,7 @@
 #include "AppResourceId.h"
 #include "SceneRegister.h"
 #include "VKUColors.h"
+#include "VKUContactsPanel.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::App;
@@ -56,15 +57,18 @@ void VKUMainForm::OnActionPerformed(const Tizen::Ui::Control& source,
 
 	switch (actionId) {
 	case ID_HEADER_MESSAGES:
+		ClearContacts();
 		pSceneManager->GoForward(ForwardSceneTransition(SCENE_MAIN_DIALOGS));
 		break;
 	case ID_HEADER_CONTACTS:
 		pSceneManager->GoForward(ForwardSceneTransition(SCENE_MAIN_CONTACTS));
 		break;
 	case ID_HEADER_SEARCH:
+		ClearContacts();
 		pSceneManager->GoForward(ForwardSceneTransition(SCENE_MAIN_SEARCH));
 		break;
 	case ID_HEADER_SETTINGS:
+		ClearContacts();
 		pSceneManager->GoForward(ForwardSceneTransition(SCENE_MAIN_SETTINGS));
 		break;
 	default:
@@ -92,4 +96,15 @@ void VKUMainForm::OnSceneDeactivated(
 		const Tizen::Ui::Scenes::SceneId& nextSceneId) {
 	// TODO: Add your implementation codes here
 
+}
+
+void VKUMainForm::ClearContacts() {
+	//Frame* frame = VKUApp::GetInstance()->GetFrame(FRAME_NAME);
+	//Form* form = frame->GetCurrentForm();
+	//if (form->GetName() == IDF_MAIN) {
+	VKUContactsPanel* contactsPanel = static_cast<VKUContactsPanel*>(GetControl(IDC_PANEL_CONTACTS));
+	if (contactsPanel != null) {
+		contactsPanel->ClearItems();
+	}
+	//}
 }

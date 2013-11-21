@@ -9,6 +9,7 @@
 #include "VKUJson.h"
 #include "VKUAuthConfig.h"
 #include "VKUConfig.h"
+#include "VKU.h"
 
 using namespace Tizen::App;
 using namespace Tizen::Base;
