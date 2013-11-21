@@ -46,6 +46,11 @@ result MessageTextElement::SetText(const String & text) {
 
 	r = pEnrichedText->GetTextExtent(0, text.GetLength(), textDim, textActualLen);
 	TryCatch(r == E_SUCCESS, , "Failed GetTextExtent");
+
+	if (pEnrichedText->GetTotalLineCount() > 1) {
+		textDim.width = GetSize().width;
+	}
+
 	width = GetSize().width < textDim.width ? GetSize().width : textDim.width;
 	AppLog("MessageTextElement Size: %d x %d", width, height);
 
