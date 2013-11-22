@@ -26,6 +26,8 @@ public:
 	virtual MessageElementType GetElementType() { return MESSAGE_TYPE_DOC; }
 	virtual result OnDraw(void);
 
+	Tizen::Base::String GetSizeString(int size);
+
 	// ITouchEventListener
 	virtual bool OnTouchPressed(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo);
 	virtual bool OnTouchReleased(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo);
