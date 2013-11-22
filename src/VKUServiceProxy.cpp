@@ -135,7 +135,7 @@ void VKUServiceProxy::OnMessageReceivedN(RemoteMessagePort* pRemoteMessagePort, 
 
 				// TODO: status processing
 				// current = user in current dialog?
-			} else if(event->CompareTo("audio-progress")) {
+			} else if(event->CompareTo("audio-progress") == 0) {
 				long duration, position;
 
 				Long::Parse(*static_cast<String *>(pMessage->GetValue(String(L"duration"))), duration);
@@ -150,6 +150,25 @@ void VKUServiceProxy::OnMessageReceivedN(RemoteMessagePort* pRemoteMessagePort, 
 
 
 	delete pMessage;
+}
+
+void VKUServiceProxy::PlayAudio(const String & url) {
+	result r = E_SUCCESS;
+	HashMap *pMap =	new HashMap(SingleObjectDeleter);
+	pMap->Construct();
+	pMap->Add(new String(L"request"), new String(L"audio-play"));
+	pMap->Add(new String(L"audio-url"), new String(url));
+	r = SendMessage(pMap);
+	delete pMap;
+}
+
+void VKUServiceProxy::PauseAudio() {
+	result r = E_SUCCESS;
+	HashMap *pMap =	new HashMap(SingleObjectDeleter);
+	pMap->Construct();
+	pMap->Add(new String(L"request"), new String(L"audio-pause"));
+	r = SendMessage(pMap);
+	delete pMap;
 }
 
 void VKUServiceProxy::SubscribeNotifications(int userId) {

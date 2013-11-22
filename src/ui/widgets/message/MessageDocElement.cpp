@@ -73,6 +73,8 @@ result MessageDocElement::Construct(const Tizen::Graphics::Rectangle & rect, Jso
 
 	SetSize(Dimension(rect.width, 90));
 
+	SetPropagatedTouchEventListener(this);
+
 	return r;
 }
 

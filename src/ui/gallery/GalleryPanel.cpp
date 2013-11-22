@@ -26,7 +26,7 @@ bool GalleryPanel::Initialize() {
 }
 
 void GalleryPanel::OnActionPerformed(const Control& source, int actionId) {
-	SceneManager* pSceneManager = SceneManager::GetInstance();
+//	SceneManager* pSceneManager = SceneManager::GetInstance();
 
 	switch(actionId) {
 

@@ -29,6 +29,9 @@ public:
 	void SubscribeNotifications(int userId);
 	void UnsubscribeNotifications(int userId);
 
+	void PlayAudio(const Tizen::Base::String & url);
+	void PauseAudio();
+
 	void SubscribeReadEvents(IReadEventListener *readEventListener);
 	void UnsubscribeReadEvents();
 
