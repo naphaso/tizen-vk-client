@@ -7,6 +7,7 @@
 
 #include "RoundedAvatar.h"
 #include "VKU.h"
+#include "SceneRegister.h"
 
 using namespace Tizen::Ui;
 using namespace Tizen::Base;
@@ -14,11 +15,12 @@ using namespace Tizen::App;
 using namespace Tizen::Graphics;
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Base::Collection;
-
+using namespace Tizen::Ui::Scenes;
 
 RoundedAvatar::RoundedAvatar(const AvatarType & type, const PlaceholderType & placeholderType) {
 	result r = E_SUCCESS;
 
+	_pUserJson = null;
 	pAvatar = null;
 	AppResource* pAppResource = VKUApp::GetInstance()->GetAppResource();
 	String bitmapName = L"thumbnail_list.png", placeholderBitmapName;
@@ -84,10 +86,47 @@ void RoundedAvatar::SetUrl(const Tizen::Base::String & str) {
 		VKUApp::GetInstance()->GetBitmapCache()->TakeBitmap(imageUrl, this);
 }
 
+void RoundedAvatar::SetUserJson(Tizen::Web::Json::JsonObject * json) {
+	_pUserJson = json->CloneN();
+
+	SetPropagatedTouchEventListener(this);
+}
+
+bool RoundedAvatar::OnTouchPressed(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo) {
+	pressAllowed = true;
+
+	return true;
+}
+
+bool RoundedAvatar::OnTouchReleased(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo) {
+	if (!pressAllowed)
+		return false;
+
+	SceneManager* pSceneManager = SceneManager::GetInstance();
+	AppAssert(pSceneManager);
+
+	ArrayList* pList = new (std::nothrow) ArrayList(SingleObjectDeleter);
+
+	pList->Construct(1);
+	pList->Add(_pUserJson->CloneN());
+
+	pSceneManager->GoForward(ForwardSceneTransition(SCENE_USER, SCENE_TRANSITION_ANIMATION_TYPE_LEFT, SCENE_HISTORY_OPTION_ADD_HISTORY), pList);
+
+	return true;
+}
+
+bool RoundedAvatar::OnTouchMoved(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo) {
+	pressAllowed = false;
+	return false;
+}
+
 RoundedAvatar::~RoundedAvatar() {
 	AppLog("rounded avatar destructor");
 	if (imageUrl.GetLength() != 0)
 		VKUApp::GetInstance()->GetBitmapCache()->ReleaseBitmap(imageUrl, this);
+
+	if (_pUserJson)
+		delete _pUserJson;
 }
 
 result RoundedAvatar::OnDraw(void) {

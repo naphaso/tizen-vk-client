@@ -223,6 +223,7 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 	} else { // THIS IS A DIALOG
 		RoundedAvatar *pRoundedAvatar = new RoundedAvatar(avType);
 		r = pRoundedAvatar->Construct(Rectangle(0, 0, 108, 108), avatarUrl);
+		pRoundedAvatar->SetUserJson(pUserInfoObject);
 		TryCatch(r == E_SUCCESS, , "Failed pRoundedAvatar->Construct");
 
 		pAvatar = static_cast<Panel *>(pRoundedAvatar);
