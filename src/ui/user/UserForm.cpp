@@ -20,6 +20,7 @@ using namespace Tizen::Base;
 using namespace Tizen::Web::Json;
 using namespace Tizen::Base::Collection;
 using namespace Tizen::Graphics;
+using namespace Tizen::App;
 
 static const int ACTION_ID_WRITE = 321;
 static const int ACTION_ID_CALL = 322;
@@ -273,10 +274,6 @@ void UserForm::EnableAction(Tizen::Web::Json::JsonObject * jsonObject) {
 		item1.SetText(str);
 		GetFooter()->AddItem(item1);
 
-//		FooterItem item2;
-//		item2.Construct(ACTION_ID_DELETE);
-//		item2.SetText(L"Decline request");
-//		GetFooter()->AddItem(item2);
 
 		GetFooter()->SetShowState(true);
 	}	break;
@@ -326,5 +323,15 @@ void UserForm::OpenDialog() {
 }
 
 void UserForm::MakeCall() {
+	String userPhone;
+	JsonParseUtils::GetString(*_pUserJson, L"mobile_phone", userPhone);
 
+	String uri = L"tel:" + userPhone;
+
+	AppControl* pAc = AppManager::FindAppControlN(L"tizen.phone",
+	                                                 L"http://tizen.org/appcontrol/operation/dial");
+	if (pAc) {
+		pAc->Start(&uri, null, null, null);
+		delete pAc;
+	}
 }
