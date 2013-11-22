@@ -21,9 +21,10 @@ PullToRefreshTrait::~PullToRefreshTrait() {
 	// TODO Auto-generated destructor stub
 }
 
-result PullToRefreshTrait::Construct(TableView *tableView, Control *progressControl, IRefreshable *refreshable) {
+result PullToRefreshTrait::Construct(TableView *tableView, Control *progressControl, IRefreshable *refreshable, PullToRefreshDirection direction) {
 	result r = E_SUCCESS;
 
+	_direction = direction;
 	_tableView = tableView;
 	_progressControl = progressControl;
 	_refreshable = refreshable;
@@ -34,16 +35,25 @@ result PullToRefreshTrait::Construct(TableView *tableView, Control *progressCont
 // IPropagatedTouchEventListener
 bool PullToRefreshTrait::OnPreviewTouchPressed(Control& source, const TouchEventInfo& touchEventInfo) {
 	_touchDownPoint = touchEventInfo.GetCurrentPosition();
-	_captured = _tableView->GetCurrentScrollPosition() == 0;
+	if(_direction == PULL_TO_REFRESH_DIRECTION_TOP) {
+		_captured = _tableView->GetCurrentScrollPosition() == 0;
+	} else {
+		_captured = _tableView->GetBottomDrawnItemIndex() == (_tableView->GetItemCount() - 1);
+	}
 	return false;
 }
 
 bool PullToRefreshTrait::OnPreviewTouchReleased(Control& source, const TouchEventInfo& touchEventInfo) {
 	if(_captured) {
-		if((touchEventInfo.GetCurrentPosition() - _touchDownPoint).y > PULL_TO_REFRESH_OFFSET_LIMIT) {
-			_refreshable->OnRefresh();
+		if(_direction == PULL_TO_REFRESH_DIRECTION_TOP) {
+			if((touchEventInfo.GetCurrentPosition() - _touchDownPoint).y > PULL_TO_REFRESH_OFFSET_LIMIT) {
+				_refreshable->OnRefresh();
+			}
+		} else {
+			if((touchEventInfo.GetCurrentPosition() - _touchDownPoint).y < -PULL_TO_REFRESH_OFFSET_LIMIT) {
+				_refreshable->OnRefresh();
+			}
 		}
-
 		_progressControl->RequestRedraw(true);
 	}
 
@@ -52,7 +62,11 @@ bool PullToRefreshTrait::OnPreviewTouchReleased(Control& source, const TouchEven
 
 bool PullToRefreshTrait::OnPreviewTouchMoved(Control& source, const TouchEventInfo& touchEventInfo) {
 	if(_captured) {
-		int offset = (touchEventInfo.GetCurrentPosition() - _touchDownPoint).y; // > PULL_TO_REFRESH_OFFSET_LIMIT) {
+		int offset;
+		if(_direction == PULL_TO_REFRESH_DIRECTION_TOP)
+			offset = (touchEventInfo.GetCurrentPosition() - _touchDownPoint).y;
+		else
+			offset = -(touchEventInfo.GetCurrentPosition() - _touchDownPoint).y;
 		float progress = (float)offset / (float)PULL_TO_REFRESH_OFFSET_LIMIT;
 		if(progress > 1.0f) {
 			progress = 1.0f;

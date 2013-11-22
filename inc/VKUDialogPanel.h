@@ -8,13 +8,15 @@
 #include "VKUMessagesListItemProvider.h"
 #include "MessageSentListener.h"
 #include "Requests.h"
+#include "PullToRefreshTrait.h"
 
 class VKUDialogPanel :
 	public Tizen::Ui::Controls::Panel,
 	public Tizen::Ui::IKeypadEventListener,
 	public Tizen::Ui::ITextEventListener,
 	public Tizen::Base::Runtime::ITimerEventListener,
-	public IAPIRequestListener
+	public IAPIRequestListener,
+	public IRefreshable
 {
 
 // Construction
@@ -54,6 +56,9 @@ public:
 	void SetDialogData(Tizen::Web::Json::JsonArray *dialogData);
 
 	void OnTyping();
+
+	// IRefreshable
+	virtual void OnRefresh();
 // Implementation
 protected:
 
@@ -73,6 +78,8 @@ private:
 	long long _lastTypingTime;
 	int _peerId;
 	int online;
+
+	PullToRefreshTrait _pullToRefresh;
 };
 
 #endif

@@ -30,6 +30,8 @@ VKURequestBuilder::VKURequestBuilder(VKUApi *api, String method, IAPIRequestList
 	r = GetLastResult();
 	TryCatch(pTransaction != null, , "Failed to open the HttpTransaction.");
 
+	pTransaction->SetTimeout(10);
+
 	requestData = new VKURequestData(pTransaction, listener);
 
 	r = pTransaction->AddHttpTransactionListener(*requestData);

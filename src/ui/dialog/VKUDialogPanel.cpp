@@ -59,6 +59,9 @@ result VKUDialogPanel::OnInitializing(void) {
 
 	typingTimer.Construct(*this);
 
+	_pullToRefresh.Construct(_messagesTableView, _editField, this, PULL_TO_REFRESH_DIRECTION_BOTTOM);
+	SetPropagatedTouchEventListener(&_pullToRefresh);
+
 	AppLog("End VKUDialogPanel::OnInitializing");
 
 	return r;
@@ -273,5 +276,9 @@ void VKUDialogPanel::OnTyping() {
 
 	typingTimer.Cancel();
 	typingTimer.Start(10000);
+}
+
+void VKUDialogPanel::OnRefresh() {
+	AppLog("pull to refresh messages");
 }
 

@@ -17,12 +17,17 @@ class PullToRefreshTrait;
 
 #define PULL_TO_REFRESH_OFFSET_LIMIT 400
 
+typedef enum {
+	PULL_TO_REFRESH_DIRECTION_TOP,
+	PULL_TO_REFRESH_DIRECTION_BOTTOM
+} PullToRefreshDirection;
+
 class PullToRefreshTrait : public Tizen::Ui::IPropagatedTouchEventListener {
 public:
 	PullToRefreshTrait();
 	virtual ~PullToRefreshTrait();
 
-	result Construct(Tizen::Ui::Controls::TableView *tableView, Tizen::Ui::Control *progressControl, IRefreshable *refreshable);
+	result Construct(Tizen::Ui::Controls::TableView *tableView, Tizen::Ui::Control *progressControl, IRefreshable *refreshable, PullToRefreshDirection direction);
 
 	// IPropagatedTouchEventListener
 	virtual bool OnTouchPressed(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo) { return false; }
@@ -34,7 +39,7 @@ public:
 	virtual bool OnPreviewTouchMoved(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo);
 
 private:
-
+	PullToRefreshDirection _direction;
 	Tizen::Graphics::Point _touchDownPoint;
 	bool _captured;
 

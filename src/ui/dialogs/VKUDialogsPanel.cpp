@@ -56,7 +56,7 @@ result VKUDialogsPanel::OnInitializing(void) {
 
 	pProvider->LoadData();
 
-	_pullToRefresh.Construct(pDialogTableView, _searchBar, this);
+	_pullToRefresh.Construct(pDialogTableView, _searchBar, this, PULL_TO_REFRESH_DIRECTION_TOP);
 	SetPropagatedTouchEventListener(&_pullToRefresh);
 
 	return r;
