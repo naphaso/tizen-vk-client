@@ -20,6 +20,7 @@
 #include "MessageAudioElement.h"
 #include "MessageDocElement.h"
 #include "MessageForwardedElement.h"
+#include "MessageLocationElement.h"
 
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Scenes;
@@ -331,8 +332,18 @@ ArrayList * VKUMessagesListItemProvider::GetMessageElementsN(const JsonObject *p
 	pResultArray = new ArrayList(SingleObjectDeleter);
 	r = pResultArray->Construct(1);
 	TryCatch(r == E_SUCCESS, , "pResultArray->Construct");
-
 	JsonParseUtils::GetInteger(*pMessageJson, L"out", out);
+
+	JsonObject * geoObject;
+	r = JsonParseUtils::GetObject(pMessageJson, L"geo", geoObject);
+
+	if (r == E_SUCCESS) {
+		AppLog("Message has geo entry, receiving");
+		MessageLocationElement * pLocationElement = new MessageLocationElement();
+		pLocationElement->Construct(Rectangle(0, 0, 400, 400), geoObject);
+
+		pResultArray->Add(pLocationElement);
+	}
 
 	r = JsonParseUtils::GetString(*pMessageJson, L"body", messageText);
 	TryCatch(r == E_SUCCESS, , "JsonParseUtils::GetString body");

@@ -74,7 +74,6 @@ result LoginPanel::OnTerminating(void) {
 	return r;
 }
 
-
 void LoginPanel::OnLoginSuccess(const String &accessToken, const String &expiresIn, const String &userId) {
 	AppLog("login success: authToken %ls, expiresIn %ls, userId %ls", accessToken.GetPointer(), expiresIn.GetPointer(), userId.GetPointer());
 	VKUAuthConfig::Replace(accessToken, expiresIn, userId);
