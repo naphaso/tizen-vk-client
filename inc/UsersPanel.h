@@ -84,7 +84,6 @@ private:
 	Tizen::Ui::Controls::SearchBar * _pSearchBar;
 	Tizen::Ui::Controls::GroupedTableView * _pTableView;
 
-	void InitModels();
 	void BuildIndexForUser(Tizen::Web::Json::JsonArray * array);
 
 	GroupedUsers * _pCurrentModel;

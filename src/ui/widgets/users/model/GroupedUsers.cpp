@@ -13,11 +13,14 @@ using namespace Tizen::Web::Json;
 
 GroupedUsers::GroupedUsers() {
 	_pUserGroups = null;
+	_filteredGroups = null;
 }
 
 GroupedUsers::~GroupedUsers() {
 	if (_pUserGroups)
 		delete _pUserGroups;
+	if(_filteredGroups)
+		delete _filteredGroups;
 }
 
 result GroupedUsers::Construct() {
@@ -32,46 +35,57 @@ result GroupedUsers::Construct() {
 
 // group operations
 int GroupedUsers::GetGroupCount() {
-	if (_pUserGroups == null)
+	ArrayList *targetGroups = _filteredGroups != null ? _filteredGroups : _pUserGroups;
+
+	if (targetGroups == null)
 		return 0;
 
-	return _pUserGroups->GetCount();
+	return targetGroups->GetCount();
 }
 
 Tizen::Base::String GroupedUsers::GetGroupName(int index) {
-	if (_pUserGroups == null)
+	ArrayList *targetGroups = _filteredGroups != null ? _filteredGroups : _pUserGroups;
+
+	if (targetGroups == null)
 		return L"";
 
-	UserGroup * pGroup = dynamic_cast<UserGroup *>(_pUserGroups->GetAt(index));
+	UserGroup * pGroup = dynamic_cast<UserGroup *>(targetGroups->GetAt(index));
 	return pGroup->GetGroupName();
 }
 
 // user operations
 result GroupedUsers::GetUserFromGroup(int group, int index, JsonObject *& obj) {
-	if (_pUserGroups == null)
+	ArrayList *targetGroups = _filteredGroups != null ? _filteredGroups : _pUserGroups;
+
+	if (targetGroups == null)
 		return null;
 
-	UserGroup * pGroup = dynamic_cast<UserGroup *>(_pUserGroups->GetAt(group));
+	UserGroup * pGroup = dynamic_cast<UserGroup *>(targetGroups->GetAt(group));
 
 	return pGroup->GetUserAt(index, obj);
 }
 
 int GroupedUsers::GetUserCountInGroup(int group) {
-	if (_pUserGroups == null)
+	ArrayList *targetGroups = _filteredGroups != null ? _filteredGroups : _pUserGroups;
+
+	if (targetGroups == null)
 		return 0;
 
-	UserGroup * pGroup = dynamic_cast<UserGroup *>(_pUserGroups->GetAt(group));
+	UserGroup * pGroup = dynamic_cast<UserGroup *>(targetGroups->GetAt(group));
 
 	return pGroup->GetUserCount();
 }
 
 int GroupedUsers::GetUserCount() {
-	if (_pUserGroups == null)
+	ArrayList *targetGroups = _filteredGroups != null ? _filteredGroups : _pUserGroups;
+
+
+	if (targetGroups == null)
 		return 0;
 
 	int sum = 0;
-	for (int i=0; i < _pUserGroups->GetCount(); i++) {
-		UserGroup * pGroup = dynamic_cast<UserGroup *>(_pUserGroups->GetAt(i));
+	for (int i=0; i < targetGroups->GetCount(); i++) {
+		UserGroup * pGroup = dynamic_cast<UserGroup *>(targetGroups->GetAt(i));
 		sum += pGroup->GetUserCount();
 	}
 
@@ -106,4 +120,27 @@ result GroupedUsers::AddUserGroup(const Tizen::Base::String & name, Tizen::Web::
 
 	r = _pUserGroups->Add(new UserGroup(userGroup));
 	return r;
+}
+
+void GroupedUsers::SetFilter(const String &filter) {
+	ResetFilter();
+
+	_filteredGroups = new ArrayList();
+	_filteredGroups->Construct();
+
+	for (int i=0; i < _pUserGroups->GetCount(); i++) {
+		UserGroup *group = dynamic_cast<UserGroup *>(_pUserGroups->GetAt(i));
+		UserGroup *filteredGroup = group->MatchFilter(filter);
+		if(filteredGroup != null) {
+			_filteredGroups->Add(filteredGroup);
+		}
+	}
+
+}
+
+void GroupedUsers::ResetFilter() {
+	if(_filteredGroups != null) {
+		delete _filteredGroups;
+		_filteredGroups = null;
+	}
 }

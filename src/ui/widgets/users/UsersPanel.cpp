@@ -48,7 +48,7 @@ result UsersPanel::Construct(const Tizen::Graphics::Rectangle & rect) {
 	_pSearchBar = new SearchBar();
 	_pSearchBar->Construct(Rectangle(0, 0, rect.width, 90));
 	TryCatch(r == E_SUCCESS, , "Failed _pIUserSelectedListeners->Construct");
-	_pSearchBar->SetText(L"Search contacts");
+	_pSearchBar->SetGuideText(L"Search friends");
 	_pSearchBar->AddSearchBarEventListener(*this);
 	_pSearchBar->AddTextEventListener(*this);
 
@@ -73,7 +73,7 @@ result UsersPanel::Construct(const Tizen::Graphics::Rectangle & rect) {
 	layout.SetVerticalFitPolicy(*_pTableView, FIT_POLICY_PARENT);
 	layout.SetHorizontalFitPolicy(*_pTableView, FIT_POLICY_PARENT);
 
-	InitModels();
+	_pCurrentModel = null;
 
 	return r;
 CATCH:
@@ -87,15 +87,6 @@ UsersPanel::~UsersPanel() {
 
 	if (_pLetterNav)
 		delete _pLetterNav;
-}
-
-void UsersPanel::InitModels() {
-//	_pCurrentModel = new GroupedUsers();
-//	_pCurrentModel->Construct();
-	_pCurrentModel = null;
-//	_pModelsMap = new HashMap();
-//	_pModelsMap->Construct(10);
-//	_pModelsMap->Add(new String(MODEL_EMPTY), new GroupedUsers(*_pCurrentModel));
 }
 
 void UsersPanel::AddUserSelectedListener(IUserSelectedListener * pListener) {
@@ -125,17 +116,33 @@ void UsersPanel::OnFastScrollIndexSelected(Tizen::Ui::Control& source, Tizen::Ba
 
 // SEARCH 1
 void UsersPanel::OnSearchBarModeChanged(Tizen::Ui::Controls::SearchBar& source, SearchBarMode mode) {
+	if(mode == SEARCH_BAR_MODE_NORMAL) {
+		_pCurrentModel->ResetFilter();
 
+		_pTableView->UpdateTableView();
+		_pTableView->RequestRedraw(true);
+	}
 }
 
 // SEARCH 2
 void UsersPanel::OnTextValueChanged(const Tizen::Ui::Control& source) {
+	String filter(static_cast<const SearchBar*>(&source)->GetText());
+	if(!filter.IsEmpty()) {
+		_pCurrentModel->SetFilter(filter);
+	} else {
+		_pCurrentModel->ResetFilter();
+	}
 
+	_pTableView->UpdateTableView();
+	_pTableView->RequestRedraw(true);
 }
 
 // SEARCH 3
 void UsersPanel::OnTextValueChangeCanceled(const Tizen::Ui::Control& source) {
+	_pCurrentModel->ResetFilter();
 
+	_pTableView->UpdateTableView();
+	_pTableView->RequestRedraw(true);
 }
 
 
@@ -230,6 +237,7 @@ void UsersPanel::UpdateGroupItem(int groupIndex, TableViewGroupItem* pItem) {
 }
 
 void UsersPanel::BuildIndexForUser(JsonArray * friends) {
+	/*
 	String letter, prevLetter = L"";
 	int currentGroup = 0;
 
@@ -263,7 +271,45 @@ void UsersPanel::BuildIndexForUser(JsonArray * friends) {
 			array->Add(user);
 		}
 
+	}*/
+
+	HashMap *letterMap = new HashMap();
+	letterMap->Construct();
+
+	for(int i = 0; i < friends->GetCount(); i++) {
+		JsonObject *user;
+		JsonParseUtils::GetObject(friends, i, user);
+
+		String name;
+		JsonParseUtils::GetString(*user, L"first_name", name);
+
+		String letter;
+		name.SubString(0, 1, letter);
+
+		JsonArray *letterArray;
+		if(!letterMap->ContainsKey(letter)) {
+			letterArray = new JsonArray();
+			letterArray->Construct();
+			letterMap->Add(new String(letter), letterArray);
+		} else {
+			letterArray = static_cast<JsonArray*>(letterMap->GetValue(letter));
+		}
+
+		letterArray->Add(user);
 	}
+
+	IList *letterList = letterMap->GetKeysN();
+	StringComparer comparer;
+	letterList->Sort(comparer);
+	for(int i = 0; i < letterList->GetCount(); i++) {
+		String *letter = static_cast<String *>(letterList->GetAt(i));
+		_fastScrollIndex.Append(*letter);
+		_pCurrentModel->AddUserGroup(*letter, static_cast<JsonArray *>(letterMap->GetValue(*letter)));
+		_pLetterNav->Add(new String(*letter), new Integer(i));
+	}
+
+	delete letterList;
+	delete letterMap;
 }
 
 TableViewItem* UsersPanel::CreateItem(int groupIndex, int itemIndex, int itemWidth) {

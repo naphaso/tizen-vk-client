@@ -25,6 +25,8 @@ public:
 	Tizen::Base::String GetGroupName();
 	result GetUserAt(int index, Tizen::Web::Json::JsonObject *& json);
 	int GetUserCount();
+
+	UserGroup *MatchFilter(const Tizen::Base::String &filter);
 private:
 	Tizen::Base::String * _pGroupName;
 	Tizen::Web::Json::JsonArray *_pUserList;
