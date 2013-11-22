@@ -8,11 +8,12 @@
 #include "ContactsTableProvider.h"
 #include "VKUAuthConfig.h"
 #include "Requests.h"
-
+#include "IUserSelectedListener.h"
 
 class VKUContactsPanel:
 	public Tizen::Ui::Controls::Panel,
-	public Tizen::Ui::Scenes::ISceneEventListener {
+	public Tizen::Ui::Scenes::ISceneEventListener,
+	public IUserSelectedListener {
 
 // Construction
 public:
@@ -26,6 +27,9 @@ public:
 								   const Tizen::Ui::Scenes::SceneId& currentSceneId, Tizen::Base::Collection::IList* pArgs);
 	virtual void OnSceneDeactivated(const Tizen::Ui::Scenes::SceneId& currentSceneId,
 									const Tizen::Ui::Scenes::SceneId& nextSceneId);
+
+	// IUserSelectedListener
+	virtual void OnUserSelected(const Tizen::Web::Json::JsonObject * userJson);
 
 protected:
 

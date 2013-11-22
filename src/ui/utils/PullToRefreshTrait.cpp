@@ -70,7 +70,7 @@ bool PullToRefreshTrait::OnPreviewTouchMoved(Control& source, const TouchEventIn
 		progressRectangle.x += undoneSize / 2;
 
 		canvas->SetCompositeMode(COMPOSITE_MODE_OVERLAY);
-		canvas->FillRectangle(Color(0, 0, 255), progressRectangle);
+		canvas->FillRectangle(Color(0x569cdd, false), progressRectangle);
 		delete canvas;
 
 	}

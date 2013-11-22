@@ -59,6 +59,7 @@ result UsersPanel::Construct(const Tizen::Graphics::Rectangle & rect) {
 	TryCatch(r == E_SUCCESS, , "Failed _pTableView->SetFastScrollIndex");
 	_pTableView->SetItemProvider(this);
 	_pTableView->AddFastScrollListener(*this);
+	_pTableView->AddGroupedTableViewItemEventListener(*this);
 
 	r = AddControl(_pSearchBar);
 	TryCatch(r == E_SUCCESS, , "Failed AddControl _pSearchBar");
@@ -141,7 +142,7 @@ void UsersPanel::OnTextValueChangeCanceled(const Tizen::Ui::Control& source) {
 void UsersPanel::RequestModel(UserModelType model) {
 	if (model == MODEL_TYPE_FRIENDS_ALPHA) {
 		VKUApi::GetInstance().CreateRequest("friends.get", this)
-			->Put(L"fields", L"photo_100,online,has_mobile")
+			->Put(L"fields", L"photo_100,photo_200,online,has_mobile,contacts")
 			->Put(L"order", L"name")
 			->Submit(REQUEST_FRIENDS_ALPHA);
 	}
@@ -371,6 +372,7 @@ void UsersPanel::OnGroupedTableViewContextItemActivationStateChanged(Tizen::Ui::
 }
 
 void UsersPanel::NotifyUserSelectedListeners(const JsonObject * user) {
+	AppLog("UsersPanel::NotifyUserSelectedListeners");
 	for (int i=0; i < _pIUserSelectedListeners->GetCount(); i++) {
 		IUserSelectedListener * item = dynamic_cast<IUserSelectedListener *>(_pIUserSelectedListeners->GetAt(i));
 		item->OnUserSelected(user);

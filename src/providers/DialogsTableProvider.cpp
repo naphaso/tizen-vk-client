@@ -576,12 +576,6 @@ void DialogsTableProvider::OpenDialog(int index) {
 	JsonObject *itemObject;
 	JsonParseUtils::GetObject(dialogsJson, index, itemObject);
 
-//	static const String userJsonConst(L"user_json");
-//	IJsonValue *userJsonValue;
-//	itemObject->GetValue(&userJsonConst, userJsonValue);
-
-//	JsonObject *userJsonObject = static_cast<JsonObject *>(userJsonValue);
-
 	ArrayList* pList = new (std::nothrow) ArrayList(SingleObjectDeleter);
 
 	pList->Construct(1);

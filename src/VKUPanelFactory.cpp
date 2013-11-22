@@ -9,6 +9,7 @@
 #include "LoginPanel.h"
 #include "GalleryPanel.h"
 #include "VideoviewPanel.h"
+#include "UserPanel.h"
 
 using namespace Tizen::Ui::Scenes;
 
@@ -59,6 +60,10 @@ VKUPanelFactory::CreatePanelN(const Tizen::Base::String& panelId,
 		pNewPanel = pPanel;
 	} else if (panelId == IDC_PANEL_VIDEO) {
 		VideoviewPanel* pPanel = new VideoviewPanel();
+		pPanel->Initialize();
+		pNewPanel = pPanel;
+	} else if (panelId == IDC_PANEL_USER) {
+		UserPanel* pPanel = new UserPanel();
 		pPanel->Initialize();
 		pNewPanel = pPanel;
 	}

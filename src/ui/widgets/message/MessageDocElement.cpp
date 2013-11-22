@@ -49,7 +49,7 @@ result MessageDocElement::Construct(const Tizen::Graphics::Rectangle & rect, Jso
 	r = AddControl(_pIcon);
 
 	Label *docLabel = new Label();
-	docLabel->Construct(Rectangle(0, 0, 72, 72), docName);
+	docLabel->Construct(Rectangle(0, 0, rect.width-72, 72), docName);
 	docLabel->SetMargin(0, 0);
 	docLabel->SetTextHorizontalAlignment(ALIGNMENT_LEFT);
 

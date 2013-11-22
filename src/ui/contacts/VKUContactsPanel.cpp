@@ -2,10 +2,14 @@
 #include "VKUContactsPanel.h"
 #include "VKUApi.h"
 #include "UsersPanel.h"
+#include "SceneRegister.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
+using namespace Tizen::Ui::Scenes;
+using namespace Tizen::Base::Collection;
+using namespace Tizen::Web::Json;
 
 VKUContactsPanel::VKUContactsPanel(void) {
 //	pProvider = new ContactsTableProvider();
@@ -26,21 +30,17 @@ result VKUContactsPanel::OnInitializing(void) {
 
 	Integer userIdInt = Integer(VKUAuthConfig::GetUserId());
 
-//	GroupedTableView* pTable = static_cast<GroupedTableView*>(GetControl(IDC_GROUPEDTABLEVIEW1));
-//	pTable->SetItemProvider(pProvider);
-
-//	pContactsRetrieveListener = new ContactsRetrieveListener(pTable, pProvider);
-
 	UsersPanel *pUsersPanel = new UsersPanel();
 	pUsersPanel->Construct(GetBounds());
 	r = AddControl(pUsersPanel);
+	pUsersPanel->AddUserSelectedListener(this);
+
+	Form * form = dynamic_cast<Form *>(GetParent());
+	RelativeLayout * layout = dynamic_cast<RelativeLayout *>(form->GetLayoutN());
+	layout->SetVerticalFitPolicy(*this, FIT_POLICY_PARENT);
 
 	pUsersPanel->RequestModel(MODEL_TYPE_FRIENDS_ALPHA);
 
-//	VKUApi::GetInstance().CreateRequest("friends.get", pContactsRetrieveListener)
-//			->Put(L"user_id", userIdInt.ToString())
-//			->Put(L"fields", L"photo_100")
-//			->Submit(REQUEST_GET_CONTACTS);
 	return r;
 }
 
@@ -65,5 +65,18 @@ void VKUContactsPanel::OnSceneActivatedN(const Tizen::Ui::Scenes::SceneId& previ
 
 void VKUContactsPanel::OnSceneDeactivated(const Tizen::Ui::Scenes::SceneId& currentSceneId,
 								const Tizen::Ui::Scenes::SceneId& nextSceneId) {
+
+}
+
+void VKUContactsPanel::OnUserSelected(const Tizen::Web::Json::JsonObject * userJson) {
+	SceneManager* pSceneManager = SceneManager::GetInstance();
+	AppAssert(pSceneManager);
+
+	ArrayList* pList = new (std::nothrow) ArrayList(SingleObjectDeleter);
+
+	pList->Construct(1);
+	pList->Add(userJson->CloneN());
+
+	pSceneManager->GoForward(ForwardSceneTransition(SCENE_USER, SCENE_TRANSITION_ANIMATION_TYPE_LEFT, SCENE_HISTORY_OPTION_ADD_HISTORY), pList);
 
 }
