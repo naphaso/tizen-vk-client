@@ -278,9 +278,9 @@ void VKUMessagesListItemProvider::UpdateItem(int itemIndex, TableViewItem* pItem
 	SetLastResult(r);
 	return;
 
-CATCH:
-	AppLogException("$${Function:UpdateItem} is failed.", GetErrorMessage(r));
-	SetLastResult(r);
+//CATCH:
+//	AppLogException("$${Function:UpdateItem} is failed.", GetErrorMessage(r));
+//	SetLastResult(r);
 }
 
 int VKUMessagesListItemProvider::GetDefaultItemHeight() {
@@ -420,8 +420,14 @@ ArrayList * VKUMessagesListItemProvider::GetMessageElementsN(const JsonObject *p
 
 		} else if (attachType == L"audio") {
 			AppLog("Message has audio, receiving");
-			pMessageElement = new MessageAudioElement();
-			pMessageElement->Construct(Rectangle(0, 0, 320, 240));
+
+			JsonObject *pAudioObject;
+			JsonParseUtils::GetObject(pAttachObject, L"audio", pAudioObject);
+
+			MessageAudioElement *pMessageAudioEleemnt = new MessageAudioElement();
+			pMessageAudioEleemnt->Construct(Rectangle(0, 0, 520, 240), pAudioObject);
+
+			pMessageElement = dynamic_cast<MessageElement *>(pMessageAudioEleemnt);
 
 		} else if (attachType == L"doc") {
 			AppLog("Message has doc, receiving");
@@ -430,7 +436,7 @@ ArrayList * VKUMessagesListItemProvider::GetMessageElementsN(const JsonObject *p
 			JsonParseUtils::GetObject(pAttachObject, L"doc", pDocObject);
 
 			MessageDocElement * pDocElement = new MessageDocElement();
-			pDocElement->Construct(Rectangle(0, 0, 500, 90), pDocObject, out);
+			pDocElement->Construct(Rectangle(0, 0, 520, 90), pDocObject, out);
 
 			pMessageElement = static_cast<MessageElement * >(pDocElement);
 		} else if (attachType == L"wall") {
