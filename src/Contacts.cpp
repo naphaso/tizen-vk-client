@@ -17,12 +17,11 @@ using namespace Tizen::Io;
 using namespace Tizen::Web::Json;
 
 Contacts::Contacts() {
-	// TODO Auto-generated constructor stub
 
 }
 
 Contacts::~Contacts() {
-	// TODO Auto-generated destructor stub
+
 }
 
 result Contacts::Sync() {
@@ -39,9 +38,7 @@ result Contacts::Sync() {
 		WriteConfig();
 	}
 
-	//addressbookManager->AddContact(null, addressbookId);
 	VKUApi::GetInstance().CreateRequest("friends.get", this)->Put(L"fields", L"contacts,photo_100")->Submit(REQUEST_SYNC_CONTACTS);
-
 
 	return r;
 	CATCH:
@@ -112,10 +109,6 @@ void Contacts::OnResponseN(JsonObject *response) {
 	AddressbookManager *addressbookManager = AddressbookManager::GetInstance();
 	IList *contacts = addressbookManager->GetAllContactsN();
 
-	ByteBuffer out;
-	out.Construct(10000);
-	JsonWriter::ComposeUnescapeUnicode(response, out);
-	AppLog("contacts response: %s", out.GetPointer());
 
 	r = JsonParseUtils::GetObject(response, L"response", data);
 	TryCatch(r == E_SUCCESS, , "failed to get response from response");
@@ -132,6 +125,7 @@ void Contacts::OnResponseN(JsonObject *response) {
 		String photoUrl;
 		String pageUrl(L"http://vk.com/id");
 		String thumbPath;
+		String mobilePhone;
 		ContactAppLaunchData appLaunchData;
 
 		r = JsonParseUtils::GetObject(friends, i, someFriend);
@@ -146,6 +140,7 @@ void Contacts::OnResponseN(JsonObject *response) {
 		r = JsonParseUtils::GetString(*someFriend, L"photo_100", photoUrl);
 		TryCatch(r == E_SUCCESS, , "failed to get photo url from friend");
 
+		r = JsonParseUtils::GetString(*someFriend, L"mobile_phone", mobilePhone);
 		//r = JsonParseUtils::GetString(someFriend, L"mobile_phone", mobilePhone);
 		//TryCatch(r == E_SUCCESS, , "failed to get friend from response");
 		r = JsonParseUtils::GetInteger(*someFriend, L"id", id);
@@ -169,6 +164,9 @@ void Contacts::OnResponseN(JsonObject *response) {
 			appLaunchData.SetUri(pageUrl);
 			contact->AddContactAppLaunchData(appLaunchData);
 
+			PhoneNumber phoneNumber(PHONENUMBER_TYPE_MOBILE, mobilePhone);
+			contact->AddPhoneNumber(phoneNumber);
+
 			thumbPath = CacheFileFromUrl(photoUrl);
 			if(File::IsFileExist(thumbPath)) {
 				contact->SetThumbnail(thumbPath);
@@ -185,6 +183,9 @@ void Contacts::OnResponseN(JsonObject *response) {
 			if(File::IsFileExist(thumbPath)) {
 				contact->SetThumbnail(thumbPath);
 			}
+
+			PhoneNumber phoneNumber(PHONENUMBER_TYPE_MOBILE, mobilePhone);
+			contact->SetPhoneNumberAt(0, phoneNumber);
 
 			r = addressbookManager->UpdateContact(*contact);
 			TryCatch(r == E_SUCCESS, , "failed to update contact in addressbook");
