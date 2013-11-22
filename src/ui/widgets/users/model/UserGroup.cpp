@@ -6,6 +6,7 @@
  */
 
 #include "UserGroup.h"
+#include "JsonParseUtils.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Base::Collection;
@@ -82,4 +83,33 @@ int UserGroup::GetUserCount() {
 		return 0;
 
 	return _pUserList->GetCount();
+}
+
+UserGroup *UserGroup::MatchFilter(const String &filter) {
+	UserGroup *filteredGroup = null;
+	String filterLowerCase;
+	filter.ToLowerCase(filterLowerCase);
+
+	for(int i = 0; i < _pUserList->GetCount(); i++) {
+		JsonObject *user;
+		String firstName;
+		String lastName;
+		String fullName;
+
+		JsonParseUtils::GetObject(_pUserList, i, user);
+		JsonParseUtils::GetString(*user, L"first_name", firstName);
+		JsonParseUtils::GetString(*user, L"last_name", lastName);
+		(firstName + L" " + lastName).ToLowerCase(fullName);
+
+		if(fullName.Contains(filterLowerCase)) {
+			if(filteredGroup == null) {
+				filteredGroup = new UserGroup();
+				filteredGroup->Construct(*_pGroupName);
+			}
+
+			filteredGroup->_pUserList->Add(user);
+		}
+	}
+
+	return filteredGroup;
 }

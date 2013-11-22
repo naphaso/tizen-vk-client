@@ -31,8 +31,12 @@ public:
 
 	result AddUserGroup(UserGroup & userGroup);
 	result AddUserGroup(const Tizen::Base::String & name, Tizen::Web::Json::JsonArray * jsonArray);
+
+	void SetFilter(const Tizen::Base::String &filter);
+	void ResetFilter();
 private:
 	Tizen::Base::Collection::ArrayList * _pUserGroups;
+	Tizen::Base::Collection::ArrayList * _filteredGroups;
 };
 
 #endif /* GROUPEDUSERS_H_ */
