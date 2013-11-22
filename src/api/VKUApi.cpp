@@ -48,6 +48,7 @@ HttpSession* VKUApi::GetHttpSession() {
 			goto CATCH;
 		}
 
+
 		r = httpSession->SetAutoRedirectionEnabled(true);
 		TryCatch(r == E_SUCCESS, , "Failed to set the redirection automatically.");
 	}

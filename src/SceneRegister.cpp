@@ -21,6 +21,7 @@ const wchar_t* SCENE_MAIN_SEARCH = L"VKUMainSearch";
 const wchar_t* SCENE_MAIN_SETTINGS = L"VKUMainSettings";
 const wchar_t* SCENE_GALLERY = L"VKUMainGallery";
 const wchar_t* SCENE_VIDEOVIEW = L"VKUVideoView";
+const wchar_t* SCENE_USER = L"VKUSceneUser";
 
 SceneRegister::SceneRegister() {
 	// TODO Auto-generated constructor stub
@@ -44,4 +45,5 @@ void SceneRegister::RegisterAllScenes() {
 	pSceneManager->RegisterScene(SCENE_MAIN_SETTINGS, IDF_MAIN, IDC_PANEL_SETTINGS);
 	pSceneManager->RegisterScene(SCENE_GALLERY, IDF_IMAGEVIEW, IDC_GALLERY);
 	pSceneManager->RegisterScene(SCENE_VIDEOVIEW, IDF_VIDEOVIEW, IDC_PANEL_VIDEO);
+	pSceneManager->RegisterScene(SCENE_USER, IDF_USER, IDC_PANEL_USER);
 }

@@ -25,11 +25,11 @@ bool GalleryPanel::Initialize() {
 	return r == E_SUCCESS ? true : false;
 }
 
-//void GalleryPanel::OnActionPerformed(const Control& source, int actionId) {
-//	SceneManager* pSceneManager = SceneManager::GetInstance();
-//
-//	switch(actionId) {
-//
-//	}
-//
-//}
+void GalleryPanel::OnActionPerformed(const Control& source, int actionId) {
+	SceneManager* pSceneManager = SceneManager::GetInstance();
+
+	switch(actionId) {
+
+	}
+
+}

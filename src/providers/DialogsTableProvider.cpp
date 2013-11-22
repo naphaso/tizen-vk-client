@@ -223,6 +223,7 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 	} else { // THIS IS A DIALOG
 		RoundedAvatar *pRoundedAvatar = new RoundedAvatar(avType);
 		r = pRoundedAvatar->Construct(Rectangle(0, 0, 108, 108), avatarUrl);
+		pRoundedAvatar->SetUserJson(pUserInfoObject);
 		TryCatch(r == E_SUCCESS, , "Failed pRoundedAvatar->Construct");
 
 		pAvatar = static_cast<Panel *>(pRoundedAvatar);
@@ -575,12 +576,6 @@ void DialogsTableProvider::OpenDialog(int index) {
 
 	JsonObject *itemObject;
 	JsonParseUtils::GetObject(dialogsJson, index, itemObject);
-
-//	static const String userJsonConst(L"user_json");
-//	IJsonValue *userJsonValue;
-//	itemObject->GetValue(&userJsonConst, userJsonValue);
-
-//	JsonObject *userJsonObject = static_cast<JsonObject *>(userJsonValue);
 
 	ArrayList* pList = new (std::nothrow) ArrayList(SingleObjectDeleter);
 

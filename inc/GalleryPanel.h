@@ -8,10 +8,11 @@
 #ifndef GALLERYPANEL_H_
 #define GALLERYPANEL_H_
 
-#include <FUiCtrlPanel.h>
+#include <FUi.h>
 
 class GalleryPanel:
-	public Tizen::Ui::Controls::Panel {
+	public Tizen::Ui::Controls::Panel,
+	public Tizen::Ui::IActionEventListener {
 public:
 	GalleryPanel();
 	virtual ~GalleryPanel();

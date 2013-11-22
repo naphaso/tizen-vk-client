@@ -49,6 +49,7 @@ result VKUDialogsPanel::OnInitializing(void) {
 	_searchBar->AddSearchBarEventListener(*pProvider);
 	_searchBar->AddTextEventListener(*pProvider);
 
+	Panel * pPullToRefreshBar = dynamic_cast<Panel *>(GetControl(IDC_PANEL_PULL_PROGRESS));
 
 	pProvider->Construct(pDialogTableView);
 	pDialogTableView->SetItemProvider(pProvider);
@@ -56,7 +57,7 @@ result VKUDialogsPanel::OnInitializing(void) {
 
 	pProvider->LoadData();
 
-	_pullToRefresh.Construct(pDialogTableView, _searchBar, this, PULL_TO_REFRESH_DIRECTION_TOP);
+	_pullToRefresh.Construct(pDialogTableView, pPullToRefreshBar, this, PULL_TO_REFRESH_DIRECTION_TOP);
 	SetPropagatedTouchEventListener(&_pullToRefresh);
 
 	return r;
