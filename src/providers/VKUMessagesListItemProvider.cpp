@@ -46,7 +46,8 @@ VKUMessagesListItemProvider::~VKUMessagesListItemProvider() {
 
 	VKUApp::GetInstance()->GetService()->UnsubscribeReadEvents();
 
-	delete _messagesJson;
+	if (_messagesJson)
+		delete _messagesJson;
 }
 
 result VKUMessagesListItemProvider::Construct(int peerId, JsonObject *chatJson, TableView *tableView) {

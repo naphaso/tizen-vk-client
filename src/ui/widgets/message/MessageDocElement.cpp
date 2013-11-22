@@ -18,14 +18,20 @@ using namespace Tizen::App;
 
 MessageDocElement::MessageDocElement() {
 	_pBitmap = null;
+	_pDocObject = null;
 }
 
 MessageDocElement::~MessageDocElement() {
 	delete _pBitmap;
+
+//	if (_pDocObject)
+//		delete _pDocObject;
 }
 
 result MessageDocElement::Construct(const Tizen::Graphics::Rectangle & rect, JsonObject * docObject, int out) {
 	result r = E_SUCCESS;
+
+	_pDocObject = docObject->CloneN();
 
 	RelativeLayout layout;
 	layout.Construct();
@@ -80,4 +86,31 @@ result MessageDocElement::OnDraw() {
 	}
 
 	return E_SUCCESS;
+}
+
+bool MessageDocElement::OnTouchPressed(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo) {
+	touchAllowed = true;
+	return true;
+}
+
+bool MessageDocElement::OnTouchReleased(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo) {
+	if (!touchAllowed)
+		return false;
+
+	String url;
+	JsonParseUtils::GetString(*_pDocObject, L"url", url);
+
+	AppControl* pAc = AppManager::FindAppControlN(L"tizen.internet",
+							 L"http://tizen.org/appcontrol/operation/view");
+	if (pAc) {
+		pAc->Start(&url, null, null, null);
+		delete pAc;
+	}
+
+	return true;
+}
+
+bool MessageDocElement::OnTouchMoved(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo) {
+	touchAllowed = false;
+	return false;
 }
