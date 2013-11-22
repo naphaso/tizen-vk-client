@@ -125,7 +125,6 @@ void Contacts::OnResponseN(JsonObject *response) {
 		String photoUrl;
 		String pageUrl(L"http://vk.com/id");
 		String thumbPath;
-		String mobilePhone;
 		ContactAppLaunchData appLaunchData;
 
 		r = JsonParseUtils::GetObject(friends, i, someFriend);
