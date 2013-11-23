@@ -5,6 +5,7 @@
 #include "JsonParseUtils.h"
 #include "RoundedAvatar.h"
 #include "ObjectCounter.h"
+#include "EmojiPopup.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Base::Runtime;
@@ -15,6 +16,7 @@ using namespace Tizen::Web::Json;
 using namespace Tizen::System;
 
 static const int ACTION_ID_ATTACH = 1234;
+static const int ACTION_ID_EMOJI  = 1235;
 
 VKUDialogPanel::VKUDialogPanel(void) {
 	CONSTRUCT(L"VKUDialogPanel");
@@ -45,13 +47,13 @@ result VKUDialogPanel::OnInitializing(void) {
 
 	FitToScreen();
 
-	_editField = static_cast<EditField*>(GetControl(IDC_DIALOGTEXT_EDITFIELD, true));
+	_editField = static_cast<EditArea*>(GetControl(IDC_DIALOGTEXT_EDITFIELD, true));
 	_editField->AddKeypadEventListener(*this);
 	_editField->AddTextEventListener(*this);
 	_editField->SetFocus();
 
 	_attachButton = dynamic_cast<Button *>(GetControl(IDC_BUTTON_ATTACH, true));
-	_attachButton->SetActionId(ACTION_ID_ATTACH);
+	_attachButton->SetActionId(ACTION_ID_EMOJI);
 	_attachButton->AddActionEventListener(*this);
 
 	Panel * pullToRefreshPanel = dynamic_cast<Panel *>(GetControl(IDC_PANEL_DIALOG_PULL, true));
@@ -87,6 +89,11 @@ void VKUDialogPanel::OnActionPerformed(const Tizen::Ui::Control& source, int act
 		pElement->Construct(Rectangle(0, 0, 200, 200));
 
 		_attachControlPanel->AddElement(pElement);
+	} else if(actionId == ACTION_ID_EMOJI) {
+		//_editField->AppendText(String(L"&#128522;"), *VKUApp::GetInstance()->GetAppResource()->GetBitmapN("emoji/126980.png"));
+		//_editField->RequestRedraw(true);
+		//CreateEmojiPopup();
+		EmojiPopup::Show(_editField);
 	}
 }
 
@@ -348,4 +355,5 @@ void VKUDialogPanel::OnTyping() {
 void VKUDialogPanel::OnRefresh() {
 	AppLog("pull to refresh messages");
 }
+
 

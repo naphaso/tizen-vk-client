@@ -115,7 +115,7 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 	String previewText, timestampText, avatarUrl;
 	String onlineImageName = L"";
 
-	int timeInSec, readState, myUserId, out, chatId, online;
+	int timeInSec, readState, myUserId, out, chatId, online, emoji = 0;
 	AvatarType avType = AVATAR_NORMAL;
 
 	myUserId = VKUAuthConfig::GetUserId();
@@ -140,12 +140,17 @@ TableViewItem* DialogsTableProvider::CreateItem(int itemIndex, int itemWidth) {
 
 	JsonParseUtils::GetInteger(*pObject, "read_state", readState);
 	JsonParseUtils::GetInteger(*pObject, "out", out);
+	JsonParseUtils::GetInteger(*pObject, "emoji", emoji);
 
 	// much, much complex for chat
 	JsonParseUtils::GetInteger(*pUserInfoObject, L"online", online);
 
-	r = JsonParseUtils::GetString(*pObject, L"body", previewText);
-	TryCatch(r == E_SUCCESS, , "Failed JsonParseUtils::GetString");
+	if(emoji) {
+		previewText = L"...";
+	} else {
+		r = JsonParseUtils::GetString(*pObject, L"body", previewText);
+		TryCatch(r == E_SUCCESS, , "Failed JsonParseUtils::GetString");
+	}
 
 	if (previewText.GetLength() == 0) {
 		JsonArray *attachments;

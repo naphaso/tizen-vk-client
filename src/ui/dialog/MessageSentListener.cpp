@@ -33,6 +33,10 @@ void MessageSentListener::OnResponseN(RequestId requestId, JsonObject *response)
 		TryReturnVoid(_userJson != null, "MessageSentListener: pUserJson is empty");
 
 		//_provider->RequestUpdateHistory();
+		ByteBuffer buffer;
+		buffer.Construct(10000);
+		JsonWriter::ComposeUnescapeUnicode(response, buffer);
+		AppLog("send message response: %s", buffer.GetPointer());
 	}
 
 	delete response;

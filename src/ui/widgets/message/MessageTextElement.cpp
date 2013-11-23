@@ -900,6 +900,7 @@ result MessageTextElement::SetText(const String & text, bool emoji) {
 				if(smile != null) {
 					AppLog("SMILE successfull load smile, size: %dx%d", smile->GetWidth(), smile->GetHeight());
 					r = pEnrichedText->Add(*smile);
+					delete smile;
 					TryCatch(r == E_SUCCESS, , "Failed Add textElement");
 				} else {
 					AppLog("SMILE failed to load smile: %s", GetErrorMessage(GetLastResult()));
