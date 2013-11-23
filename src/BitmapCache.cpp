@@ -107,7 +107,7 @@ public:
 		AppLog("cache entry desctructor. TODO: implement it");
 	}
 
-	void AddSubscriber(Control *control) {
+	Bitmap *AddSubscriber(Control *control) {
 		AppLog("BITMAPCACHE: add subscriber %ls", _url.GetPointer());
 
 		_subscribers.Add(control);
@@ -122,11 +122,14 @@ public:
 			break;
 		case CACHE_ENTRY_STATE_MEMORY:
 			AppLog("new subscriber on cache entry, entry in memory, send bitmap...");
-			SendEvent(control);
+			//SendEvent(control);
+			return _bitmap;
 			break;
 		default:
 			break;
 		}
+
+		return null;
 	}
 
 	void RemoveSubscriber(Control *control) {
@@ -252,7 +255,7 @@ BitmapCache::~BitmapCache() {
 }
 
 //  Tizen::Graphics::BitmapPixelFormat pixelFormat, int destWidth, int destHeight, RequestId& reqId, const IImageDecodeUrlEventListener& listener, long timeout
-void BitmapCache::TakeBitmap(const String &address, Control *control) {
+Bitmap *BitmapCache::TakeBitmap(const String &address, Control *control) {
 	AppLog("BITMAPCACHE: take bitmap %ls", address.GetPointer());
 	AppLog("getting cache entry %ls from bitmap cache", address.GetPointer());
 	CacheEntry *cacheEntry = static_cast<CacheEntry *>(bitmapCache->GetValue(address));
@@ -262,7 +265,7 @@ void BitmapCache::TakeBitmap(const String &address, Control *control) {
 		bitmapCache->Add(new String(address), cacheEntry);
 	}
 
-	cacheEntry->AddSubscriber(control);
+	return cacheEntry->AddSubscriber(control);
 }
 
 void BitmapCache::ReleaseBitmap(const String &address, Control *control) {

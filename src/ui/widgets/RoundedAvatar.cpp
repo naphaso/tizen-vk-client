@@ -74,8 +74,12 @@ result RoundedAvatar::Construct(const Tizen::Graphics::Rectangle & rect, const T
 
 	Panel::Construct(rect, GROUP_STYLE_NONE);
 
-	if (imageUrl.GetLength() != 0)
-		VKUApp::GetInstance()->GetBitmapCache()->TakeBitmap(imageUrl, this);
+	if (imageUrl.GetLength() != 0) {
+		Bitmap *bitmap = VKUApp::GetInstance()->GetBitmapCache()->TakeBitmap(imageUrl, this);
+		if(bitmap != null) {
+			pAvatar = bitmap;
+		}
+	}
 
 	return r;
 }

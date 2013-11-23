@@ -45,7 +45,7 @@ public:
 	result Construct();
 	virtual ~BitmapCache();
 
-	void TakeBitmap(const Tizen::Base::String &address, Tizen::Ui::Control *control);
+	Tizen::Graphics::Bitmap *TakeBitmap(const Tizen::Base::String &address, Tizen::Ui::Control *control);
 	void ReleaseBitmap(const Tizen::Base::String &address, Tizen::Ui::Control *control);
 	void ReduceMemoryUsage();
 private:
