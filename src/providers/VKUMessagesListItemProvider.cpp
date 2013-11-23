@@ -328,6 +328,7 @@ ArrayList * VKUMessagesListItemProvider::GetMessageElementsN(const JsonObject *p
 	IJsonValue *attachs;
 	JsonArray * pAttachArray;
 	int out;
+	int emoji = 0;
 
 	pResultArray = new ArrayList(SingleObjectDeleter);
 	r = pResultArray->Construct(1);
@@ -348,11 +349,13 @@ ArrayList * VKUMessagesListItemProvider::GetMessageElementsN(const JsonObject *p
 	r = JsonParseUtils::GetString(*pMessageJson, L"body", messageText);
 	TryCatch(r == E_SUCCESS, , "JsonParseUtils::GetString body");
 
+	JsonParseUtils::GetInteger(*pMessageJson, L"emoji", emoji);
+
 	if (messageText.GetLength() != 0) {
 		AppLog("Message has text entry, receiving");
 		pMessageTextElement = new MessageTextElement();
 		pMessageTextElement->Construct(Rectangle(0, 0, itemWidth-200, 10000));
-		pMessageTextElement->SetText(messageText);
+		pMessageTextElement->SetText(messageText, emoji);
 
 		pResultArray->Add(pMessageTextElement);
 	}
