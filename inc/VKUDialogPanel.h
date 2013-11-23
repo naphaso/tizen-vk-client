@@ -9,14 +9,18 @@
 #include "MessageSentListener.h"
 #include "Requests.h"
 #include "PullToRefreshTrait.h"
+#include "AttachControl.h"
+#include "IItemsRemovedListener.h"
 
 class VKUDialogPanel :
 	public Tizen::Ui::Controls::Panel,
 	public Tizen::Ui::IKeypadEventListener,
 	public Tizen::Ui::ITextEventListener,
 	public Tizen::Base::Runtime::ITimerEventListener,
+	public Tizen::Ui::IActionEventListener,
 	public IAPIRequestListener,
-	public IRefreshable
+	public IRefreshable,
+	public IItemsRemovedListener
 {
 
 // Construction
@@ -28,6 +32,10 @@ public:
 	result OnTerminating(void);
 
 	void FitToScreen(void);
+	result ShowAttachPanel(void);
+
+	// IItemsRemovedListener
+	virtual void OnAllItemsRemoved();
 
 	// screen keyboard listeners...
 	virtual void OnKeypadActionPerformed (Tizen::Ui::Control &source, Tizen::Ui::KeypadAction keypadAction);
@@ -45,6 +53,9 @@ public:
 
 	// ITimerEventListener
 	virtual void OnTimerExpired(Tizen::Base::Runtime::Timer& timer);
+
+	// IActionEventListener
+	virtual void OnActionPerformed(const Tizen::Ui::Control& source, int actionId);
 
 	// custom methods
 	void LoadMessages();
@@ -72,12 +83,15 @@ private:
 	Tizen::Web::Json::JsonObject* _dialogJson;
 	Tizen::Ui::Controls::TableView* _messagesTableView;
 	Tizen::Ui::Controls::Panel * _headerPanel;
+	Tizen::Ui::Controls::Button *_attachButton;
 
 	Tizen::Base::Runtime::Timer typingTimer;
 
 	long long _lastTypingTime;
 	int _peerId;
 	int online;
+
+	AttachControl * _attachControlPanel;
 
 	PullToRefreshTrait _pullToRefresh;
 };
