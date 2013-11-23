@@ -8,6 +8,7 @@
 #include "GalleryForm.h"
 #include "SceneRegister.h"
 #include "VKU.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
@@ -17,11 +18,11 @@ using namespace Tizen::Graphics;
 using namespace Tizen::Ui::Scenes;
 
 GalleryForm::GalleryForm() {
-
+	CONSTRUCT(L"GalleryForm");
 }
 
 GalleryForm::~GalleryForm() {
-
+	DESTRUCT(L"GalleryForm");
 }
 
 result GalleryForm::OnInitializing(void) {

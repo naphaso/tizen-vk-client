@@ -30,7 +30,7 @@ public:
 	void StartUpload(const Tizen::Base::String &filePath);
 
 
-
+	PhotoUploadTrait();
 	virtual ~PhotoUploadTrait();
 
 	// IAPIRequestListener

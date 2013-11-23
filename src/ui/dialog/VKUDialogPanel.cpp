@@ -4,6 +4,7 @@
 #include "VKUDialog.h"
 #include "JsonParseUtils.h"
 #include "RoundedAvatar.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Base::Runtime;
@@ -14,6 +15,7 @@ using namespace Tizen::Web::Json;
 using namespace Tizen::System;
 
 VKUDialogPanel::VKUDialogPanel(void) {
+	CONSTRUCT(L"VKUDialogPanel");
 	_provider = new VKUMessagesListItemProvider();
 	_messagesTableView = null;
 	_dialogJson = null;
@@ -21,6 +23,7 @@ VKUDialogPanel::VKUDialogPanel(void) {
 }
 
 VKUDialogPanel::~VKUDialogPanel(void) {
+	DESTRUCT(L"VKUDialogPanel");
 	delete _provider;
 
 //	if (_dialogJson)

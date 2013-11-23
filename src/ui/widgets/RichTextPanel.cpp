@@ -6,6 +6,7 @@
  */
 
 #include "RichTextPanel.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Graphics;
 using namespace Tizen::Base;
@@ -13,12 +14,11 @@ using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
 
 RichTextPanel::RichTextPanel() {
-	// TODO Auto-generated constructor stub
-
+	CONSTRUCT(L"RichTextPanel");
 }
 
 RichTextPanel::~RichTextPanel() {
-	// TODO Auto-generated destructor stub
+	DESTRUCT(L"RichTextPanel");
 }
 
 // FIXME: leaks

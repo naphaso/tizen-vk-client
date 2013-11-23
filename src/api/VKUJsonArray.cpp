@@ -6,16 +6,19 @@
  */
 
 #include "VKUJsonArray.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Web::Json;
 using namespace Tizen::Base;
 
 VKUJsonArray::VKUJsonArray(JsonArray *jsonArray, bool ownership) {
+	CONSTRUCT(L"VKUJsonArray");
 	this->ownership = ownership;
 	this->jsonArray = jsonArray;
 }
 
 VKUJsonArray::VKUJsonArray(IJsonValue *jsonValue, bool ownership) {
+	DESTRUCT(L"VKUJsonArray");
 	this->ownership = ownership;
 	this->jsonArray = static_cast<JsonArray *>(jsonValue);
 }

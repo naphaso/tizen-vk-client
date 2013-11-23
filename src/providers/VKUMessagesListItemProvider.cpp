@@ -21,6 +21,7 @@
 #include "MessageDocElement.h"
 #include "MessageForwardedElement.h"
 #include "MessageLocationElement.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Scenes;
@@ -39,11 +40,12 @@ static const int LIST_ITEM_UNREAD_COLOR = 0x191f25;
 static const wchar_t *PRELOAD_MESSAGES = L"20";
 
 VKUMessagesListItemProvider::VKUMessagesListItemProvider() {
+	CONSTRUCT(L"VKUMessagesListItemProvider");
 	_messagesJson = null;
 }
 
 VKUMessagesListItemProvider::~VKUMessagesListItemProvider() {
-	AppLog("Destruction of VKUMessagesListItemProvider");
+	DESTRUCT(L"VKUMessagesListItemProvider");
 
 	VKUApp::GetInstance()->GetService()->UnsubscribeReadEvents();
 

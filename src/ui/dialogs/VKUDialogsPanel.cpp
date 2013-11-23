@@ -2,6 +2,7 @@
 #include "AppResourceId.h"
 
 #include "VKUApi.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Graphics;
 using namespace Tizen::Ui;
@@ -11,11 +12,12 @@ using namespace Tizen::Web::Json;
 using namespace Tizen::Base;
 
 VKUDialogsPanel::VKUDialogsPanel(void) {
+	CONSTRUCT(L"VKUDialogsPanel");
 	pProvider = new DialogsTableProvider();
 }
 
 VKUDialogsPanel::~VKUDialogsPanel(void) {
-
+	DESTRUCT(L"VKUDialogsPanel");
 }
 
 bool VKUDialogsPanel::Initialize(void) {

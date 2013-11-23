@@ -6,6 +6,7 @@
  */
 
 #include "VKUJsonObject.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Web::Json;
@@ -28,16 +29,19 @@ VKUJsonObject *VKUJsonObject::parseN(ByteBuffer *buffer) {
 }
 
 VKUJsonObject::VKUJsonObject(JsonObject *jsonObject, bool ownership) {
+	CONSTRUCT(L"VKUJsonObject");
 	this->ownership = ownership;
 	this->jsonObject = jsonObject;
 }
 
 VKUJsonObject::VKUJsonObject(IJsonValue *jsonValue, bool ownership) {
+	CONSTRUCT(L"VKUJsonObject");
 	this->ownership = ownership;
 	this->jsonObject = static_cast<JsonObject *>(jsonValue);
 }
 
 VKUJsonObject::~VKUJsonObject() {
+	DESTRUCT(L"VKUJsonObject");
 	if(ownership) {
 		delete jsonObject;
 	}

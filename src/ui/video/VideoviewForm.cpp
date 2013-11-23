@@ -9,6 +9,7 @@
 #include "AppResourceId.h"
 #include "VKU.h"
 #include "SceneRegister.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::App;
 using namespace Tizen::Ui;
@@ -20,12 +21,11 @@ using namespace Tizen::Media;
 using namespace Tizen::Base::Utility;
 
 VideoviewForm::VideoviewForm() {
-	// TODO Auto-generated constructor stub
-
+	CONSTRUCT(L"VideoviewForm");
 }
 
 VideoviewForm::~VideoviewForm() {
-	// TODO Auto-generated destructor stub
+	DESTRUCT(L"VideoviewForm");
 }
 
 result VideoviewForm::OnInitializing(void) {

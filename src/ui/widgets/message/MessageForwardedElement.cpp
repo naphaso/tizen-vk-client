@@ -14,6 +14,7 @@
 #include <cstdlib>
 #include <ctime>
 #include "UserCache.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
@@ -22,12 +23,12 @@ using namespace Tizen::Web::Json;
 using namespace Tizen::Graphics;
 
 MessageForwardedElement::MessageForwardedElement() {
-	// TODO Auto-generated constructor stub
+	CONSTRUCT(L"MessageForwardedElement");
 	srand(time(NULL));
 }
 
 MessageForwardedElement::~MessageForwardedElement() {
-	// TODO Auto-generated destructor stub
+	DESTRUCT(L"MessageForwardedElement");
 }
 
 result MessageForwardedElement::Construct(const Rectangle & rect, Tizen::Web::Json::JsonObject * forwardedMessage, int out) {

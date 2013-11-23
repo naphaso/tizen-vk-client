@@ -8,11 +8,11 @@
 #include "VKU.h"
 #include "VKUFrame.h"
 #include "AppResourceId.h"
-#include "SampleRequest.h"
 #include "SceneRegister.h"
 #include "VKUAuthConfig.h"
 #include "VKUApi.h"
 #include "UserCache.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::App;
 using namespace Tizen::Base;
@@ -24,6 +24,7 @@ using namespace Tizen::Ui::Scenes;
 static const wchar_t* REMOTE_PORT_NAME = L"SERVICE_PORT";
 
 VKUApp::VKUApp(void) {
+	CONSTRUCT(L"VKUApp");
 	result r;
 
 	return;
@@ -33,6 +34,7 @@ VKUApp::VKUApp(void) {
 }
 
 VKUApp::~VKUApp(void) {
+	DESTRUCT(L"VKUApp");
 	AppLog("destructor");
 	delete bitmapCache;
 }

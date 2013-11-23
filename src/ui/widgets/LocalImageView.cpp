@@ -8,6 +8,7 @@
 #include "LocalImageView.h"
 
 #include "VKU.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Ui;
 using namespace Tizen::Graphics;
@@ -16,11 +17,12 @@ using namespace Tizen::Base;
 using namespace Tizen::Ui::Controls;
 
 LocalImageView::LocalImageView() {
+	CONSTRUCT(L"LocalImageView");
 	pNormalBitmap = null;
-
 }
 
 LocalImageView::~LocalImageView() {
+	DESTRUCT(L"LocalImageView");
 	if (pNormalBitmap)
 		delete pNormalBitmap;
 }

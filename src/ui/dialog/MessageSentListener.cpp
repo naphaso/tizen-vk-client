@@ -6,13 +6,14 @@
  */
 
 #include "MessageSentListener.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Web::Json;
 using namespace Tizen::Ui::Controls;
 
 MessageSentListener::MessageSentListener() {
-
+	CONSTRUCT(L"MessageSentListener");
 }
 
 result MessageSentListener::Construct(TableView *tableView, VKUMessagesListItemProvider * provider, JsonObject *userJson) {
@@ -23,7 +24,7 @@ result MessageSentListener::Construct(TableView *tableView, VKUMessagesListItemP
 }
 
 MessageSentListener::~MessageSentListener() {
-	// TODO Auto-generated destructor stub
+	DESTRUCT(L"MessageSentListener");
 }
 
 void MessageSentListener::OnResponseN(RequestId requestId, JsonObject *response) {

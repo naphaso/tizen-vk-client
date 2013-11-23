@@ -8,16 +8,16 @@
 #include "GalleryPanel.h"
 #include "AppResourceId.h"
 #include <FUi.h>
+#include "ObjectCounter.h"
 
 using namespace Tizen::Ui::Scenes;
 
 GalleryPanel::GalleryPanel() {
-	// TODO Auto-generated constructor stub
-
+	CONSTRUCT(L"GalleryPanel");
 }
 
 GalleryPanel::~GalleryPanel() {
-	// TODO Auto-generated destructor stub
+	DESTRUCT(L"GalleryPanel");
 }
 
 bool GalleryPanel::Initialize() {

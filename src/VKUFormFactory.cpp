@@ -6,13 +6,16 @@
 #include "GalleryForm.h"
 #include "VideoviewForm.h"
 #include "UserForm.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Ui::Scenes;
 
 VKUFormFactory::VKUFormFactory(void) {
+	CONSTRUCT(L"VKUFormFactory");
 }
 
 VKUFormFactory::~VKUFormFactory(void) {
+	DESTRUCT(L"VKUFormFactory");
 }
 
 Tizen::Ui::Controls::Form* VKUFormFactory::CreateFormN(

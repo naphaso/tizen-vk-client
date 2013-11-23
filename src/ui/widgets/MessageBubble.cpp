@@ -6,6 +6,7 @@
  */
 
 #include "MessageBubble.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Graphics;
 using namespace Tizen::Base;
@@ -17,6 +18,8 @@ using namespace Tizen::Base::Collection;
 static const int BUBBLE_ITEM_SPACING = 10;
 
 MessageBubble::MessageBubble() {
+	CONSTRUCT(L"MessageBubble");
+
 	result r = E_SUCCESS;
 	message = null;
 
@@ -37,6 +40,7 @@ CATCH:
 }
 
 MessageBubble::~MessageBubble() {
+	DESTRUCT(L"MessageBubble");
 	delete pBubbleIn;
 	delete pBubbleOut;
 }

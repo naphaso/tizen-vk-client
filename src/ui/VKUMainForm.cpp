@@ -5,6 +5,7 @@
 #include "VKUContactsPanel.h"
 #include "VKUApi.h"
 #include "JsonParseUtils.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::App;
@@ -15,9 +16,11 @@ using namespace Tizen::Graphics;
 using namespace Tizen::Web::Json;
 
 VKUMainForm::VKUMainForm(void) {
+	CONSTRUCT(L"VKUMainForm");
 }
 
 VKUMainForm::~VKUMainForm(void) {
+	DESTRUCT(L"VKUMainForm");
 }
 
 bool VKUMainForm::Initialize(void) {

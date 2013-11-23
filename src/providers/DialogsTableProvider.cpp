@@ -12,6 +12,7 @@
 #include "SceneRegister.h"
 #include "MultipleAvatar.h"
 #include "LocalImageView.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
@@ -33,6 +34,7 @@ static const int HIGHLIGHTED_COLOR = 0x213f63;
 static const String userJsonConst(L"user_json");
 
 DialogsTableProvider::DialogsTableProvider() {
+	CONSTRUCT(L"DialogsTableProvider");
 	dialogsJson = null;
 	filteredDialogsJson = null;
 }
@@ -48,7 +50,7 @@ result DialogsTableProvider::Construct(TableView* tableView) {
 }
 
 DialogsTableProvider::~DialogsTableProvider() {
-	// TODO Auto-generated destructor stub
+	DESTRUCT(L"DialogsTableProvider");
 }
 
 int DialogsTableProvider::GetItemCount(void) {

@@ -7,6 +7,7 @@
 
 #include "BitmapLoader.h"
 #include <FMedia.h>
+#include "ObjectCounter.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Base::Runtime;
@@ -20,12 +21,11 @@ ImageLoadingOptions::ImageLoadingOptions() {
 }
 
 BitmapLoader::BitmapLoader() {
-	AppLog("constructor");
-
+	CONSTRUCT(L"BitmapLoader");
 }
 
 BitmapLoader::~BitmapLoader() {
-	AppLog("destructor");
+	DESTRUCT(L"BitmapLoader");
 }
 
 result BitmapLoader::Construct() {

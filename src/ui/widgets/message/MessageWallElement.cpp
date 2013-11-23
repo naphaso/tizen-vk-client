@@ -6,16 +6,16 @@
  */
 
 #include "MessageWallElement.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Graphics;
 
 MessageWallElement::MessageWallElement() {
-	// TODO Auto-generated constructor stub
-
+	CONSTRUCT(L"MessageWallElement");
 }
 
 MessageWallElement::~MessageWallElement() {
-	// TODO Auto-generated destructor stub
+	DESTRUCT(L"MessageWallElement");
 }
 
 result MessageWallElement::Construct(const Tizen::Graphics::Rectangle & rect) {

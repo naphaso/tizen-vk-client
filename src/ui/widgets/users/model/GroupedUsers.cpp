@@ -6,17 +6,20 @@
  */
 
 #include "GroupedUsers.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Base::Collection;
 using namespace Tizen::Web::Json;
 
 GroupedUsers::GroupedUsers() {
+	CONSTRUCT(L"GroupedUsers");
 	_pUserGroups = null;
 	_filteredGroups = null;
 }
 
 GroupedUsers::~GroupedUsers() {
+	DESTRUCT(L"GroupedUsers");
 	if (_pUserGroups)
 		delete _pUserGroups;
 	if(_filteredGroups)

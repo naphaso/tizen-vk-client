@@ -3,6 +3,7 @@
 #include "VKUApi.h"
 #include "UsersPanel.h"
 #include "SceneRegister.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
@@ -12,10 +13,12 @@ using namespace Tizen::Base::Collection;
 using namespace Tizen::Web::Json;
 
 VKUContactsPanel::VKUContactsPanel(void) {
+	CONSTRUCT(L"VKUContactsPanel");
 //	pProvider = new ContactsTableProvider();
 }
 
 VKUContactsPanel::~VKUContactsPanel(void) {
+	DESTRUCT(L"VKUContactsPanel");
 //	delete pProvider;
 }
 

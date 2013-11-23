@@ -10,6 +10,7 @@
 #include "VKUAuthConfig.h"
 #include "VKUConfig.h"
 #include "VKU.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::App;
 using namespace Tizen::Base;
@@ -19,6 +20,7 @@ using namespace Tizen::Web::Json;
 
 
 VKURequestBuilder::VKURequestBuilder(VKUApi *api, String method, IAPIRequestListener *listener) {
+	CONSTRUCT(L"VKURequestBuilder");
 	result r;
 
 	this->api = api;
@@ -60,7 +62,7 @@ VKURequestBuilder::VKURequestBuilder(VKUApi *api, String method, IAPIRequestList
 }
 
 VKURequestBuilder::~VKURequestBuilder() {
-	AppLog("destruct VKURequestBuilder and entity");
+	DESTRUCT(L"VKURequestBuilder");
 	delete pHttpUrlEncodedEntity;
 }
 

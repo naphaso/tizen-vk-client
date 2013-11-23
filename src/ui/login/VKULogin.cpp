@@ -3,6 +3,7 @@
 #include "VKUAuthConfig.h"
 #include "SceneRegister.h"
 #include "VKU.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
@@ -12,9 +13,11 @@ using namespace Tizen::App;
 
 
 VKULogin::VKULogin(void) {
+	CONSTRUCT(L"VKULogin");
 }
 
 VKULogin::~VKULogin(void) {
+	DESTRUCT(L"VKULogin");
 }
 
 bool VKULogin::Initialize() {

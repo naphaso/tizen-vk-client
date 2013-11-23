@@ -9,6 +9,7 @@
 #include "VKU.h"
 #include "VKUConfig.h"
 #include "VKUUtils.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Graphics;
 using namespace Tizen::Base;
@@ -17,6 +18,14 @@ using namespace Tizen::Web::Controls;
 using namespace Tizen::Base::Utility;
 using namespace Tizen::Io;
 using namespace Tizen::Ui;
+
+VKULoginPopup::VKULoginPopup() {
+	CONSTRUCT(L"VKULoginPopup");
+}
+
+VKULoginPopup::~VKULoginPopup() {
+	DESTRUCT(L"VKULoginPopup");
+}
 
 result VKULoginPopup::Construct() {
 	result r = E_SUCCESS;

@@ -5,6 +5,7 @@
 #include "WebImageView.h"
 #include "VKUApi.h"
 #include "Requests.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
@@ -12,10 +13,12 @@ using namespace Tizen::Ui::Controls;
 using namespace Tizen::Web::Json;
 
 VKSettingsPanel::VKSettingsPanel(void) {
+	CONSTRUCT(L"VKSettingsPanel");
 	pProvider = new SettingsSectionTableProvider();
 }
 
 VKSettingsPanel::~VKSettingsPanel(void) {
+	DESTRUCT(L"VKSettingsPanel");
 }
 
 bool VKSettingsPanel::Initialize() {

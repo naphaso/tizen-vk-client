@@ -1,18 +1,19 @@
 
 #include "AppResourceId.h"
 #include "VKUSearchPanel.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
 
 
-VKUSearchPanel::VKUSearchPanel(void)
-{
+VKUSearchPanel::VKUSearchPanel(void) {
+	CONSTRUCT(L"VKUSearchPanel");
 }
 
-VKUSearchPanel::~VKUSearchPanel(void)
-{
+VKUSearchPanel::~VKUSearchPanel(void) {
+	DESTRUCT(L"VKUSearchPanel");
 }
 
 bool

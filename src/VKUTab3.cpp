@@ -1,19 +1,19 @@
 #include "VKUTab3.h"
 #include "AppResourceId.h"
+#include "ObjectCounter.h"
+
 
 using namespace Tizen::Graphics;
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Ui::Scenes;
 
-VKUTab3::VKUTab3(void)
-{
-
+VKUTab3::VKUTab3(void) {
+	CONSTRUCT(L"VKUTab3");
 }
 
-VKUTab3::~VKUTab3(void)
-{
-
+VKUTab3::~VKUTab3(void) {
+	DESTRUCT(L"VKUTab3");
 }
 
 bool

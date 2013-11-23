@@ -6,6 +6,7 @@
  */
 
 #include "BitmapCache.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Base::Collection;
@@ -83,11 +84,19 @@ private:
 public:
 	CacheEntry(const String &url, FileDownloader *downloader, BitmapLoader *loader)
 			: _url(url), _file(CacheFileFromUrl(url)), _downloader(downloader), _loader(loader), _subscribers(NoOpDeleter) {
+		CONSTRUCT(L"CacheEntry");
 		_subscribers.Construct();
 		if(File::IsFileExist(_file)) {
 			_state = CACHE_ENTRY_STATE_FILE;
 		} else {
 			_state = CACHE_ENTRY_STATE_NOT_FOUND;
+		}
+	}
+
+	virtual ~CacheEntry() {
+		DESTRUCT(L"CacheEntry");
+		if(_state == CACHE_ENTRY_STATE_MEMORY) {
+			delete _bitmap;
 		}
 	}
 
@@ -101,10 +110,6 @@ public:
 
 	virtual String GetFile() {
 		return _file;
-	}
-
-	virtual ~CacheEntry() {
-		AppLog("cache entry desctructor. TODO: implement it");
 	}
 
 	Bitmap *AddSubscriber(Control *control) {
@@ -210,7 +215,7 @@ public:
 
 
 BitmapCache::BitmapCache() {
-
+	CONSTRUCT(L"BitmapCache");
 }
 
 result BitmapCache::Construct() {
@@ -249,6 +254,8 @@ result BitmapCache::Construct() {
 }
 
 BitmapCache::~BitmapCache() {
+	DESTRUCT(L"BitmapCache");
+
 	delete bitmapCache;
 	delete downloader;
 	delete loader;

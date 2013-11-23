@@ -6,6 +6,7 @@
  */
 
 #include "ContactsTableProvider.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Ui;
 using namespace Tizen::Base;
@@ -15,12 +16,13 @@ using namespace Tizen::Ui::Controls;
 using namespace Tizen::Graphics;
 
 ContactsTableProvider::ContactsTableProvider() {
+	CONSTRUCT(L"ContactsTableProvider");
 	contactsArray = null;
 
 }
 
 ContactsTableProvider::~ContactsTableProvider() {
-	// TODO Auto-generated destructor stub
+	DESTRUCT(L"ContactsTableProvider");
 }
 
 int ContactsTableProvider::GetGroupCount(void) {

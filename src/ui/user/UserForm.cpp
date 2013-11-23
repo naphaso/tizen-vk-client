@@ -12,6 +12,7 @@
 #include "WebImageView.h"
 #include "Requests.h"
 #include "VKUApi.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
@@ -28,12 +29,11 @@ static const int ACTION_ID_DELETE = 666;
 static const int ACTION_ID_ACCEPT = 667;
 
 UserForm::UserForm() {
-	// TODO Auto-generated constructor stub
-
+	CONSTRUCT(L"UserForm");
 }
 
 UserForm::~UserForm() {
-	// TODO Auto-generated destructor stub
+	DESTRUCT(L"UserForm");
 }
 
 bool UserForm::Initialize() {

@@ -9,7 +9,7 @@
 #include "VKUApi.h"
 #include "Requests.h"
 #include "JsonParseUtils.h"
-
+#include "ObjectCounter.h"
 
 
 using namespace Tizen::Base;
@@ -24,7 +24,12 @@ void PhotoUploadTrait::StartUpload(const String &filePath) {
 	VKUApi::GetInstance().CreateRequest(L"photos.getMessagesUploadServer", this)->Submit(REQUEST_GET_UPLOAD_SERVER);
 }
 
+PhotoUploadTrait::PhotoUploadTrait() {
+	CONSTRUCT(L"PhotoUploadTrait");
+}
+
 PhotoUploadTrait::~PhotoUploadTrait() {
+	DESTRUCT(L"PhotoUploadTrait");
 	httpSession.CloseAllTransactions();
 }
 

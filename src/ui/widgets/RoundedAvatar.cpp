@@ -8,6 +8,7 @@
 #include "RoundedAvatar.h"
 #include "VKU.h"
 #include "SceneRegister.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Ui;
 using namespace Tizen::Base;
@@ -18,6 +19,7 @@ using namespace Tizen::Base::Collection;
 using namespace Tizen::Ui::Scenes;
 
 RoundedAvatar::RoundedAvatar(const AvatarType & type, const PlaceholderType & placeholderType) {
+	CONSTRUCT(L"RoundedAvatar");
 	result r = E_SUCCESS;
 
 	_pUserJson = null;
@@ -64,6 +66,15 @@ CATCH:
 	AppLogException("RoundedAvatar is failed.", GetErrorMessage(r));
 	SetLastResult(r);
 	return;
+}
+
+RoundedAvatar::~RoundedAvatar() {
+	DESTRUCT(L"RoundedAvatar");
+	if (imageUrl.GetLength() != 0)
+		VKUApp::GetInstance()->GetBitmapCache()->ReleaseBitmap(imageUrl, this);
+
+	if (_pUserJson)
+		delete _pUserJson;
 }
 
 result RoundedAvatar::Construct(const Tizen::Graphics::Rectangle & rect, const Tizen::Base::String &avatarPath) {
@@ -122,15 +133,6 @@ bool RoundedAvatar::OnTouchReleased(Tizen::Ui::Control& source, const Tizen::Ui:
 bool RoundedAvatar::OnTouchMoved(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo) {
 	pressAllowed = false;
 	return false;
-}
-
-RoundedAvatar::~RoundedAvatar() {
-	AppLog("rounded avatar destructor");
-	if (imageUrl.GetLength() != 0)
-		VKUApp::GetInstance()->GetBitmapCache()->ReleaseBitmap(imageUrl, this);
-
-	if (_pUserJson)
-		delete _pUserJson;
 }
 
 result RoundedAvatar::OnDraw(void) {

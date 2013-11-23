@@ -7,6 +7,7 @@
 
 #include "WebImageView.h"
 #include "VKU.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Ui;
 using namespace Tizen::Base;
@@ -16,10 +17,12 @@ using namespace Tizen::Ui::Controls;
 using namespace Tizen::Base::Collection;
 
 WebImageView::WebImageView() {
+	CONSTRUCT(L"WebImageView");
 	pImageBitmap = null;
 }
 
 WebImageView::~WebImageView() {
+	DESTRUCT(L"WebImageView");
 	VKUApp::GetInstance()->GetBitmapCache()->ReleaseBitmap(imageUrl, this);
 //	if (pImageBitmap)
 //		delete pImageBitmap;

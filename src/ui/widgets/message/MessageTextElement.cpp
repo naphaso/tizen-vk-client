@@ -7,6 +7,7 @@
 
 #include "MessageTextElement.h"
 #include "VKU.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
@@ -15,7 +16,12 @@ using namespace Tizen::Graphics;
 
 static const int TEXT_FONT_SIZE = 35;
 
+MessageTextElement::MessageTextElement() {
+	CONSTRUCT(L"MessageTextElement");
+}
+
 MessageTextElement::~MessageTextElement() {
+	DESTRUCT(L"MessageTextElement");
 //	delete pEnrichedText;
 //	delete pFont;
 }
