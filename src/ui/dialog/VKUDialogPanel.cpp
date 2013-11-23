@@ -39,10 +39,12 @@ result VKUDialogPanel::OnInitializing(void) {
 
 	FitToScreen();
 
-	_editField = static_cast<EditField*>(GetControl(IDC_DIALOGTEXT_EDITFIELD));
+	_editField = static_cast<EditField*>(GetControl(IDC_DIALOGTEXT_EDITFIELD, true));
 	_editField->AddKeypadEventListener(*this);
 	_editField->AddTextEventListener(*this);
 	_editField->SetFocus();
+
+	Panel * pullToRefreshPanel = dynamic_cast<Panel *>(GetControl(IDC_PANEL_DIALOG_PULL, true));
 
 	/* ! HEADER ITEMS INIT ! */
 
@@ -59,7 +61,7 @@ result VKUDialogPanel::OnInitializing(void) {
 
 	typingTimer.Construct(*this);
 
-	_pullToRefresh.Construct(_messagesTableView, _editField, this, PULL_TO_REFRESH_DIRECTION_BOTTOM);
+	_pullToRefresh.Construct(_messagesTableView, pullToRefreshPanel, this, PULL_TO_REFRESH_DIRECTION_BOTTOM);
 	SetPropagatedTouchEventListener(&_pullToRefresh);
 
 	AppLog("End VKUDialogPanel::OnInitializing");
