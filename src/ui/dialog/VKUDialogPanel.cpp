@@ -14,12 +14,15 @@ using namespace Tizen::Graphics;
 using namespace Tizen::Web::Json;
 using namespace Tizen::System;
 
+static const int ACTION_ID_ATTACH = 1234;
+
 VKUDialogPanel::VKUDialogPanel(void) {
 	CONSTRUCT(L"VKUDialogPanel");
 	_provider = new VKUMessagesListItemProvider();
 	_messagesTableView = null;
 	_dialogJson = null;
 	_lastTypingTime = 0;
+	_attachControlPanel = null;
 }
 
 VKUDialogPanel::~VKUDialogPanel(void) {
@@ -47,6 +50,10 @@ result VKUDialogPanel::OnInitializing(void) {
 	_editField->AddTextEventListener(*this);
 	_editField->SetFocus();
 
+	_attachButton = dynamic_cast<Button *>(GetControl(IDC_BUTTON_ATTACH, true));
+	_attachButton->SetActionId(ACTION_ID_ATTACH);
+	_attachButton->AddActionEventListener(*this);
+
 	Panel * pullToRefreshPanel = dynamic_cast<Panel *>(GetControl(IDC_PANEL_DIALOG_PULL, true));
 
 	/* ! HEADER ITEMS INIT ! */
@@ -70,6 +77,57 @@ result VKUDialogPanel::OnInitializing(void) {
 	AppLog("End VKUDialogPanel::OnInitializing");
 
 	return r;
+}
+
+void VKUDialogPanel::OnActionPerformed(const Tizen::Ui::Control& source, int actionId) {
+	if (actionId == ACTION_ID_ATTACH) {
+		ShowAttachPanel();
+
+		AttachElement * pElement = new AttachElement();
+		pElement->Construct(Rectangle(0, 0, 200, 200));
+
+		_attachControlPanel->AddElement(pElement);
+	}
+}
+
+result VKUDialogPanel::ShowAttachPanel() {
+	result r = E_SUCCESS;
+
+	if (_attachControlPanel != null)
+		return r;
+
+	RelativeLayout *layout;
+	Panel * editBoxPanel;
+
+	_attachControlPanel = new AttachControl();
+	r = _attachControlPanel->Construct(Rectangle(0, 0, GetBounds().width, 220));
+	TryCatch(r == E_SUCCESS, , "Failed _attachControlPanel->Construct");
+
+	layout = dynamic_cast<RelativeLayout *>(GetLayoutN());
+	editBoxPanel = dynamic_cast<Panel *>(GetControl(IDC_PANEL_DIALOG_EDITOR));
+
+	r = AddControl(_attachControlPanel);
+	TryCatch(r == E_SUCCESS, , "Failed AddControl");
+
+	_attachControlPanel->SetItemsRemovedListener(this);
+
+	r = layout->SetRelation(*_attachControlPanel, editBoxPanel, RECT_EDGE_RELATION_BOTTOM_TO_TOP);
+	TryCatch(r == E_SUCCESS, , "Failed layout->SetRelation");
+
+	delete layout;
+
+	return r;
+CATCH:
+	AppLogException("VKUDialogPanel::ShowAttachPanel is failed. %s", GetErrorMessage(r));
+	return r;
+}
+
+void VKUDialogPanel::OnAllItemsRemoved() {
+	if (_attachControlPanel == null)
+		return;
+
+	RemoveControl(*_attachControlPanel);
+	_attachControlPanel = null;
 }
 
 void VKUDialogPanel::LoadMessages() {
@@ -202,6 +260,8 @@ void VKUDialogPanel::FitToScreen() {
 		_messagesTableView->RequestRedraw(true);
 	}
 
+	AppLog("VKUDialogPanel::FitToScreen done");
+
 	Invalidate(true);
 }
 
@@ -229,20 +289,22 @@ void VKUDialogPanel::OnKeypadActionPerformed(Control &source,
 }
 
 void VKUDialogPanel::OnKeypadBoundsChanged(Control &source) {
+	AppLog("Keypad OnKeypadBoundsChanged");
 
 }
 
 void VKUDialogPanel::OnKeypadClosed(Control &source) {
-	AppLog("Keypad closed");
+	AppLog("Keypad OnKeypadClosed");
 	FitToScreen();
 }
 
 void VKUDialogPanel::OnKeypadOpened(Control &source) {
-	AppLog("Keypad opened");
+	AppLog("Keypad OnKeypadOpened");
 	FitToScreen();
 }
 
 void VKUDialogPanel::OnKeypadWillOpen(Control &source) {
+	AppLog("Keypad OnKeypadWillOpen");
 
 }
 
