@@ -27,7 +27,8 @@ MessageLocationElement::~MessageLocationElement() {
 result MessageLocationElement::Construct(const Tizen::Graphics::Rectangle & rect, Tizen::Web::Json::JsonObject * location) {
 	result r = E_SUCCESS;
 	baseUrl = "http://maps.googleapis.com/maps/api/staticmap?center={COORDINATES}&zoom=14&size=400x400&markers=color:black%7Csize:normal%7C{COORDINATES}&sensor=false";
-	browserUrl = "https://maps.google.com/?ll={COORDINATES}&t=m&z=14";
+	//browserUrl = "https://maps.google.com/?ll=&t=m&z=14";
+	browserUrl = "http://maps.google.com/?saddr={COORDINATES}&daddr={COORDINATES}&output=embed";
 	r = Panel::Construct(rect);
 	r = SetSize(Dimension(rect.width, rect.height));
 

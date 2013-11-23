@@ -21,7 +21,7 @@ public:
 
 	virtual result Construct(const Tizen::Graphics::Rectangle & rect);
 
-	result SetText(const Tizen::Base::String & text);
+	result SetText(const Tizen::Base::String & text, bool emoji = true);
 
 	virtual MessageElementType GetElementType() { return MESSAGE_TYPE_TEXT; }
 	virtual result OnDraw(void);
