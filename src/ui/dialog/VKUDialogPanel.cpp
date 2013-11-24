@@ -8,6 +8,7 @@
 #include "EmojiPopup.h"
 #include "AttachPopup.h"
 #include "AttachLocationElement.h"
+#include "AttachPhotoElement.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Base::Runtime;
@@ -308,7 +309,9 @@ void VKUDialogPanel::DoSend() {
 
 	// process attachments
 	IList * attachs = _attachControlPanel->GetElements();
-
+	bool hasAttach = false;
+	bool blockSending = false;
+	String attachString = L"";
 	for (int i=0; i<attachs->GetCount(); i++) {
 		AttachElement *pElement = dynamic_cast<AttachElement *>(attachs->GetAt(i));
 
@@ -333,8 +336,25 @@ void VKUDialogPanel::DoSend() {
 
 			builder->Put(L"lat", Double::ToString(pLocationElement->GetLat()));
 			builder->Put(L"lng", Double::ToString(pLocationElement->GetLng()));
+		} else if (pElement->GetType() == ATTACHMENT_TYPE_PHOTO) {
+			AttachPhotoElement * pPhotoElement = dynamic_cast<AttachPhotoElement *>(pElement);
+			if (pPhotoElement->IsUploaded()) {
+				String data = pPhotoElement->ToString();
+				hasAttach = true;
+
+				attachString += data + L",";
+			} else {
+				blockSending = true;
+			}
 		}
 	}
+
+	if (hasAttach) {
+		builder->Put(L"attachment", attachString);
+	}
+
+	if (blockSending)
+		return;
 
 
 	RemoveAttachPanel();

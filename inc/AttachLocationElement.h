@@ -17,7 +17,7 @@ public:
 	virtual ~AttachLocationElement();
 
 	virtual result Construct(const Tizen::Graphics::Rectangle & rect);
-	virtual Tizen::Web::Json::JsonObject * ToJson() {return null;};
+	virtual Tizen::Base::String ToString() {return L"";};
 
 	virtual AttachmentType GetType() { return ATTACHMENT_TYPE_LOCATION; }
 

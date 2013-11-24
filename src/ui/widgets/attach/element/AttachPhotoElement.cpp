@@ -6,6 +6,7 @@
  */
 
 #include "AttachPhotoElement.h"
+#include "JsonParseUtils.h"
 
 using namespace Tizen::Graphics;
 using namespace Tizen::Base;
@@ -53,9 +54,9 @@ result AttachPhotoElement::Construct(const Tizen::Graphics::Rectangle & rect, co
 	label->Construct(Rectangle(0, 0, rect.width, 40), fileName);
 	label->SetTextConfig(30, LABEL_TEXT_STYLE_NORMAL);
 
-	_pProgress = new Progress();
-	_pProgress->Construct(Rectangle(0, 0, rect.width, 20), 0, 100);
-	_pProgress->SetValue(0);
+	_pProgress = new SaneProgressBar();
+	_pProgress->Construct(Rectangle(0, 0, rect.width-20, 20), 0, 100);
+	_pProgress->SetProgress(0);
 
 	r = AddControl(label);
 	r = AddControl(_icon);
@@ -71,8 +72,12 @@ result AttachPhotoElement::Construct(const Tizen::Graphics::Rectangle & rect, co
 	r = layout->SetMargin(*label, 10, 10, 10, 0);
 
 	r = layout->SetRelation(*_pProgress, label, RECT_EDGE_RELATION_TOP_TO_BOTTOM);
-	r = layout->SetMargin(*_pProgress, 10, 10, 10, 0);
+	r = layout->SetMargin(*_pProgress, 10, 10, 20, 0);
 	r = layout->SetCenterAligned(*_pProgress, CENTER_ALIGN_HORIZONTAL);
+
+	_loading = true;
+	RequestRedraw(true);
+	SetUploaded(false);
 
 	StartUpload(_url);
 
@@ -83,20 +88,38 @@ void AttachPhotoElement::OnUploadError(result r) {
 	AppLog("Error %s", GetErrorMessage(r));
 }
 
+Tizen::Base::String AttachPhotoElement::ToString() {
+	if (IsUploaded())
+		return L"photo" + Integer::ToString(_ownerId) + L"_" + Integer::ToString(_id);
+	else
+		return L"";
+}
+
 void AttachPhotoElement::OnUploadSuccess(Tizen::Web::Json::JsonObject *savedPhoto) {
 	ByteBuffer buffer;
 	buffer.Construct(100000);
 
-	JsonWriter::Compose(savedPhoto, buffer);
+	JsonArray *array;
+	JsonParseUtils::GetArray(savedPhoto, L"response", array);
 
-	AppLog("Upload success! %s", buffer.GetPointer());
+	JsonObject *response;
+	JsonParseUtils::GetObject(array, 0, response);
+
+	JsonParseUtils::GetObject(savedPhoto, L"response", response);
+	JsonParseUtils::GetInteger(*response, L"owner_id", _ownerId);
+	JsonParseUtils::GetInteger(*response, L"id", _id);
+
+	_loading = false;
+	SetUploaded(true);
+	RequestRedraw(true);
+
 	RemoveControl(_pProgress);
 }
 
 void AttachPhotoElement::OnUploadProgress(long long currentLength, long long totalLength) {
 	AppLog("Upload progress %lld of %lld", currentLength, totalLength);
 	double perc = (double) currentLength / (double) totalLength;
-	_pProgress->SetValue((int) (perc * 100));
+	_pProgress->SetProgress((int) (perc * 100));
 	_pProgress->RequestRedraw(true);
 }
 

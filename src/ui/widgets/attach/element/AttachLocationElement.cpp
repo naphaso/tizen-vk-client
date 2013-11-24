@@ -46,6 +46,7 @@ result AttachLocationElement::Construct(const Tizen::Graphics::Rectangle & rect)
 	r = layout->SetMargin(*label, 0, 0, 0, 10);
 
 	SetUploaded(true);
+	_loading = false;
 
 	delete layout;
 	return r;

@@ -11,6 +11,7 @@
 #include "AttachElement.h"
 #include "LocalImageView.h"
 #include "FileUploader.h"
+#include "SaneProgressBar.h"
 
 class AttachPhotoElement:
 	public AttachElement,
@@ -21,6 +22,9 @@ public:
 
 	virtual result Construct(const Tizen::Graphics::Rectangle & rect, const Tizen::Base::String &url);
 
+	virtual Tizen::Base::String ToString();
+	virtual AttachmentType GetType() { return ATTACHMENT_TYPE_PHOTO; }
+
 	// PhotoUploadTrait
 	virtual void OnUploadError(result r);
 	virtual void OnUploadSuccess(Tizen::Web::Json::JsonObject *savedPhoto);
@@ -29,7 +33,10 @@ private:
 	Tizen::Base::String _url;
 	LocalImageView * _icon;
 
-	Tizen::Ui::Controls::Progress* _pProgress;
+	int _ownerId;
+	int _id;
+
+	SaneProgressBar* _pProgress;
 };
 
 #endif /* ATTACHPHOTOELEMENT_H_ */
