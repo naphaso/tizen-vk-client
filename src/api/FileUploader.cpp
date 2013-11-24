@@ -82,6 +82,9 @@ void PhotoUploadTrait::OnTransactionCompleted(HttpSession& httpSession, HttpTran
 	IJsonValue *responseJson;
 	JsonObject *responseJsonObject;
 	String photoValue;
+	int serverValue;
+	String hashValue;
+
 
 	uploadResponseData.Flip();
 
@@ -94,7 +97,17 @@ void PhotoUploadTrait::OnTransactionCompleted(HttpSession& httpSession, HttpTran
 	r = JsonParseUtils::GetString(*responseJsonObject, L"photo", photoValue);
 	TryCatch(r == E_SUCCESS, , "failed to get photo string from upload response json");
 
-	VKUApi::GetInstance().CreateRequest(L"photos.saveMessagesPhoto", this)->Put(L"photo", photoValue)->Submit(REQUEST_SAVE_PHOTO);
+	r = JsonParseUtils::GetInteger(*responseJsonObject, L"server", serverValue);
+	TryCatch(r == E_SUCCESS, , "failed to get server string from upload response json");
+
+	r = JsonParseUtils::GetString(*responseJsonObject, L"hash", hashValue);
+	TryCatch(r == E_SUCCESS, , "failed to get hash string from upload response json");
+
+	VKUApi::GetInstance().CreateRequest(L"photos.saveMessagesPhoto", this)
+			->Put(L"photo", photoValue)
+			->Put(L"server", Integer::ToString(serverValue))
+			->Put(L"hash", hashValue)
+			->Submit(REQUEST_SAVE_PHOTO);
 
 	delete &httpTransaction;
 	return;
