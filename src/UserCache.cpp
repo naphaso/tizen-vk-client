@@ -6,6 +6,7 @@
  */
 
 #include "UserCache.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Base::Collection;
 using namespace Tizen::Web::Json;
@@ -14,11 +15,12 @@ using namespace Tizen::Base;
 HashMap UserCache::_usersCache;
 
 UserCache::UserCache() {
+	CONSTRUCT(L"UserCache");
 	_usersCache.Construct(100);
 }
 
 UserCache::~UserCache() {
-
+	DESTRUCT(L"UserCache");
 }
 
 void UserCache::Put(int userId, JsonObject * userJson) {

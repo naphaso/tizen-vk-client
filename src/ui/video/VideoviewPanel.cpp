@@ -7,14 +7,14 @@
 
 #include "VideoviewPanel.h"
 #include "AppResourceId.h"
+#include "ObjectCounter.h"
 
 VideoviewPanel::VideoviewPanel() {
-	// TODO Auto-generated constructor stub
-
+	CONSTRUCT(L"VideoviewPanel");
 }
 
 VideoviewPanel::~VideoviewPanel() {
-	// TODO Auto-generated destructor stub
+	DESTRUCT(L"VideoviewPanel");
 }
 
 bool VideoviewPanel::Initialize() {

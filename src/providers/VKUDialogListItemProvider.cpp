@@ -7,6 +7,7 @@
 
 #include "VKUDialogListItemProvider.h"
 #include "SceneRegister.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Graphics;
@@ -26,11 +27,13 @@ static const int AVATAR_SIZE = 80;
 ///////////////////////////////////////////////////////////////
 
 VKUDialogListItemProvider::VKUDialogListItemProvider() {
+	CONSTRUCT(L"VKUDialogListItemProvider");
 	dialogsJson = null;
 	responseJson = null;
 }
 
 VKUDialogListItemProvider::~VKUDialogListItemProvider() {
+	DESTRUCT(L"VKUDialogListItemProvider");
 	// TODO Auto-generated destructor stub
 }
 

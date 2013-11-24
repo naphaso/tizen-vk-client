@@ -9,6 +9,7 @@
 #include "LocalImageView.h"
 #include "JsonParseUtils.h"
 #include "VKU.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Graphics;
 using namespace Tizen::Ui;
@@ -19,10 +20,13 @@ using namespace Tizen::App;
 
 MessageWallElement::MessageWallElement() {
 	_pBitmap = null;
+	CONSTRUCT(L"MessageWallElement");
 }
 
 MessageWallElement::~MessageWallElement() {
 	delete _pBitmap;
+
+	DESTRUCT(L"MessageWallElement");
 }
 
 result MessageWallElement::Construct(const Tizen::Graphics::Rectangle & rect, JsonObject * wallObject, int out) {

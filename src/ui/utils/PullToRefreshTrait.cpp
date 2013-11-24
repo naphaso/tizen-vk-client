@@ -6,6 +6,7 @@
  */
 
 #include "PullToRefreshTrait.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
@@ -13,12 +14,11 @@ using namespace Tizen::Ui::Controls;
 using namespace Tizen::Graphics;
 
 PullToRefreshTrait::PullToRefreshTrait() {
-	// TODO Auto-generated constructor stub
-
+	CONSTRUCT(L"PullToRefreshTrait");
 }
 
 PullToRefreshTrait::~PullToRefreshTrait() {
-	// TODO Auto-generated destructor stub
+	DESTRUCT(L"PullToRefreshTrait");
 }
 
 result PullToRefreshTrait::Construct(TableView *tableView, Control *progressControl, IRefreshable *refreshable, PullToRefreshDirection direction) {

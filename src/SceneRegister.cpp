@@ -9,6 +9,7 @@
 #include "VKUFormFactory.h"
 #include "AppResourceId.h"
 #include <FUi.h>
+#include "ObjectCounter.h"
 
 using namespace Tizen::Ui::Scenes;
 
@@ -24,12 +25,11 @@ const wchar_t* SCENE_VIDEOVIEW = L"VKUVideoView";
 const wchar_t* SCENE_USER = L"VKUSceneUser";
 
 SceneRegister::SceneRegister() {
-	// TODO Auto-generated constructor stub
-
+	CONSTRUCT(L"SceneRegister");
 }
 
 SceneRegister::~SceneRegister() {
-	// TODO Auto-generated destructor stub
+	DESTRUCT(L"SceneRegister");
 }
 
 void SceneRegister::RegisterAllScenes() {

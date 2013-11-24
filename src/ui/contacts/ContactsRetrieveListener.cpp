@@ -6,17 +6,19 @@
  */
 
 #include "ContactsRetrieveListener.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Web::Json;
 
 ContactsRetrieveListener::ContactsRetrieveListener(GroupedTableView * apTableView, ContactsTableProvider * apProvider) {
+	CONSTRUCT(L"ContactsRetrieveListener");
 	pGroupedTableView = apTableView;
 	pProvider = apProvider;
 }
 
 ContactsRetrieveListener::~ContactsRetrieveListener() {
-
+	DESTRUCT(L"ContactsRetrieveListener");
 }
 
 void ContactsRetrieveListener::OnResponseN(RequestId requestId, JsonObject *object) {

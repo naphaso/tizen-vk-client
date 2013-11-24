@@ -6,18 +6,18 @@
  */
 
 #include "TimeUtils.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Locales;
 using namespace Tizen::System;
 
 TimeUtils::TimeUtils() {
-	// TODO Auto-generated constructor stub
-
+	CONSTRUCT(L"TimeUtils");
 }
 
 TimeUtils::~TimeUtils() {
-	// TODO Auto-generated destructor stub
+	DESTRUCT(L"TimeUtils");
 }
 
 result TimeUtils::GetDialogsTime(int time, String & str) {

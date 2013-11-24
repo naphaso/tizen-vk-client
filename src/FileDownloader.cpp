@@ -12,6 +12,7 @@
 #include "FSecCrypto.h"
 
 #include "VKU.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Base::Utility;
@@ -28,6 +29,7 @@ private:
 	ICacheEntry *_cacheEntry;
 public:
 	DownloadingImageData(ICacheEntry *cacheEntry) {
+		CONSTRUCT(L"DownloadingImageData");
 		result r;
 		_cacheEntry = cacheEntry;
 		_file = new (std::nothrow) File();
@@ -35,6 +37,10 @@ public:
 		if(r != E_SUCCESS) {
 			AppLogException("failed to open file: %s", GetErrorMessage(r));
 		}
+	}
+
+	~DownloadingImageData() {
+		DESTRUCT(L"DownloadingImageData");
 	}
 
 	void Write(const ByteBuffer &buffer) {
@@ -55,7 +61,11 @@ public:
 };
 
 FileDownloader::FileDownloader() {
-	AppLog("constructor");
+	CONSTRUCT(L"FileDownloader");
+}
+
+FileDownloader::~FileDownloader() {
+	DESTRUCT(L"FileDownloader");
 }
 
 result FileDownloader::Construct() {
@@ -76,9 +86,7 @@ result FileDownloader::Construct() {
 	return r;
 }
 
-FileDownloader::~FileDownloader() {
 
-}
 
 result FileDownloader::DownloadImage(ICacheEntry *cacheEntry) {
 	result r;

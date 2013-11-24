@@ -8,6 +8,7 @@
 #include "MessagePhotoElement.h"
 #include "SceneRegister.h"
 #include "VKU.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Graphics;
 using namespace Tizen::Ui::Scenes;
@@ -15,11 +16,12 @@ using namespace Tizen::Base::Collection;
 using namespace Tizen::Base;
 
 MessagePhotoElement::MessagePhotoElement() {
+	CONSTRUCT(L"MessagePhotoElement");
 	pImageView = null;
 }
 
 MessagePhotoElement::~MessagePhotoElement() {
-
+	DESTRUCT(L"MessagePhotoElement");
 }
 
 result MessagePhotoElement::Construct(const Tizen::Graphics::Rectangle & rect, Tizen::Base::String & imageUrl) {

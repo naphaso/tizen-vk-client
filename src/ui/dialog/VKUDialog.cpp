@@ -4,6 +4,7 @@
 #include "VKUDialogPanel.h"
 #include "VKUColors.h"
 #include "JsonParseUtils.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
@@ -13,11 +14,12 @@ using namespace Tizen::Graphics;
 using namespace Tizen::Web::Json;
 
 VKUDialog::VKUDialog(void) {
+	CONSTRUCT(L"VKUDialog");
 	dialogJson = null;
 }
 
 VKUDialog::~VKUDialog(void) {
-
+	DESTRUCT(L"VKUDialog");
 }
 
 bool VKUDialog::Initialize() {

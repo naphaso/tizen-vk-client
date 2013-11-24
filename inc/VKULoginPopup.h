@@ -20,8 +20,8 @@ class VKULoginPopup :
 	public Tizen::Web::Controls::ILoadingListener,
 	public Tizen::Ui::IPropagatedKeyEventListener {
 public:
-
-	virtual ~VKULoginPopup(void) {}
+	VKULoginPopup();
+	virtual ~VKULoginPopup(void);
 
 	result Construct();
 

@@ -10,15 +10,16 @@
 #include "GalleryPanel.h"
 #include "VideoviewPanel.h"
 #include "UserPanel.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Ui::Scenes;
 
 VKUPanelFactory::VKUPanelFactory(void) {
-
+	CONSTRUCT(L"VKUPanelFactory");
 }
 
 VKUPanelFactory::~VKUPanelFactory(void) {
-
+	DESTRUCT(L"VKUPanelFactory");
 }
 
 Tizen::Ui::Controls::Panel*

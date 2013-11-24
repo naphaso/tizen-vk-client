@@ -6,6 +6,7 @@
  */
 
 #include "MultipleAvatar.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Graphics;
 using namespace Tizen::Ui::Controls;
@@ -14,12 +15,11 @@ using namespace Tizen::Base;
 using namespace Tizen::Base::Collection;
 
 MultipleAvatar::MultipleAvatar() {
-	// TODO Auto-generated constructor stub
-
+	CONSTRUCT(L"MultipleAvatar");
 }
 
 MultipleAvatar::~MultipleAvatar() {
-	// TODO Auto-generated destructor stub
+	DESTRUCT(L"MultipleAvatar");
 }
 
 result MultipleAvatar::Constrcut(const Rectangle & rect, AvatarType avatarType, Tizen::Base::Collection::ArrayList* pAvatars,

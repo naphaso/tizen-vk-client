@@ -2,6 +2,7 @@
 #include "VKUFormFactory.h"
 #include "VKUPanelFactory.h"
 #include "AppResourceId.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
@@ -9,9 +10,11 @@ using namespace Tizen::Ui::Controls;
 using namespace Tizen::Ui::Scenes;
 
 VKUFrame::VKUFrame(void) {
+	CONSTRUCT(L"VKUFrame");
 }
 
 VKUFrame::~VKUFrame(void) {
+	DESTRUCT(L"VKUFrame");
 }
 
 result VKUFrame::OnInitializing(void) {

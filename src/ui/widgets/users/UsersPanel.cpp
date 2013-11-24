@@ -10,6 +10,7 @@
 #include "JsonParseUtils.h"
 #include "RoundedAvatar.h"
 #include "VKUApi.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Base::Collection;
@@ -24,6 +25,7 @@ const wchar_t* MODEL_REQUESTS_SUGGESTS = L"MODEL_REQUESTS_SUGGESTS";
 const wchar_t* MODEL_PHONE_CONTACTS = L"MODEL_PHONE_CONTACTS";
 
 UsersPanel::UsersPanel() {
+	CONSTRUCT(L"UsersPanel");
 	_pIUserSelectedListeners = null;
 	_pCurrentModel = null;
 }
@@ -82,6 +84,7 @@ CATCH:
 }
 
 UsersPanel::~UsersPanel() {
+	DESTRUCT(L"UsersPanel");
 	if (_pIUserSelectedListeners)
 		delete _pIUserSelectedListeners;
 

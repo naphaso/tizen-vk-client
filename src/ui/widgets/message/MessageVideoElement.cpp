@@ -10,6 +10,7 @@
 #include "VKU.h"
 #include "TimeUtils.h"
 #include "SceneRegister.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Graphics;
 using namespace Tizen::Web::Json;
@@ -21,12 +22,14 @@ using namespace Tizen::Ui::Scenes;
 using namespace Tizen::Base::Collection;
 
 MessageVideoElement::MessageVideoElement() {
+	CONSTRUCT(L"MessageVideoElement");
 	pVideoObject = null;
 	pPlayBtn = null;
 	pImageView = null;
 }
 
 MessageVideoElement::~MessageVideoElement() {
+	DESTRUCT(L"MessageVideoElement");
 	if (pVideoObject)
 		delete pVideoObject;
 }

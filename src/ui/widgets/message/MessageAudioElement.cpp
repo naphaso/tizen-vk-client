@@ -8,6 +8,7 @@
 #include "MessageAudioElement.h"
 #include "JsonParseUtils.h"
 #include "VKU.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Graphics;
 using namespace Tizen::Ui;
@@ -24,11 +25,12 @@ Tizen::Graphics::Bitmap* MessageAudioElement::_pPausePressedBitmap = null;
 static const int ACTION_ID_PLAYPAUSE = 111;
 
 MessageAudioElement::MessageAudioElement() {
+	CONSTRUCT(L"MessageAudioElement");
 	isPlaying = false;
 }
 
 MessageAudioElement::~MessageAudioElement() {
-
+	DESTRUCT(L"MessageAudioElement");
 }
 
 void MessageAudioElement::InitStatics() {

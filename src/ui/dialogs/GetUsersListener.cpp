@@ -6,14 +6,15 @@
  */
 
 #include "GetUsersListener.h"
+#include "ObjectCounter.h"
 
 GetUsersListener::GetUsersListener() {
-	// TODO Auto-generated constructor stub
+	CONSTRUCT(L"GetUsersListener");
 
 }
 
 GetUsersListener::~GetUsersListener() {
-	// TODO Auto-generated destructor stub
+	DESTRUCT(L"GetUsersListener");
 }
 
 void GetUsersListener::OnResponseN(Tizen::Web::Json::JsonObject *object) {

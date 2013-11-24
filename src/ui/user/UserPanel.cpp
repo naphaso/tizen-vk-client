@@ -7,14 +7,14 @@
 
 #include "UserPanel.h"
 #include "AppResourceId.h"
+#include "ObjectCounter.h"
 
 UserPanel::UserPanel() {
-	// TODO Auto-generated constructor stub
-
+	CONSTRUCT(L"UserPanel");
 }
 
 UserPanel::~UserPanel() {
-	// TODO Auto-generated destructor stub
+	DESTRUCT(L"UserPanel");
 }
 
 bool UserPanel::Initialize() {

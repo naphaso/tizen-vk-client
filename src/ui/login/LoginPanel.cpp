@@ -9,6 +9,7 @@
 #include "AppResourceId.h"
 #include "VKUAuthConfig.h"
 #include "SceneRegister.h"
+#include "ObjectCounter.h"
 
 static const int ACTION_LOGIN = 101;
 static const int ACTION_SIGNUP = 102;
@@ -20,10 +21,11 @@ using namespace Tizen::Ui::Controls;
 using namespace Tizen::Ui::Scenes;
 
 LoginPanel::LoginPanel() {
-
+	CONSTRUCT(L"LoginPanel");
 }
 
 LoginPanel::~LoginPanel() {
+	DESTRUCT(L"LoginPanel");
 	delete pPopup;
 }
 

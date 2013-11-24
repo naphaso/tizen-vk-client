@@ -9,6 +9,7 @@
 #include "VKU.h"
 #include "AppResourceId.h"
 #include "VKUDialogPanel.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::App;
 using namespace Tizen::Base;
@@ -26,9 +27,13 @@ VKUServiceProxy::VKUServiceProxy(void) :
 		pLocalMessagePort(null),
 		pRemoteMessagePort(null),
 		_readEventListener(null),
-		_audioProgressListener(null) {}
+		_audioProgressListener(null) {
+	CONSTRUCT(L"VKUServiceProxy");
+}
 
-VKUServiceProxy::~VKUServiceProxy(void) {}
+VKUServiceProxy::~VKUServiceProxy(void) {
+	DESTRUCT(L"VKUServiceProxy");
+}
 
 result VKUServiceProxy::Construct(const AppId& appId, const String& remotePortName) {
 	result r = E_FAILURE;

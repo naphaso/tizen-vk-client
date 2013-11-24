@@ -8,6 +8,7 @@
 #include "VKUApi.h"
 
 #include <FText.h>
+#include "ObjectCounter.h"
 
 using namespace Tizen::App;
 using namespace Tizen::Base;
@@ -21,12 +22,13 @@ using namespace Tizen::Web::Json;
 
 
 VKUApi::VKUApi() : requestsMap(SingleObjectDeleter) {
+	CONSTRUCT(L"VKUApi");
 	httpSession = null;
 	requestsMap.Construct();
 }
 
 VKUApi::~VKUApi() {
-	// TODO Auto-generated destructor stub
+	DESTRUCT(L"VKUApi");
 }
 
 

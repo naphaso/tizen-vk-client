@@ -6,6 +6,7 @@
  */
 
 #include "VKURequestData.h"
+#include "ObjectCounter.h"
 
 #define MAX_RESPONSE_SIZE 131072
 
@@ -15,6 +16,7 @@ using namespace Tizen::Base;
 
 
 VKURequestData::VKURequestData(HttpTransaction *httpTransaction, IAPIRequestListener *requestListener) {
+	CONSTRUCT(L"VKURequestData");
 	this->listener = requestListener;
 	this->data.Construct(MAX_RESPONSE_SIZE);
 	this->httpTransaction = httpTransaction;
@@ -25,9 +27,8 @@ VKURequestData::VKURequestData(HttpTransaction *httpTransaction, IAPIRequestList
 }
 
 VKURequestData::~VKURequestData() {
-	AppLog("destruct VKURequestData");
+	DESTRUCT(L"VKURequestData");
 	if(httpTransaction != null) {
-		AppLog("delete transaction");
 		delete httpTransaction;
 	}
 }

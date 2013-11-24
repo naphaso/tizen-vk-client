@@ -3,6 +3,8 @@
 //
 #include "VKU.h"
 
+#include "ObjectCounter.h"
+
 using namespace Tizen::Base;
 using namespace Tizen::Base::Collection;
 
@@ -21,6 +23,9 @@ _EXPORT_ int OspMain(int argc, char* pArgv[]) {
 	result r = Tizen::App::UiApp::Execute(VKUApp::CreateInstance, &args);
 	TryLog(r == E_SUCCESS,
 			"[%s] Application execution failed", GetErrorMessage(r));
+
+	ObjectCounter::Report();
+
 	AppLog("Application finished.");
 
 	return static_cast<int>(r);

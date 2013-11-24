@@ -8,6 +8,7 @@
 #include "MessageLocationElement.h"
 #include "WebImageView.h"
 #include "JsonParseUtils.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Web::Json;
 using namespace Tizen::Base;
@@ -16,12 +17,12 @@ using namespace Tizen::Ui::Controls;
 using namespace Tizen::Graphics;
 
 MessageLocationElement::MessageLocationElement() {
-	// TODO Auto-generated constructor stub
+	CONSTRUCT(L"MessageLocationElement");
 	baseUrl = "";
 }
 
 MessageLocationElement::~MessageLocationElement() {
-	// TODO Auto-generated destructor stub
+	DESTRUCT(L"MessageLocationElement");
 }
 
 result MessageLocationElement::Construct(const Tizen::Graphics::Rectangle & rect, Tizen::Web::Json::JsonObject * location) {

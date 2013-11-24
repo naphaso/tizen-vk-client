@@ -8,12 +8,14 @@
 
 #include "IAPIRequestListener.h"
 #include "VKUApi.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Base::Collection;
 using namespace Tizen::Web::Json;
 
 IAPIRequestListener::IAPIRequestListener() : pendingRequests(SingleObjectDeleter) {
+	CONSTRUCT(L"IAPIRequestListener");
 	pendingRequests.Construct();
 }
 
@@ -22,6 +24,7 @@ void IAPIRequestListener::AddPendingRequest(const UuId &requestId) {
 }
 
 IAPIRequestListener::~IAPIRequestListener() {
+	DESTRUCT(L"IAPIRequestListener");
     IEnumerator* enumerator = pendingRequests.GetEnumeratorN();
     while (enumerator->MoveNext() == E_SUCCESS) {
         VKUApi::GetInstance().DropRequest(*static_cast<UuId *>(enumerator->GetCurrent()));

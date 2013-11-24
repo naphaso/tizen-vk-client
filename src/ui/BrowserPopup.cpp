@@ -6,6 +6,7 @@
  */
 
 #include "BrowserPopup.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Graphics;
 using namespace Tizen::Base;
@@ -16,12 +17,11 @@ using namespace Tizen::Io;
 using namespace Tizen::Ui;
 
 BrowserPopup::BrowserPopup() {
-	// TODO Auto-generated constructor stub
-
+	CONSTRUCT(L"BrowserPopup");
 }
 
 BrowserPopup::~BrowserPopup() {
-	// TODO Auto-generated destructor stub
+	DESTRUCT(L"BrowserPopup");
 }
 
 result BrowserPopup::Construct() {

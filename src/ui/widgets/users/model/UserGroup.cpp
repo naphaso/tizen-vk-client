@@ -7,12 +7,14 @@
 
 #include "UserGroup.h"
 #include "JsonParseUtils.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Base::Collection;
 using namespace Tizen::Web::Json;
 
 UserGroup::UserGroup() {
+	CONSTRUCT(L"UserGroup");
 	_pGroupName = null;
 
 	_pUserList = new JsonArray();
@@ -21,6 +23,7 @@ UserGroup::UserGroup() {
 
 // FIXME: leaks
 UserGroup::~UserGroup() {
+	DESTRUCT(L"UserGroup");
 //	if (_pGroupName)
 //		delete _pGroupName;
 //	delete _pUserList;

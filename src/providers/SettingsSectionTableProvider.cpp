@@ -6,6 +6,7 @@
  */
 
 #include "SettingsSectionTableProvider.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
@@ -13,12 +14,11 @@ using namespace Tizen::Ui::Controls;
 using namespace Tizen::Graphics;
 
 SettingsSectionTableProvider::SettingsSectionTableProvider() {
-	// TODO Auto-generated constructor stub
-
+	CONSTRUCT(L"SettingsSectionTableProvider");
 }
 
 SettingsSectionTableProvider::~SettingsSectionTableProvider() {
-	// TODO Auto-generated destructor stub
+	DESTRUCT(L"SettingsSectionTableProvider");
 }
 
 void SettingsSectionTableProvider::OnSectionTableViewContextItemActivationStateChanged(

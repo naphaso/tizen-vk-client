@@ -10,6 +10,7 @@
 #include <FIo.h>
 
 #include "VKU.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Io;
 using namespace Tizen::Base;
@@ -19,12 +20,11 @@ int VKUAuthConfig::expiresInValue = 0;
 int VKUAuthConfig::userIdValue = 0;
 
 VKUAuthConfig::VKUAuthConfig() {
-	// TODO Auto-generated constructor stub
-
+	CONSTRUCT(L"VKUAuthConfig");
 }
 
 VKUAuthConfig::~VKUAuthConfig() {
-	// TODO Auto-generated destructor stub
+	DESTRUCT(L"VKUAuthConfig");
 }
 
 

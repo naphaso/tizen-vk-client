@@ -8,6 +8,7 @@
 #include "MessageDocElement.h"
 #include "JsonParseUtils.h"
 #include "VKU.h"
+#include "ObjectCounter.h"
 
 using namespace Tizen::Graphics;
 using namespace Tizen::Ui;
@@ -17,11 +18,13 @@ using namespace Tizen::Web::Json;
 using namespace Tizen::App;
 
 MessageDocElement::MessageDocElement() {
+	CONSTRUCT(L"MessageDocElement");
 	_pBitmap = null;
 	_pDocObject = null;
 }
 
 MessageDocElement::~MessageDocElement() {
+	DESTRUCT(L"MessageDocElement");
 	delete _pBitmap;
 
 //	if (_pDocObject)

@@ -77,7 +77,7 @@ protected:
 public:
 
 private:
-	Tizen::Ui::Controls::EditField* _editField;
+	Tizen::Ui::Controls::EditArea* _editField;
 	VKUMessagesListItemProvider* _provider;
 	MessageSentListener* _messageSentListener;
 	Tizen::Web::Json::JsonObject* _dialogJson;
