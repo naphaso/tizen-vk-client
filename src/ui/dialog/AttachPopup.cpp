@@ -209,25 +209,31 @@ Tizen::Ui::Controls::TableViewItem* AttachPopup::CreateItem(int itemIndex, int i
 	Label *pLabel;
 	String name, icon;
 
+
 	switch (itemIndex) {
 	case 0:
-		name = L"Photo";
+		//name = L"Photo";
+		VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_NAME_PHOTO", name);
 		icon = L"icon_photo.png";
 		break;
 	case 1:
-		name = L"Video";
-		icon = L"icon_video.png";
+		//name = L"Video";
+		VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_NAME_VIDEO", name);
+		//icon = L"icon_video.png";
 		break;
 	case 2:
-		name = L"Audio";
+		//name = L"Audio";
+		VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_NAME_AUDIO", name);
 		icon = L"icon_audio.png";
 		break;
 	case 3:
-		name = L"Document";
+		//name = L"Document";
+		VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_NAME_DOC", name);
 		icon = L"icon_document.png";
 		break;
 	case 4:
-		name = L"Location";
+		//name = L"Location";
+		VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_NAME_LOCATION", name);
 		icon = L"icon_location.png";
 		{
 			Location location = LocationProvider::GetLastKnownLocation();
