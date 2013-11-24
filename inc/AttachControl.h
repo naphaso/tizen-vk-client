@@ -29,11 +29,13 @@ public:
 	virtual void OnElementRemoveRequest(AttachElement * source);
 
 	result AddElement(AttachElement * element);
+	Tizen::Base::Collection::IList * GetElements();
 private:
 	Tizen::Ui::Controls::ScrollPanel * _scrollPanel;
 	Tizen::Ui::HorizontalBoxLayout * _itemLayout;
 
 	IItemsRemovedListener *_listener;
+	bool _locationAdded;
 };
 
 #endif /* ATTACHCONTROL_H_ */

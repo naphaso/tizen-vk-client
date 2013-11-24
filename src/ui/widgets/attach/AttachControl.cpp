@@ -19,6 +19,7 @@ AttachControl::AttachControl() {
 }
 
 AttachControl::~AttachControl() {
+	AppLog("PIZDA AttachControl::~AttachControl");
 	_listener = null;
 }
 
@@ -62,10 +63,19 @@ CATCH:
 }
 
 result AttachControl::AddElement(AttachElement * element) {
+	AppLog("AttachControl::AddElement %x", element);
 	result r = E_SUCCESS;
 
 	if (element == null)
 		return E_INVALID_ARG;
+
+	if (element->GetType() == ATTACHMENT_TYPE_LOCATION && _locationAdded) {
+		delete element;
+		return E_SUCCESS;
+	}
+
+	if (element->GetType() == ATTACHMENT_TYPE_LOCATION)
+		_locationAdded = true;
 
 	r = _scrollPanel->AddControl(element);
 	TryCatch(r == E_SUCCESS, , "Failed DrawNinePatchedBitmap");
@@ -84,7 +94,15 @@ CATCH:
 	return r;
 }
 
+IList * AttachControl::GetElements() {
+	return _scrollPanel->GetControls();
+}
+
 void AttachControl::OnElementRemoveRequest(AttachElement * source) {
+	AppLog("AttachControl::OnElementRemoveRequest");
+	if (source->GetType() == ATTACHMENT_TYPE_LOCATION)
+		_locationAdded = false;
+
 	_scrollPanel->RemoveControl(*source);
 	Invalidate(true);
 

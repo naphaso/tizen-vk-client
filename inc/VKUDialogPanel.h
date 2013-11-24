@@ -31,6 +31,10 @@ public:
 	result OnInitializing(void);
 	result OnTerminating(void);
 
+	void RemoveAttachPanel();
+
+	void DoSend();
+
 	void FitToScreen(void);
 	result ShowAttachPanel(void);
 

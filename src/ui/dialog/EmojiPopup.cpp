@@ -36,15 +36,20 @@ void EmojiPopup::Show(EditArea *editArea) {
 }
 
 void EmojiPopup::Start() {
+
 	if(_popup == null) {
+		RelativeLayout popupLayout;
+		popupLayout.Construct();
+
 		_popup = new Popup();
-		_popup->Construct(false, Dimension(600, 800));
+		_popup->Construct(popupLayout, false, Dimension(600, 800));
 	}
 
 	_popup->SetPropagatedKeyEventListener(this);
 
 	ScrollPanel *scrollPanel = new ScrollPanel();
 	scrollPanel->Construct(_popup->GetClientAreaBounds());
+	scrollPanel->SetScrollBarVisible(false);
 
 	Button *button;
 
@@ -68,6 +73,10 @@ void EmojiPopup::Start() {
 	}
 
 	_popup->AddControl(scrollPanel);
+
+	RelativeLayout * layout = dynamic_cast<RelativeLayout *>(_popup->GetLayoutN());
+	layout->SetCenterAligned(*scrollPanel, CENTER_ALIGN_HORIZONTAL);
+	delete layout;
 
 	_popup->SetShowState(true);
 	_popup->Show();

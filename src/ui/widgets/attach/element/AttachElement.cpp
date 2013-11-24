@@ -14,6 +14,7 @@ using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::App;
 using namespace Tizen::Base::Collection;
+using namespace Tizen::Web::Json;
 
 static const int ACTION_ID_CLOSE = 444;
 
@@ -30,6 +31,14 @@ AttachElement::~AttachElement() {
 
 	if (_loadingBg)
 		delete _loadingBg;
+}
+
+Tizen::Web::Json::JsonObject * AttachElement::ToJson() {
+//	JsonObject * json;
+//	json->Construct();
+//
+//	return json;
+	return null;
 }
 
 result AttachElement::Construct(const Tizen::Graphics::Rectangle & rect) {

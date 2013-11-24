@@ -57,7 +57,12 @@ void GalleryForm::OnSceneActivatedN(const Tizen::Ui::Scenes::SceneId& previousSc
 	if (pArgs != null) {
 		imageUrl = static_cast<String* > (pArgs->GetAt(0));
 		AppLog("ImageUrl %ls", imageUrl->GetPointer());
-		VKUApp::GetInstance()->GetBitmapCache()->TakeBitmap(*imageUrl, this);
+		pBitmap = VKUApp::GetInstance()->GetBitmapCache()->TakeBitmap(*imageUrl, this);
+		if (pBitmap) {
+			Gallery *pGallery = static_cast<Gallery *>(GetControl(IDC_GALLERY, true));
+			pGallery->SetItemProvider(*this);
+			RequestRedraw(true);
+		}
 	}
 }
 

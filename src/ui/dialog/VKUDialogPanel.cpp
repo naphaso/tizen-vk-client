@@ -6,6 +6,8 @@
 #include "RoundedAvatar.h"
 #include "ObjectCounter.h"
 #include "EmojiPopup.h"
+#include "AttachPopup.h"
+#include "AttachLocationElement.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Base::Runtime;
@@ -14,6 +16,7 @@ using namespace Tizen::Ui::Controls;
 using namespace Tizen::Graphics;
 using namespace Tizen::Web::Json;
 using namespace Tizen::System;
+using namespace Tizen::Base::Collection;
 
 static const int ACTION_ID_ATTACH = 1234;
 static const int ACTION_ID_EMOJI  = 1235;
@@ -51,10 +54,17 @@ result VKUDialogPanel::OnInitializing(void) {
 	_editField->AddKeypadEventListener(*this);
 	_editField->AddTextEventListener(*this);
 	_editField->SetFocus();
+	_editField->SetKeypadAction(KEYPAD_ACTION_SEND);
+	_editField->SetKeypadStyle(KEYPAD_STYLE_NORMAL);
+	_editField->SetKeypadActionEnabled(true);
 
 	_attachButton = dynamic_cast<Button *>(GetControl(IDC_BUTTON_ATTACH, true));
-	_attachButton->SetActionId(ACTION_ID_EMOJI);
+	_attachButton->SetActionId(ACTION_ID_ATTACH);
 	_attachButton->AddActionEventListener(*this);
+
+	Button * emojiButton = dynamic_cast<Button *>(GetControl(IDC_BUTTON_EMOJI, true));
+	emojiButton->SetActionId(ACTION_ID_EMOJI);
+	emojiButton->AddActionEventListener(*this);
 
 	Panel * pullToRefreshPanel = dynamic_cast<Panel *>(GetControl(IDC_PANEL_DIALOG_PULL, true));
 
@@ -84,15 +94,12 @@ result VKUDialogPanel::OnInitializing(void) {
 void VKUDialogPanel::OnActionPerformed(const Tizen::Ui::Control& source, int actionId) {
 	if (actionId == ACTION_ID_ATTACH) {
 		ShowAttachPanel();
+		AttachPopup::Show(_attachControlPanel);
 
-		AttachElement * pElement = new AttachElement();
-		pElement->Construct(Rectangle(0, 0, 200, 200));
-
-		_attachControlPanel->AddElement(pElement);
+//		AttachElement * pElement = new AttachElement();
+//		pElement->Construct(Rectangle(0, 0, 200, 200));
+//		_attachControlPanel->AddElement(pElement);
 	} else if(actionId == ACTION_ID_EMOJI) {
-		//_editField->AppendText(String(L"&#128522;"), *VKUApp::GetInstance()->GetAppResource()->GetBitmapN("emoji/126980.png"));
-		//_editField->RequestRedraw(true);
-		//CreateEmojiPopup();
 		EmojiPopup::Show(_editField);
 	}
 }
@@ -130,6 +137,12 @@ CATCH:
 }
 
 void VKUDialogPanel::OnAllItemsRemoved() {
+	AppLog("VKUDialogPanel::OnAllItemsRemoved");
+	RemoveAttachPanel();
+}
+
+void VKUDialogPanel::RemoveAttachPanel() {
+	AppLog("VKUDialogPanel::RemoveAttachPanel");
 	if (_attachControlPanel == null)
 		return;
 
@@ -272,26 +285,83 @@ void VKUDialogPanel::FitToScreen() {
 	Invalidate(true);
 }
 
+void VKUDialogPanel::DoSend() {
+	AppLog("VKUDialogPanel::DoSend");
+	String text = _editField->GetText();
+	VKURequestBuilder * builder;
+	if (_peerId < 2000000000) {
+		builder = VKUApi::GetInstance().CreateRequest(L"messages.send", _messageSentListener)
+				->Put(L"user_id", Integer::ToString(_peerId))
+				->Put(L"message", text);
+	} else {
+		builder = VKUApi::GetInstance().CreateRequest(L"messages.send", _messageSentListener)
+				->Put(L"chat_id", Integer::ToString(_peerId-2000000000))
+				->Put(L"message", text);
+	}
+
+	AppLog("Checking attachments");
+	if (_attachControlPanel == null) {
+		builder->Submit(REQUEST_SEND_MESSAGE);
+		return;
+	}
+
+	AppLog("Attachments are not empty");
+	// process attachments
+	IList * attachs = _attachControlPanel->GetElements();
+
+	for (int i=0; i<attachs->GetCount(); i++) {
+		AppLog("Checking attachments %d", i);
+		AttachElement *pElement = dynamic_cast<AttachElement *>(attachs->GetAt(i));
+		AppLog("AttachControl::AddElement %x", pElement);
+
+		AppLog("Cast %d done", i);
+
+		if (pElement == null) {
+			AppLog("pElement[%d] == null", i);
+			continue;
+		}
+
+		if (pElement->GetType() == ATTACHMENT_TYPE_LOCATION) {
+			AppLog("ATTACHMENT_TYPE_LOCATION at %d", i);
+
+			AttachLocationElement * pLocationElement = dynamic_cast<AttachLocationElement *>(pElement);
+			AppLog("AttachControl::AddElement %x", pLocationElement);
+
+			if (pLocationElement == null) {
+				AppLog("Attach SHIT HAPPENED");
+				continue;
+			} else {
+				AppLog("Attach OK");
+			}
+
+			if (Double::IsNaN(pLocationElement->GetLat())) {
+				AppLog("No coordinates");
+				continue;
+			}
+
+			AppLog("Lattitude %lf", pLocationElement->GetLat());
+			builder->Put(L"lat", Double::ToString(pLocationElement->GetLat()));
+
+			AppLog("Longtitude");
+			builder->Put(L"lng", Double::ToString(pLocationElement->GetLng()));
+			AppLog("Done");
+		}
+	}
+
+	AppLog("RemoveAttachPanel and submitting");
+
+	RemoveAttachPanel();
+	builder->Submit(REQUEST_SEND_MESSAGE);
+	_editField->Clear();
+	_editField->RequestRedraw(true);
+}
+
 void VKUDialogPanel::OnKeypadActionPerformed(Control &source,
 		KeypadAction keypadAction) {
 
 
 	if (keypadAction == KEYPAD_ACTION_SEND) {
-		String text = _editField->GetText();
-		if (_peerId < 2000000000) {
-			VKUApi::GetInstance().CreateRequest(L"messages.send", _messageSentListener)
-					->Put(L"user_id", Integer::ToString(_peerId))
-					->Put(L"message", text)
-					->Submit(REQUEST_SEND_MESSAGE);
-		} else {
-			VKUApi::GetInstance().CreateRequest(L"messages.send", _messageSentListener)
-					->Put(L"chat_id", Integer::ToString(_peerId-2000000000))
-					->Put(L"message", text)
-					->Submit(REQUEST_SEND_MESSAGE);
-		}
-
-		_editField->Clear();
-		_editField->RequestRedraw(true);
+		DoSend();
 	}
 }
 
