@@ -299,22 +299,18 @@ void VKUDialogPanel::DoSend() {
 				->Put(L"message", text);
 	}
 
-	AppLog("Checking attachments");
 	if (_attachControlPanel == null) {
 		builder->Submit(REQUEST_SEND_MESSAGE);
+		_editField->Clear();
+		_editField->Invalidate(true);
 		return;
 	}
 
-	AppLog("Attachments are not empty");
 	// process attachments
 	IList * attachs = _attachControlPanel->GetElements();
 
 	for (int i=0; i<attachs->GetCount(); i++) {
-		AppLog("Checking attachments %d", i);
 		AttachElement *pElement = dynamic_cast<AttachElement *>(attachs->GetAt(i));
-		AppLog("AttachControl::AddElement %x", pElement);
-
-		AppLog("Cast %d done", i);
 
 		if (pElement == null) {
 			AppLog("pElement[%d] == null", i);
@@ -322,16 +318,12 @@ void VKUDialogPanel::DoSend() {
 		}
 
 		if (pElement->GetType() == ATTACHMENT_TYPE_LOCATION) {
-			AppLog("ATTACHMENT_TYPE_LOCATION at %d", i);
 
 			AttachLocationElement * pLocationElement = dynamic_cast<AttachLocationElement *>(pElement);
-			AppLog("AttachControl::AddElement %x", pLocationElement);
 
 			if (pLocationElement == null) {
 				AppLog("Attach SHIT HAPPENED");
 				continue;
-			} else {
-				AppLog("Attach OK");
 			}
 
 			if (Double::IsNaN(pLocationElement->GetLat())) {
@@ -339,21 +331,18 @@ void VKUDialogPanel::DoSend() {
 				continue;
 			}
 
-			AppLog("Lattitude %lf", pLocationElement->GetLat());
 			builder->Put(L"lat", Double::ToString(pLocationElement->GetLat()));
-
-			AppLog("Longtitude");
 			builder->Put(L"lng", Double::ToString(pLocationElement->GetLng()));
-			AppLog("Done");
 		}
 	}
 
-	AppLog("RemoveAttachPanel and submitting");
 
 	RemoveAttachPanel();
 	builder->Submit(REQUEST_SEND_MESSAGE);
 	_editField->Clear();
-	_editField->RequestRedraw(true);
+	_editField->SetText(L"");
+//	_editField->RequestRedraw(true);
+	_editField->Invalidate(true);
 }
 
 void VKUDialogPanel::OnKeypadActionPerformed(Control &source,

@@ -10,6 +10,7 @@
 
 #include <FUi.h>
 #include <FBase.h>
+#include <FApp.h>
 #include "AttachControl.h"
 
 typedef enum AttachmentTypeIndexed {
@@ -23,7 +24,8 @@ typedef enum AttachmentTypeIndexed {
 class AttachPopup:
 	public Tizen::Ui::IPropagatedKeyEventListener,
 	public Tizen::Ui::Controls::ITableViewItemProvider,
-	public Tizen::Ui::Controls::ITableViewItemEventListener {
+	public Tizen::Ui::Controls::ITableViewItemEventListener,
+	public Tizen::App::IAppControlResponseListener {
 public:
 	AttachPopup(AttachControl * ctl);
 	virtual ~AttachPopup();
@@ -45,6 +47,11 @@ public:
 	virtual bool TranslateKeyEventInfo(Tizen::Ui::Control& source,
 									  Tizen::Ui::KeyEventInfo& keyEventInfo) {return false;};
 
+	// IAppControlProviderEventListener
+	void OnAppControlCompleteResponseReceived(const Tizen::App::AppId& appId,
+							 const Tizen::Base::String& operationId,
+							 const Tizen::App::AppCtrlResult appControlResult,
+							 const Tizen::Base::Collection::IMap* pExtraData);
 	// ITableViewItemProvider
 	virtual int GetItemCount(void);
 	virtual Tizen::Ui::Controls::TableViewItem* CreateItem(int itemIndex, int itemWidth);
