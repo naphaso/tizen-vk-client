@@ -81,7 +81,7 @@ result MessageWallElement::Construct(const Tizen::Graphics::Rectangle & rect, Js
 	layout.SetCenterAligned(*nameLabel, CENTER_ALIGN_VERTICAL);
 	layout.SetHorizontalFitPolicy(*nameLabel, FIT_POLICY_CONTENT);
 
-	SetSize(Dimension(rect.width, 90));
+	SetSize(Dimension(nameLabel->GetWidth() + _pIcon->GetWidth() + 20, 90));
 	SetPropagatedTouchEventListener(this);
 
 	return r;
