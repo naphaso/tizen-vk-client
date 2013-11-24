@@ -32,7 +32,7 @@ UsersPanel::UsersPanel() {
 
 result UsersPanel::Construct(const Tizen::Graphics::Rectangle & rect) {
 	result r = E_SUCCESS;
-
+	String searchFriendsText;
 	_pLetterNav = new HashMap();
 	_pLetterNav->Construct(70);
 
@@ -50,7 +50,7 @@ result UsersPanel::Construct(const Tizen::Graphics::Rectangle & rect) {
 	_pSearchBar = new SearchBar();
 	_pSearchBar->Construct(Rectangle(0, 0, rect.width, 90));
 	TryCatch(r == E_SUCCESS, , "Failed _pIUserSelectedListeners->Construct");
-	String searchFriendsText;
+
 	VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_SEARCH_FRIENDS", searchFriendsText);
 	_pSearchBar->SetGuideText(searchFriendsText);
 	_pSearchBar->AddSearchBarEventListener(*this);
