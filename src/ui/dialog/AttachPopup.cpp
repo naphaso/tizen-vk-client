@@ -8,7 +8,11 @@
 #include "AttachPopup.h"
 #include "LocalImageView.h"
 #include "AttachLocationElement.h"
+#include "AttachPhotoElement.h"
+
 #include <FLocations.h>
+#include <FApp.h>
+#include "VKU.h"
 
 using namespace Tizen::Graphics;
 using namespace Tizen::Base;
@@ -100,7 +104,6 @@ void AttachPopup::OnTableViewItemStateChanged(
 		break;
 	}
 
-	HideAndDie();
 }
 
 
@@ -109,11 +112,61 @@ int AttachPopup::GetItemCount(void) {
 	return 5;
 }
 
+void AttachPopup::OnAppControlCompleteResponseReceived(const Tizen::App::AppId& appId,
+						 const Tizen::Base::String& operationId,
+						 const Tizen::App::AppCtrlResult appControlResult,
+						 const Tizen::Base::Collection::IMap* pExtraData)
+{	if (appId.Equals(String(L"tizen.gallery")) &&
+	       operationId.Equals(String(L"http://tizen.org/appcontrol/operation/pick")))
+	   {
+	      if (appControlResult  == APP_CTRL_RESULT_SUCCEEDED)
+	      {
+	         AppLog("Media list retrieving succeeded.");
+	         // Use the selected media paths
+	         if (pExtraData)
+	         {
+	            IList* pValueList = const_cast< IList* >(dynamic_cast< const IList* >
+	                                                     (pExtraData->GetValue(String(L"http://tizen.org/appcontrol/data/selected"))));
+	            if (pValueList)
+	            {
+	               for (int i = 0; i < pValueList->GetCount(); i++)
+	               {
+	                  String* pValue = dynamic_cast< String* >(pValueList->GetAt(i));
+	                  // Use the file path
+	                  AttachPhotoElement * photoElement = new AttachPhotoElement();
+	                  photoElement->Construct(Rectangle(0, 0, 200, 200), *pValue);
+	                  _attachControl->AddElement(photoElement);
+	               }
+
+	               HideAndDie();
+	            }
+	         }
+	      }
+	      else if (appControlResult  == APP_CTRL_RESULT_FAILED)
+	      {
+	         AppLog("Media list retrieving failed.");
+	      }
+	      else if (appControlResult  == APP_CTRL_RESULT_CANCELED)
+	      {
+	         AppLog("Media list retrieving was canceled.");
+	      }
+	      else if (appControlResult == APP_CTRL_RESULT_TERMINATED)
+	      {
+	         AppLog("Media list retrieving was terminated.");
+	      }
+	      else if (appControlResult == APP_CTRL_RESULT_ABORTED)
+	      {
+	         AppLog("Media list retrieving was is aborted.");
+	      }
+	   }
+}
+
 void AttachPopup::CreateAttachment(AttachmentTypeIndexed item) {
 	AttachElement * pElement;
 	Rectangle defaultSizeRect(0, 0, 200, 200);
 	if (item == ATI_LOCATION) {
 		if (!LocationProvider::GetLastKnownLocation().IsValid()) {
+			HideAndDie();
 			return;
 		}
 
@@ -122,8 +175,24 @@ void AttachPopup::CreateAttachment(AttachmentTypeIndexed item) {
 
 		pElement = dynamic_cast<AttachElement *>(pLocationElement);
 		_attachControl->AddElement(pElement);
-	} else if (item == ATI_PHOTO) {
+		HideAndDie();
+	} else if (item == ATI_PHOTO || item == ATI_VIDEO) {
+//		AppControlProviderManager::GetInstance()->SetApp(this);
 
+		String mime = (item == ATI_PHOTO) ? L"image/*" : L"video/*";
+		HashMap extraData;
+		extraData.Construct();
+
+		String selectKey = L"http://tizen.org/appcontrol/data/selection_mode";
+		String selectVal = L"multiple";
+		extraData.Add(&selectKey, &selectVal);
+
+		AppControl* pAc = AppManager::FindAppControlN(L"tizen.gallery",
+											 L"http://tizen.org/appcontrol/operation/pick");
+		if (pAc) {
+			pAc->Start(null, &mime, &extraData, this);
+			delete pAc;
+		}
 	}
 //	 else {
 //		pElement = new AttachElement();
