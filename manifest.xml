@@ -9,13 +9,13 @@
     <Apps>
         <ApiVersion>2.2</ApiVersion>
         <Privileges>
-            <Privilege>http://tizen.org/privilege/location</Privilege>
             <Privilege>http://tizen.org/privilege/web.service</Privilege>
+            <Privilege>http://tizen.org/privilege/location</Privilege>
             <Privilege>http://tizen.org/privilege/account.write</Privilege>
-            <Privilege>http://tizen.org/privilege/http</Privilege>
             <Privilege>http://tizen.org/privilege/application.launch</Privilege>
-            <Privilege>http://tizen.org/privilege/notification</Privilege>
+            <Privilege>http://tizen.org/privilege/http</Privilege>
             <Privilege>http://tizen.org/privilege/contact.write</Privilege>
+            <Privilege>http://tizen.org/privilege/notification</Privilege>
             <Privilege>http://tizen.org/privilege/account.read</Privilege>
             <Privilege>http://tizen.org/privilege/vibrator</Privilege>
             <Privilege>http://tizen.org/privilege/contact.read</Privilege>
@@ -24,7 +24,7 @@
             <UiScalability BaseScreenSize="Normal" CoordinateSystem="Logical" LogicalCoordinate="720"/>
             <UiTheme SystemTheme="Black"/>
             <DisplayNames>
-                <DisplayName Locale="eng-GB">VKU</DisplayName>
+                <DisplayName Locale="eng-GB">VK Messenger</DisplayName>
             </DisplayNames>
             <Icons>
                 <Icon Section="MainMenu">mainmenu.png</Icon>

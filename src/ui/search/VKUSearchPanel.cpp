@@ -2,12 +2,13 @@
 #include "AppResourceId.h"
 #include "VKUSearchPanel.h"
 #include "ObjectCounter.h"
+#include "VKU.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
 
-
+static const int ACTION_ID_SYNC = 123445;
 VKUSearchPanel::VKUSearchPanel(void) {
 	CONSTRUCT(L"VKUSearchPanel");
 }
@@ -29,9 +30,20 @@ VKUSearchPanel::OnInitializing(void)
 {
 	result r = E_SUCCESS;
 
-	// TODO: Add your initialization code here
+	Button *syncButton = dynamic_cast<Button *>(GetControl(IDC_BUTTON_SYNC, true));
+	syncButton->SetActionId(ACTION_ID_SYNC);
+	syncButton->AddActionEventListener(*this);
 
 	return r;
+}
+
+void VKUSearchPanel::OnActionPerformed(const Tizen::Ui::Control& source, int actionId) {
+	if (ACTION_ID_SYNC) {
+		VKUApp::GetInstance()->GetService()->ContactsSync();
+		Button *syncButton = dynamic_cast<Button *>(GetControl(IDC_BUTTON_SYNC, true));
+		syncButton->SetActionId(0);
+		syncButton->SetText("In progress. Check your addressbook.");
+	}
 }
 
 result
