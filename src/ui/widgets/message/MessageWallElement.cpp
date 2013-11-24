@@ -64,10 +64,10 @@ result MessageWallElement::Construct(const Tizen::Graphics::Rectangle & rect, Js
 	r = AddControl(_pIcon);
 
 	nameLabel = new Label();
-	nameLabel->Construct(Rectangle(0, 0, rect.width-72, 35), L"Wall Post");
+	nameLabel->Construct(Rectangle(0, 0, rect.width-72, 40), L"Wall Post");
 	nameLabel->SetMargin(0, 0);
 	nameLabel->SetTextHorizontalAlignment(ALIGNMENT_LEFT);
-	nameLabel->SetTextConfig(40, LABEL_TEXT_STYLE_BOLD);
+	nameLabel->SetTextConfig(35, LABEL_TEXT_STYLE_BOLD);
 
 	r = AddControl(nameLabel);
 
