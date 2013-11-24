@@ -8,17 +8,24 @@
 #ifndef MESSAGEVIDEOELEMENT_H_
 #define MESSAGEVIDEOELEMENT_H_
 
-#include "MessageElement.h"
-#include "WebImageView.h"
-#include "LocalImageView.h"
 #include <FGraphics.h>
 #include <FBase.h>
 #include <FWeb.h>
 #include <FUi.h>
+#include <FApp.h>
+
+class MessageVideoElement;
+
+#include "MessageElement.h"
+#include "WebImageView.h"
+#include "LocalImageView.h"
+#include "IAPIRequestListener.h"
+#include "Requests.h"
 
 class MessageVideoElement:
 	public MessageElement,
-	public Tizen::Ui::IPropagatedTouchEventListener {
+	public Tizen::Ui::IPropagatedTouchEventListener,
+	public IAPIRequestListener {
 public:
 	MessageVideoElement();
 	virtual ~MessageVideoElement();
@@ -38,6 +45,8 @@ public:
 	virtual MessageElementType GetElementType() { return MESSAGE_TYPE_VIDEO; }
 //	virtual result OnDraw(void);
 
+	// IAPIRequestListener
+	virtual void OnResponseN(RequestId requestId, Tizen::Web::Json::JsonObject *object);
 private:
 	Tizen::Base::String thumbUrl;
 	Tizen::Web::Json::JsonObject * pVideoObject;

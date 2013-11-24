@@ -12,13 +12,19 @@
 #include <FUi.h>
 #include <FBase.h>
 #include <FMedia.h>
+#include <FWebJson.h>
+
+class VideoviewForm;
+
+#include "IAPIRequestListener.h"
 
 class VideoviewForm:
 	public Tizen::Ui::Controls::Form,
 	public Tizen::Ui::Controls::IFormBackEventListener,
 	public Tizen::Ui::Scenes::ISceneEventListener,
 	public Tizen::Media::IPlayerEventListener,
-	public Tizen::Media::IPlayerVideoEventListener {
+	public Tizen::Media::IPlayerVideoEventListener,
+	public IAPIRequestListener {
 
 public:
 	VideoviewForm();
@@ -39,7 +45,7 @@ public:
 
 protected:
     // IPlayerEventListener
-    virtual void OnPlayerOpened(result r) {}
+    virtual void OnPlayerOpened(result r);
     virtual void OnPlayerEndOfClip(void) {}
     virtual void OnPlayerBuffering(int percent) {}
     virtual void OnPlayerErrorOccurred(Tizen::Media::PlayerErrorReason r) {}
@@ -53,6 +59,12 @@ protected:
 			Tizen::Graphics::BitmapPixelFormat bitmapPixelFormat,
 			const Tizen::Graphics::Dimension& dim, const byte* pBuffer, int sizeOfBuffer, result r) {};
 
+	// IAPIRequestListener
+	virtual void OnResponseN(RequestId requestId, Tizen::Web::Json::JsonObject *object);
+	virtual void OnError(result r);
+
+
+	void PlayUrl(const Tizen::Base::String &url);
 private:
 	Tizen::Ui::Controls::Panel* pOverlayRegionSamplePanel;
 	Tizen::Ui::Controls::OverlayRegion *pOverlayRegion;

@@ -8,6 +8,7 @@
 #include "MessageVideoElement.h"
 #include "JsonParseUtils.h"
 #include "VKU.h"
+#include "VKUApi.h"
 #include "TimeUtils.h"
 #include "SceneRegister.h"
 #include "ObjectCounter.h"
@@ -107,17 +108,64 @@ bool MessageVideoElement::OnTouchPressed(Tizen::Ui::Control& source, const Tizen
 }
 
 bool MessageVideoElement::OnTouchReleased(Tizen::Ui::Control& source, const Tizen::Ui::TouchEventInfo& touchEventInfo) {
+	/*
 	SceneManager* pSceneManager = SceneManager::GetInstance();
 
 	ArrayList* pList = new (std::nothrow) ArrayList(SingleObjectDeleter);
-	String *pUrl = new String(Integer::ToString(videoId));
 
 	pList->Construct(1);
-	pList->Add(pUrl);
+	pList->Add(pVideoObject->CloneN());
 
 	pSceneManager->GoForward(ForwardSceneTransition(SCENE_VIDEOVIEW, SCENE_TRANSITION_ANIMATION_TYPE_ZOOM_IN, SCENE_HISTORY_OPTION_ADD_HISTORY), pList);
+
+	*/
+
+	result r;
+	int videoId, ownerId;
+	String fullVideoId;
+
+	r = JsonParseUtils::GetInteger(*pVideoObject, L"id", videoId);
+	r = JsonParseUtils::GetInteger(*pVideoObject, L"owner_id", ownerId);
+
+
+	fullVideoId.Append(ownerId);
+	fullVideoId.Append(L"_");
+	fullVideoId.Append(videoId);
+
+
+	VKUApi::GetInstance().CreateRequest(L"execute.getVideo", this)
+			->Put(L"video_id", fullVideoId)
+			->Put(L"owner_id", Integer::ToString(ownerId))
+			->Submit(REQUEST_GET_VIDEO);
 
 	return true;
 }
 
+void MessageVideoElement::OnResponseN(RequestId requestId, JsonObject *object) {
+	if(requestId == REQUEST_GET_VIDEO) {
+		result r;
+		JsonObject *response;
+		String player;
+		AppControl* pAc;
+
+		r = JsonParseUtils::GetObject(object, L"response", response);
+		TryCatch(r == E_SUCCESS, , "failed to get response from object");
+
+		r = JsonParseUtils::GetString(*response, L"player", player);
+		TryCatch(r == E_SUCCESS, , "failed to get player from object");
+
+
+		pAc = AppManager::FindAppControlN(L"tizen.internet",
+								 L"http://tizen.org/appcontrol/operation/view");
+		if (pAc) {
+			pAc->Start(&player, null, null, null);
+			delete pAc;
+		}
+
+		return;
+		CATCH:
+		AppLogException("error open video: %s", GetErrorMessage(r));
+		return;
+	}
+}
 
