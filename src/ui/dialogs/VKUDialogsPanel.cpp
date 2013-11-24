@@ -3,6 +3,7 @@
 
 #include "VKUApi.h"
 #include "ObjectCounter.h"
+#include "VKUMainForm.h"
 
 using namespace Tizen::Graphics;
 using namespace Tizen::Ui;
@@ -92,5 +93,14 @@ void VKUDialogsPanel::OnSceneDeactivated(
 
 void VKUDialogsPanel::OnRefresh() {
 	pProvider->LoadData();
+
+	Frame* frame = VKUApp::GetInstance()->GetFrame(FRAME_NAME);
+	Form* form = frame->GetCurrentForm();
+	if (form->GetName() == IDF_MAIN) {
+		VKUMainForm *mainForm = dynamic_cast<VKUMainForm *>(form);
+		if(mainForm != null) {
+			mainForm->UpdateCounters();
+		}
+	}
 }
 
