@@ -7,6 +7,7 @@
 
 #include "SettingsSectionTableProvider.h"
 #include "ObjectCounter.h"
+#include "Settings.h"
 
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
@@ -26,6 +27,7 @@ void SettingsSectionTableProvider::OnSectionTableViewContextItemActivationStateC
 		int itemIndex, Tizen::Ui::Controls::TableViewContextItem* pContextItem,
 		bool activated) {
 
+
 }
 
 void SettingsSectionTableProvider::OnSectionTableViewItemStateChanged(
@@ -33,6 +35,37 @@ void SettingsSectionTableProvider::OnSectionTableViewItemStateChanged(
 		int itemIndex, Tizen::Ui::Controls::TableViewItem* pItem,
 		Tizen::Ui::Controls::TableViewItemStatus status) {
 
+	String texts[2][3];
+
+	texts[0][0] = L"sound";
+	texts[0][1] = L"vibe";
+	texts[0][2] = L"notify";
+
+	texts[1][0] = L"resize";
+	texts[1][1] = L"reserved1";
+	texts[1][2] = L"reserved2";
+
+	AppLog("Item state changed");
+
+	switch(status) {
+	case TABLE_VIEW_ITEM_STATUS_SELECTED:
+		AppLog("TABLE_VIEW_ITEM_STATUS_SELECTED");
+		break;
+	case TABLE_VIEW_ITEM_STATUS_HIGHLIGHTED:
+		AppLog("TABLE_VIEW_ITEM_STATUS_HIGHLIGHTED");
+		break;
+	case TABLE_VIEW_ITEM_STATUS_CHECKED:
+		AppLog("TABLE_VIEW_ITEM_STATUS_CHECKED");
+		Settings::SetSetting(texts[sectionIndex][itemIndex], 1);
+		break;
+	case TABLE_VIEW_ITEM_STATUS_UNCHECKED:
+		AppLog("TABLE_VIEW_ITEM_STATUS_UNCHECKED");
+		Settings::SetSetting(texts[sectionIndex][itemIndex], 0);
+		break;
+	case TABLE_VIEW_ITEM_STATUS_MORE:
+		AppLog("TABLE_VIEW_ITEM_STATUS_MORE");
+		break;
+	}
 }
 
 int SettingsSectionTableProvider::GetSectionCount(void) {
@@ -93,7 +126,6 @@ Tizen::Ui::Controls::TableViewItem* SettingsSectionTableProvider::CreateItem(
 	pItem->SetBackgroundColor(itemBgColor, TABLE_VIEW_ITEM_DRAWING_STATUS_NORMAL);
 	pItem->SetBackgroundColor(itemBgColor, TABLE_VIEW_ITEM_DRAWING_STATUS_PRESSED);
 	pItem->SetBackgroundColor(itemBgColor, TABLE_VIEW_ITEM_DRAWING_STATUS_HIGHLIGHTED);
-
 
 	pItem->AddControl(pLabel);
 

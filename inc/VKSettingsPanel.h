@@ -12,6 +12,7 @@
 class VKSettingsPanel :
 	public Tizen::Ui::Controls::Panel,
  	public Tizen::Ui::Scenes::ISceneEventListener,
+ 	public Tizen::Ui::IActionEventListener,
  	public IAPIRequestListener
 {
 
@@ -34,6 +35,8 @@ public:
 								   const Tizen::Ui::Scenes::SceneId& currentSceneId, Tizen::Base::Collection::IList* pArgs);
 	virtual void OnSceneDeactivated(const Tizen::Ui::Scenes::SceneId& currentSceneId,
 									const Tizen::Ui::Scenes::SceneId& nextSceneId);
+
+	virtual void OnActionPerformed(const Tizen::Ui::Control& source, int actionId);
 
 	virtual void OnResponseN(RequestId requestId, Tizen::Web::Json::JsonObject *object);
 	virtual void OnError();

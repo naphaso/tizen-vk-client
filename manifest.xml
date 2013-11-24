@@ -17,6 +17,7 @@
             <Privilege>http://tizen.org/privilege/notification</Privilege>
             <Privilege>http://tizen.org/privilege/contact.write</Privilege>
             <Privilege>http://tizen.org/privilege/account.read</Privilege>
+            <Privilege>http://tizen.org/privilege/vibrator</Privilege>
             <Privilege>http://tizen.org/privilege/contact.read</Privilege>
         </Privileges>
         <UiApp HwAcceleration="On" LaunchingHistoryVisible="True" Main="True" MenuIconVisible="True" Name="VKU">
