@@ -36,7 +36,7 @@ public:
 	void SetElementActionListener(IElementActionListener * listener) { _listener = listener; }
 	virtual void OnActionPerformed(const Tizen::Ui::Control& source, int actionId);
 
-	virtual Tizen::Web::Json::JsonObject * ToJson();
+	virtual Tizen::Base::String ToString();
 	bool IsUploaded() { return _isUploaded; }
 
 	virtual AttachmentType GetType() { return ATTACHMENT_TYPE_DOC; }

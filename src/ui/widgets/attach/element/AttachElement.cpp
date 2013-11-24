@@ -33,12 +33,8 @@ AttachElement::~AttachElement() {
 		delete _loadingBg;
 }
 
-Tizen::Web::Json::JsonObject * AttachElement::ToJson() {
-//	JsonObject * json;
-//	json->Construct();
-//
-//	return json;
-	return null;
+String AttachElement::ToString() {
+	return L"";
 }
 
 result AttachElement::Construct(const Tizen::Graphics::Rectangle & rect) {
