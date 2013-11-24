@@ -31,6 +31,7 @@ MessageAudioElement::MessageAudioElement() {
 
 MessageAudioElement::~MessageAudioElement() {
 	DESTRUCT(L"MessageAudioElement");
+	VKUApp::GetInstance()->GetService()->ResetCurrentAudioElement(this);
 }
 
 void MessageAudioElement::InitStatics() {
@@ -53,9 +54,10 @@ void MessageAudioElement::InitStatics() {
 	}
 }
 
-result MessageAudioElement::Construct(const Tizen::Graphics::Rectangle & rect, JsonObject * audioJson) {
+result MessageAudioElement::Construct(const Tizen::Graphics::Rectangle & rect, JsonObject * audioJson, int out) {
 	result r = E_SUCCESS;
-
+	String url;
+	Bitmap *progressPoint;
 	InitStatics();
 
 	_pAudioJson = audioJson->CloneN();
@@ -93,12 +95,31 @@ result MessageAudioElement::Construct(const Tizen::Graphics::Rectangle & rect, J
 	pNameLabel->SetTextConfig(35, LABEL_TEXT_STYLE_NORMAL);
 	pNameLabel->SetTextHorizontalAlignment(ALIGNMENT_LEFT);
 
+	_slider = new Slider();
+	r = _slider->Construct(Rectangle(0, 0, rect.width - 60, 60),BACKGROUND_STYLE_NONE, false, 0, 100);
+	progressPoint = VKUApp::GetInstance()->GetAppResource()->GetBitmapN(L"progress_point.png");
+	r = _slider->SetThumbBitmap(SLIDER_THUMB_STATUS_NORMAL, *progressPoint);
+	TryCatch(r == E_SUCCESS, , "failed to construct slider");
+	delete progressPoint;
+
+	if(out) {
+		_slider->SetBarBackgroundColor(Color(0x384f6c, false));
+	} else {
+		_slider->SetBarBackgroundColor(Color(0x4c6d96, false));
+	}
+
+	_slider->SetThumbTextColor(SLIDER_THUMB_STATUS_NORMAL, Color(0, 0, 0, 0));
+	//_slider->AddSliderEventListener(*this);
+	_slider->AddAdjustmentEventListener(*this);
+
 	r = AddControl(_pPlayPauseButton);
 	TryCatch(r == E_SUCCESS, , "Failed AddControl _pPlayPauseButton");
 	r = AddControl(pAuthorLabel);
 	TryCatch(r == E_SUCCESS, , "Failed AddControl pAuthorLabel");
 	r = AddControl(pNameLabel);
 	TryCatch(r == E_SUCCESS, , "Failed AddControl pNameLabel");
+	r = AddControl(_slider);
+	TryCatch(r == E_SUCCESS, , "Failed AddControl _slider");
 
 	r = layout.SetRelation(*_pPlayPauseButton, this, RECT_EDGE_RELATION_LEFT_TO_LEFT);
 	TryCatch(r == E_SUCCESS, , "Failed layout.SetRelation");
@@ -122,8 +143,23 @@ result MessageAudioElement::Construct(const Tizen::Graphics::Rectangle & rect, J
 	r = layout.SetMargin(*pNameLabel, 10, 0, 10, 0);
 	TryCatch(r == E_SUCCESS, , "Failed layout.SetMargin");
 
-	r = SetSize(Dimension(rect.width, 120));
+	r = layout.SetRelation(*_slider, pNameLabel, RECT_EDGE_RELATION_TOP_TO_BOTTOM);
+	TryCatch(r == E_SUCCESS, , "Failed layout.SetRelation");
+	r = layout.SetRelation(*_slider, _pPlayPauseButton, RECT_EDGE_RELATION_LEFT_TO_RIGHT);
+	TryCatch(r == E_SUCCESS, , "Failed layout.SetRelation");
+	r = layout.SetMargin(*_slider, 0, 0, 10, 0);
+	TryCatch(r == E_SUCCESS, , "Failed layout.SetMargin");
+
+
+	r = SetSize(Dimension(rect.width, 180));
 	TryCatch(r == E_SUCCESS, , "Failed SetSize(Dimension");
+
+
+
+	JsonParseUtils::GetString(*_pAudioJson, L"url", url);
+	if(VKUApp::GetInstance()->GetService()->IsAudioCurrent(url)) {
+		VKUApp::GetInstance()->GetService()->SetCurrentAudioElement(this);
+	}
 
 	return r;
 
@@ -135,21 +171,27 @@ CATCH:
 void MessageAudioElement::OnActionPerformed(const Tizen::Ui::Control& source, int actionId) {
 	AppLog("MessageAudioElement::OnActionPerformed");
 
-	isPlaying = !isPlaying;
 
-	if (isPlaying) {
+	if (!isPlaying) {
+		isPlaying = !isPlaying;
+
 		String url;
 		JsonParseUtils::GetString(*_pAudioJson, L"url", url);
 
 		VKUApp::GetInstance()->GetService()->PlayAudio(url);
+		VKUApp::GetInstance()->GetService()->SetCurrentAudioElement(this);
 
 		_pPlayPauseButton->SetNormalBackgroundBitmap(*_pPauseNormalBitmap);
 		_pPlayPauseButton->SetPressedBackgroundBitmap(*_pPausePressedBitmap);
+		_pPlayPauseButton->RequestRedraw(true);
 	} else {
+		isPlaying = !isPlaying;
+
 		VKUApp::GetInstance()->GetService()->PauseAudio();
 
 		_pPlayPauseButton->SetNormalBackgroundBitmap(*_pPlayNormalBitmap);
 		_pPlayPauseButton->SetPressedBackgroundBitmap(*_pPlayPressedBitmap);
+		_pPlayPauseButton->RequestRedraw(true);
 	}
 }
 
@@ -165,3 +207,40 @@ void MessageAudioElement::OnActionPerformed(const Tizen::Ui::Control& source, in
 //
 //	return E_SUCCESS;
 //}
+
+void MessageAudioElement::OnProgress(int progress) {
+	_slider->SetValue(progress);
+	_slider->RequestRedraw(true);
+
+	if(!isPlaying) {
+		isPlaying = !isPlaying;
+
+		_pPlayPauseButton->SetNormalBackgroundBitmap(*_pPauseNormalBitmap);
+		_pPlayPauseButton->SetPressedBackgroundBitmap(*_pPausePressedBitmap);
+		_pPlayPauseButton->RequestRedraw(true);
+	}
+}
+
+void MessageAudioElement::OnReset() {
+	_slider->SetValue(0);
+	_slider->RequestRedraw(true);
+	if(isPlaying) {
+		isPlaying = false;
+		_pPlayPauseButton->SetNormalBackgroundBitmap(*_pPlayNormalBitmap);
+		_pPlayPauseButton->SetPressedBackgroundBitmap(*_pPlayPressedBitmap);
+		_pPlayPauseButton->RequestRedraw(true);
+	}
+}
+
+
+/*
+void MessageAudioElement::OnSliderBarMoved(Slider& source, int value) {
+	AppLog("PLAYER slider moved to %d", value);
+	VKUApp::GetInstance()->GetService()->SeekAudio(value);
+}*/
+
+
+void MessageAudioElement::OnAdjustmentValueChanged(const Tizen::Ui::Control& source, int adjustment) {
+	AppLog("PLAYER slider moved to %d", adjustment);
+	VKUApp::GetInstance()->GetService()->SeekAudio(adjustment);
+}

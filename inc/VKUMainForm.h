@@ -4,6 +4,7 @@
 #include <FApp.h>
 #include <FBase.h>
 #include <FSystem.h>
+#include <FShell.h>
 #include <FUi.h>
 #include <FUiIme.h>
 #include <FGraphics.h>

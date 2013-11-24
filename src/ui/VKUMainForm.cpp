@@ -138,6 +138,13 @@ void VKUMainForm::OnResponseN(RequestId requestId, JsonObject *object) {
 	r = JsonParseUtils::GetInteger(*response, L"messages", messages);
 	if(r == E_SUCCESS) {
 		header->SetItemNumberedBadgeIcon(0, messages);
+
+
+		Tizen::Shell::NotificationRequest notificationBadge;
+		notificationBadge.SetBadgeNumber(messages);
+		Tizen::Shell::NotificationManager notificationManager;
+		notificationManager.Construct();
+		notificationManager.NotifyByAppId(L"iEl2RaVlnG.VKU", notificationBadge);
 	}
 
 	r = JsonParseUtils::GetInteger(*response, L"friends", friends);

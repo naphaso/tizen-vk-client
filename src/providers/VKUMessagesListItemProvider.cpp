@@ -441,7 +441,7 @@ ArrayList * VKUMessagesListItemProvider::GetMessageElementsN(const JsonObject *p
 			JsonParseUtils::GetObject(pAttachObject, L"audio", pAudioObject);
 
 			MessageAudioElement *pMessageAudioEleemnt = new MessageAudioElement();
-			pMessageAudioEleemnt->Construct(Rectangle(0, 0, 520, 240), pAudioObject);
+			pMessageAudioEleemnt->Construct(Rectangle(0, 0, 520, 240), pAudioObject, out);
 
 			pMessageElement = dynamic_cast<MessageElement *>(pMessageAudioEleemnt);
 
