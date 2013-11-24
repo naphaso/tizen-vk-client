@@ -106,6 +106,8 @@ extern const wchar_t* IDS_SOUND;
 extern const wchar_t* IDS_STRING1;
 extern const wchar_t* IDS_STRING2;
 extern const wchar_t* IDS_STRING3;
+extern const wchar_t* IDS_SYNC;
+extern const wchar_t* IDS_SYNC_IN_PROGRESS;
 extern const wchar_t* IDS_TYPING;
 extern const wchar_t* IDS_UNKNOWN;
 extern const wchar_t* IDS_VIBRATION;

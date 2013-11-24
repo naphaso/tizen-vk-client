@@ -12,7 +12,9 @@
     <text id="IDS_RESIZE_BEFORE_UPLOAD">Сжатие картинок</text>
     <text id="IDS_WRITE_MESSAGE">Сообщение</text>
     <text id="IDS_REGISTER">Регистрация</text>
+    <text id="IDS_SYNC">Синхронизировать контакты</text>
     <text id="IDS_NEW_MESSAGES">Новые сообщения</text>
+    <text id="IDS_SYNC_IN_PROGRESS">Синхронизация... Проверьте контакты.</text>
     <text id="IDS_NAME_VIDEO">Видео</text>
     <text id="IDS_NOTIFICATION">Извещения</text>
     <text id="IDS_NAME_DOC">Документ</text>
