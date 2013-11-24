@@ -29,11 +29,12 @@ result
 VKUSearchPanel::OnInitializing(void)
 {
 	result r = E_SUCCESS;
-
+	String syncText;
 	Button *syncButton = dynamic_cast<Button *>(GetControl(IDC_BUTTON_SYNC, true));
 	syncButton->SetActionId(ACTION_ID_SYNC);
 	syncButton->AddActionEventListener(*this);
-
+	VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_SYNC", syncText);
+	syncButton->SetText(syncText);
 	return r;
 }
 
@@ -42,7 +43,9 @@ void VKUSearchPanel::OnActionPerformed(const Tizen::Ui::Control& source, int act
 		VKUApp::GetInstance()->GetService()->ContactsSync();
 		Button *syncButton = dynamic_cast<Button *>(GetControl(IDC_BUTTON_SYNC, true));
 		syncButton->SetActionId(0);
-		syncButton->SetText("In progress. Check your addressbook.");
+		String syncInProgress;
+		VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_SYNC_IN_PROGRESS", syncInProgress);
+		syncButton->SetText(syncInProgress);
 	}
 }
 
