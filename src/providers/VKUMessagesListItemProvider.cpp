@@ -455,9 +455,14 @@ ArrayList * VKUMessagesListItemProvider::GetMessageElementsN(const JsonObject *p
 			pMessageElement = static_cast<MessageElement * >(pDocElement);
 		} else if (attachType == L"wall") {
 			AppLog("Message has wall, receiving");
-			pMessageElement = new MessageWallElement();
-			pMessageElement->Construct(Rectangle(0, 0, 320, 240));
 
+			JsonObject *pWallObject;
+			JsonParseUtils::GetObject(pAttachObject, L"wall", pWallObject);
+
+			MessageWallElement * pWallElement = new MessageWallElement();
+			pWallElement->Construct(Rectangle(0, 0, 320, 240), pWallObject, out);
+
+			pMessageElement = dynamic_cast<MessageElement *>(pWallElement);
 		}
 
 		pResultArray->Add(pMessageElement);
