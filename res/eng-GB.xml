@@ -11,6 +11,7 @@
     <text id="IDS_SEARCH">Search</text>
     <text id="IDS_RESIZE_BEFORE_UPLOAD">Resize before upload</text>
     <text id="IDS_WRITE_MESSAGE">Write message</text>
+    <text id="IDS_REGISTER">Register</text>
     <text id="IDS_NEW_MESSAGES">New messages</text>
     <text id="IDS_NAME_VIDEO">Video</text>
     <text id="IDS_NOTIFICATION">Notification</text>
@@ -23,6 +24,8 @@
     <text id="IDS_ONLINE">Online</text>
     <text id="IDS_NAME_PHOTO">Photo</text>
     <text id="IDS_SOUND">Sound</text>
+    <text id="IDS_BANNER">You can message your friends for free</text>
+    <text id="IDS_LOGIN">Login</text>
     <text id="IDS_CONTACTS">Contacts</text>
     <text id="IDS_NAME_WALLPOST">Wall post</text>
     <text id="IDS_UNKNOWN">Unknown</text>

@@ -11,6 +11,7 @@
     <text id="IDS_SEARCH">Поиск</text>
     <text id="IDS_RESIZE_BEFORE_UPLOAD">Сжатие картинок</text>
     <text id="IDS_WRITE_MESSAGE">Сообщение</text>
+    <text id="IDS_REGISTER">Регистрация</text>
     <text id="IDS_NEW_MESSAGES">Новые сообщения</text>
     <text id="IDS_NAME_VIDEO">Видео</text>
     <text id="IDS_NOTIFICATION">Извещения</text>
@@ -23,6 +24,8 @@
     <text id="IDS_ONLINE">В сети</text>
     <text id="IDS_NAME_PHOTO">Фотография</text>
     <text id="IDS_SOUND">Звук</text>
+    <text id="IDS_BANNER">Вы сможете бесплатно обмениваться мгновенными сообщениями с друзьями</text>
+    <text id="IDS_LOGIN">Вход</text>
     <text id="IDS_CONTACTS">Контакты</text>
     <text id="IDS_NAME_WALLPOST">Запись на стене</text>
     <text id="IDS_UNKNOWN">Неизвестно</text>
