@@ -6,11 +6,19 @@
 #include "VKUApi.h"
 #include "Requests.h"
 #include "ObjectCounter.h"
+#include "VKU.h"
+#include <FSystem.h>
+#include <FShell.h>
 
+using namespace Tizen::System;
 using namespace Tizen::Base;
 using namespace Tizen::Ui;
 using namespace Tizen::Ui::Controls;
 using namespace Tizen::Web::Json;
+using namespace Tizen::Io;
+using namespace Tizen::Shell;
+
+static const int ACTION_ID_SIGNOUT = 223;
 
 VKSettingsPanel::VKSettingsPanel(void) {
 	CONSTRUCT(L"VKSettingsPanel");
@@ -32,12 +40,33 @@ result VKSettingsPanel::OnInitializing(void) {
 
 	SectionTableView* pSettingsTable = static_cast<SectionTableView *>(GetControl(IDC_SECTIONTABLEVIEW_SETTINGS, true));
 	pSettingsTable->SetItemProvider(pProvider);
+	pSettingsTable->AddSectionTableViewItemEventListener(*pProvider);
 	pAvatarPanel = static_cast<Panel *>(GetControl(IDC_PANEL_SETTINGS_AVATAR, true));
 	pLabelName = static_cast<Label *>(GetControl(IDC_LABEL_SETTINGS_NAME, true));
+
+	Button * signout = dynamic_cast<Button *>(GetControl(IDC_BUTTON_SETTINGS_SIGNOUT, true));
+	signout->SetActionId(ACTION_ID_SIGNOUT);
+	signout->AddActionEventListener(*this);
 
 	VKUApi::GetInstance().CreateRequest("users.get", this)->Put(L"fields", "photo_max")->Submit(REQUEST_GET_MYSELF);
 
 	return r;
+}
+
+void VKSettingsPanel::OnActionPerformed(const Tizen::Ui::Control& source, int actionId) {
+	if (actionId == ACTION_ID_SIGNOUT) {
+		String regPath(VKUApp::GetInstance()->GetAppDataPath() + L"auth.ini");
+		File::Remove(regPath);
+
+		NotificationRequest request;
+		request.SetBadgeNumber(0);
+
+		NotificationManager notificationManager;
+		notificationManager.Construct();
+		notificationManager.NotifyByAppId(L"iEl2RaVlnG.VKU", request);
+
+		VKUApp::GetInstance()->Terminate();
+	}
 }
 
 result VKSettingsPanel::OnTerminating(void) {
