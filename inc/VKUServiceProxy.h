@@ -16,6 +16,7 @@ class VKUServiceProxy;
 
 #include "IReadEventListener.h"
 #include "IAudioProgressListener.h"
+#include "MessageAudioElement.h"
 
 class VKUServiceProxy : public Tizen::Io::IMessagePortListener {
 public:
@@ -31,12 +32,18 @@ public:
 
 	void PlayAudio(const Tizen::Base::String & url);
 	void PauseAudio();
+	void SeekAudio(int value);
 
 	void SubscribeReadEvents(IReadEventListener *readEventListener);
 	void UnsubscribeReadEvents();
 
 	void SetAudioProgressListener(IAudioProgressListener *audioProgressListener);
 	void UnsetAudioProgressListener();
+
+	void SetCurrentAudioElement(MessageAudioElement *element);
+	void ResetCurrentAudioElement(MessageAudioElement *element);
+
+	bool IsAudioCurrent(const Tizen::Base::String &url);
 private:
 	Tizen::Io::LocalMessagePort* pLocalMessagePort;
 	Tizen::Io::RemoteMessagePort* pRemoteMessagePort;
@@ -44,6 +51,9 @@ private:
 
 	IAudioProgressListener *_audioProgressListener;
 	IReadEventListener *_readEventListener;
+
+	MessageAudioElement *_audioElement;
+	Tizen::Base::String currentUrl;
 };
 
 #endif /* VKUSERVICEPROXY_H_ */

@@ -11,6 +11,7 @@
 #include "VKUDialogPanel.h"
 #include "ObjectCounter.h"
 
+
 using namespace Tizen::App;
 using namespace Tizen::Base;
 using namespace Tizen::Base::Runtime;
@@ -27,7 +28,8 @@ VKUServiceProxy::VKUServiceProxy(void) :
 		pLocalMessagePort(null),
 		pRemoteMessagePort(null),
 		_readEventListener(null),
-		_audioProgressListener(null) {
+		_audioProgressListener(null),
+		_audioElement(null) {
 	CONSTRUCT(L"VKUServiceProxy");
 }
 
@@ -149,6 +151,10 @@ void VKUServiceProxy::OnMessageReceivedN(RemoteMessagePort* pRemoteMessagePort, 
 				if(_audioProgressListener != null) {
 					_audioProgressListener->OnAudioProgress(duration, position);
 				}
+
+				if(_audioElement != null) {
+					_audioElement->OnProgress((int)(((double)position / (double)duration)*100));
+				}
 			}
 		}
 	}
@@ -158,6 +164,7 @@ void VKUServiceProxy::OnMessageReceivedN(RemoteMessagePort* pRemoteMessagePort, 
 }
 
 void VKUServiceProxy::PlayAudio(const String & url) {
+	currentUrl = url;
 	result r = E_SUCCESS;
 	HashMap *pMap =	new HashMap(SingleObjectDeleter);
 	pMap->Construct();
@@ -172,6 +179,16 @@ void VKUServiceProxy::PauseAudio() {
 	HashMap *pMap =	new HashMap(SingleObjectDeleter);
 	pMap->Construct();
 	pMap->Add(new String(L"request"), new String(L"audio-pause"));
+	r = SendMessage(pMap);
+	delete pMap;
+}
+
+void VKUServiceProxy::SeekAudio(int value) {
+	result r = E_SUCCESS;
+	HashMap *pMap =	new HashMap(SingleObjectDeleter);
+	pMap->Construct();
+	pMap->Add(new String(L"request"), new String(L"audio-seek"));
+	pMap->Add(new String(L"seek"), new String(Integer::ToString(value)));
 	r = SendMessage(pMap);
 	delete pMap;
 }
@@ -210,4 +227,28 @@ void VKUServiceProxy::SetAudioProgressListener(IAudioProgressListener *audioProg
 
 void VKUServiceProxy::UnsetAudioProgressListener() {
 	_audioProgressListener = null;
+}
+
+void VKUServiceProxy::SetCurrentAudioElement(MessageAudioElement *element) {
+	if(_audioElement != null) {
+		if(_audioElement != element) {
+			_audioElement->OnReset();
+		}
+	}
+
+	_audioElement = element;
+}
+
+void VKUServiceProxy::ResetCurrentAudioElement(MessageAudioElement *element) {
+	if(_audioElement == element) {
+		_audioElement = null;
+	}
+}
+
+bool VKUServiceProxy::IsAudioCurrent(const String &url) {
+	if(currentUrl.CompareTo(url) == 0) {
+		return true;
+	} else {
+		return false;
+	}
 }
