@@ -33,16 +33,16 @@ result VKUContactsPanel::OnInitializing(void) {
 
 	Integer userIdInt = Integer(VKUAuthConfig::GetUserId());
 
-	UsersPanel *pUsersPanel = new UsersPanel();
-	pUsersPanel->Construct(GetBounds());
-	r = AddControl(pUsersPanel);
-	pUsersPanel->AddUserSelectedListener(this);
+	_usersPanel = new UsersPanel();
+	_usersPanel->Construct(GetBounds());
+	r = AddControl(_usersPanel);
+	_usersPanel->AddUserSelectedListener(this);
 
 	Form * form = dynamic_cast<Form *>(GetParent());
 	RelativeLayout * layout = dynamic_cast<RelativeLayout *>(form->GetLayoutN());
 	layout->SetVerticalFitPolicy(*this, FIT_POLICY_PARENT);
 
-	pUsersPanel->RequestModel(MODEL_TYPE_FRIENDS_ALPHA);
+
 
 	return r;
 }
@@ -63,12 +63,14 @@ void VKUContactsPanel::ClearItems() {
 
 void VKUContactsPanel::OnSceneActivatedN(const Tizen::Ui::Scenes::SceneId& previousSceneId,
 							   const Tizen::Ui::Scenes::SceneId& currentSceneId, Tizen::Base::Collection::IList* pArgs) {
-
+	AppLog("contacts activated");
+	_usersPanel->RequestModel(MODEL_TYPE_FRIENDS_ALPHA);
 }
 
 void VKUContactsPanel::OnSceneDeactivated(const Tizen::Ui::Scenes::SceneId& currentSceneId,
 								const Tizen::Ui::Scenes::SceneId& nextSceneId) {
-
+	AppLog("contacts deactivated");
+	_usersPanel->ClearModel();
 }
 
 void VKUContactsPanel::OnUserSelected(const Tizen::Web::Json::JsonObject * userJson) {

@@ -43,6 +43,7 @@ public:
 	void AddUserSelectedListener(IUserSelectedListener * pListener);
 
 	void RequestModel(UserModelType model);
+	void ClearModel();
 
 	// IAPIRequestListener
 	virtual void OnResponseN(RequestId requestId, Tizen::Web::Json::JsonObject *object);
@@ -74,6 +75,7 @@ public:
 	// ITextEventListener
 	virtual void OnTextValueChanged(const Tizen::Ui::Control& source);
 	virtual void OnTextValueChangeCanceled(const Tizen::Ui::Control& source);
+
 
 
 private:

@@ -9,6 +9,7 @@
 #include "VKUAuthConfig.h"
 #include "Requests.h"
 #include "IUserSelectedListener.h"
+#include "UsersPanel.h"
 
 class VKUContactsPanel:
 	public Tizen::Ui::Controls::Panel,
@@ -39,6 +40,7 @@ public:
 	void ClearItems();
 
 private:
+	UsersPanel *_usersPanel;
 //	ContactsRetrieveListener* pContactsRetrieveListener;
 //	ContactsTableProvider* pProvider;
 };

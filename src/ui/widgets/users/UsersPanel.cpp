@@ -158,6 +158,15 @@ void UsersPanel::RequestModel(UserModelType model) {
 	}
 }
 
+void UsersPanel::ClearModel() {
+	if(_pCurrentModel != null) {
+		delete _pCurrentModel;
+		_pCurrentModel = null;
+		_pTableView->UpdateTableView();
+		_pTableView->RequestRedraw(true);
+	}
+}
+
 // IAPIRequestListener
 void UsersPanel::OnResponseN(RequestId requestId, Tizen::Web::Json::JsonObject *object) {
 	result r;
