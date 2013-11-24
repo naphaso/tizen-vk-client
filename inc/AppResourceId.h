@@ -8,6 +8,7 @@ extern const wchar_t* IDC_BUTTON_EMOJI;
 extern const wchar_t* IDC_BUTTON_LOGIN;
 extern const wchar_t* IDC_BUTTON_REGISTER;
 extern const wchar_t* IDC_BUTTON_SETTINGS_SIGNOUT;
+extern const wchar_t* IDC_BUTTON_SYNC;
 extern const wchar_t* IDC_BUTTON_USER_CALLTO;
 extern const wchar_t* IDC_BUTTON_USER_WRITETO;
 extern const wchar_t* IDC_CHECKBUTTON1;

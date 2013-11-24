@@ -9,6 +9,7 @@
 
 class VKUSearchPanel :
 	public Tizen::Ui::Controls::Panel,
+ 	public Tizen::Ui::IActionEventListener,
  	public Tizen::Ui::Scenes::ISceneEventListener
 {
 
@@ -25,6 +26,7 @@ protected:
 
 // Generated call-back functions
 public:
+	virtual void OnActionPerformed(const Tizen::Ui::Control& source, int actionId);
 
 
 	virtual void OnSceneActivatedN(const Tizen::Ui::Scenes::SceneId& previousSceneId,
