@@ -34,6 +34,7 @@ public:
 	virtual void OnFormBackRequested(Tizen::Ui::Controls::Form& source);
 	virtual void OnActionPerformed(const Tizen::Ui::Control& source, int actionId);
 
+	void UpdateCounters();
 protected:
 	static const int ID_HEADER_MESSAGES = 101;
 	static const int ID_HEADER_CONTACTS = 102;
@@ -46,9 +47,9 @@ protected:
 									const Tizen::Ui::Scenes::SceneId& nextSceneId);
 
 
-	void ClearContacts();
+	//void ClearContacts();
 
-	void UpdateCounters();
+
 	virtual void OnResponseN(RequestId requestId, Tizen::Web::Json::JsonObject *object);
 };
 

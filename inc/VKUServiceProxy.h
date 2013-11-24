@@ -44,6 +44,9 @@ public:
 	void ResetCurrentAudioElement(MessageAudioElement *element);
 
 	bool IsAudioCurrent(const Tizen::Base::String &url);
+
+
+	void ContactsSync();
 private:
 	Tizen::Io::LocalMessagePort* pLocalMessagePort;
 	Tizen::Io::RemoteMessagePort* pRemoteMessagePort;

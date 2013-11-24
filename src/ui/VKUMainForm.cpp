@@ -64,18 +64,15 @@ void VKUMainForm::OnActionPerformed(const Tizen::Ui::Control& source,
 	UpdateCounters();
 	switch (actionId) {
 	case ID_HEADER_MESSAGES:
-		ClearContacts();
 		pSceneManager->GoForward(ForwardSceneTransition(SCENE_MAIN_DIALOGS));
 		break;
 	case ID_HEADER_CONTACTS:
 		pSceneManager->GoForward(ForwardSceneTransition(SCENE_MAIN_CONTACTS));
 		break;
 	case ID_HEADER_SEARCH:
-		ClearContacts();
 		pSceneManager->GoForward(ForwardSceneTransition(SCENE_MAIN_SEARCH));
 		break;
 	case ID_HEADER_SETTINGS:
-		ClearContacts();
 		pSceneManager->GoForward(ForwardSceneTransition(SCENE_MAIN_SETTINGS));
 		break;
 	default:
@@ -105,6 +102,7 @@ void VKUMainForm::OnSceneDeactivated(
 
 }
 
+/*
 void VKUMainForm::ClearContacts() {
 	//Frame* frame = VKUApp::GetInstance()->GetFrame(FRAME_NAME);
 	//Form* form = frame->GetCurrentForm();
@@ -115,6 +113,7 @@ void VKUMainForm::ClearContacts() {
 	}
 	//}
 }
+*/
 
 void VKUMainForm::UpdateCounters() {
 	VKUApi::GetInstance().CreateRequest("account.getCounters", this)->Put(L"filter", L"messages,friends")->Submit(REQUEST_COUNTERS);
@@ -145,10 +144,21 @@ void VKUMainForm::OnResponseN(RequestId requestId, JsonObject *object) {
 		Tizen::Shell::NotificationManager notificationManager;
 		notificationManager.Construct();
 		notificationManager.NotifyByAppId(L"iEl2RaVlnG.VKU", notificationBadge);
+	} else {
+		header->SetItemNumberedBadgeIcon(0, 0);
+
+
+		Tizen::Shell::NotificationRequest notificationBadge;
+		notificationBadge.SetBadgeNumber(0);
+		Tizen::Shell::NotificationManager notificationManager;
+		notificationManager.Construct();
+		notificationManager.NotifyByAppId(L"iEl2RaVlnG.VKU", notificationBadge);
 	}
 
 	r = JsonParseUtils::GetInteger(*response, L"friends", friends);
 	if(r == E_SUCCESS) {
 		header->SetItemNumberedBadgeIcon(2, friends);
+	} else {
+		header->SetItemNumberedBadgeIcon(2, 0);
 	}
 }

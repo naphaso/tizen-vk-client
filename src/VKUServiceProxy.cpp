@@ -252,3 +252,12 @@ bool VKUServiceProxy::IsAudioCurrent(const String &url) {
 		return false;
 	}
 }
+
+void VKUServiceProxy::ContactsSync() {
+	result r = E_SUCCESS;
+	HashMap *pMap =	new HashMap(SingleObjectDeleter);
+	pMap->Construct();
+	pMap->Add(new String("request"), new String("contacts-sync"));
+	r = SendMessage(pMap);
+	delete pMap;
+}
