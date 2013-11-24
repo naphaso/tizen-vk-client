@@ -7,6 +7,7 @@
 
 #include "SettingsSectionTableProvider.h"
 #include "ObjectCounter.h"
+#include "VKU.h"
 #include "Settings.h"
 
 using namespace Tizen::Base;
@@ -91,9 +92,11 @@ Tizen::Base::String SettingsSectionTableProvider::GetSectionHeader(
 		int sectionIndex) {
 	String header;
 	if (sectionIndex == 0)
-		header = L"New messages";
+		VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_NEW_MESSAGES", header);
+		//header = L"New messages";
 	else
-		header = L"Photo processing";
+		VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_PHOTO_PROCESSING", header);
+		//header = L"Photo processing";
 
 	return header;
 }
@@ -154,6 +157,14 @@ String SettingsSectionTableProvider::GetSectionText(int section, int index) {
 
 	String texts[2][3];
 
+	VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_SOUND", texts[0][0]);
+	VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_VIBRATION", texts[0][1]);
+	VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_NOTIFICATION", texts[0][2]);
+
+	VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_RESIZE_BEFORE_UPLOAD", texts[1][0]);
+	VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_UNKNOWN", texts[1][1]);
+	VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_UNKNOWN", texts[1][2]);
+	/*
 	texts[0][0] = L"Sound";
 	texts[0][1] = L"Vibration";
 	texts[0][2] = L"Notification";
@@ -161,7 +172,7 @@ String SettingsSectionTableProvider::GetSectionText(int section, int index) {
 	texts[1][0] = L"Resize before upload";
 	texts[1][1] = L"UNKNOWN";
 	texts[1][2] = L"UNKNOWN";
-
+*/
 	return texts[section][index];
 }
 

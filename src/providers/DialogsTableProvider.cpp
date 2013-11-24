@@ -69,17 +69,23 @@ Tizen::Base::String DialogsTableProvider::GetAttachmentNameByType(Tizen::Base::S
 	String name;
 
 	if (type == L"photo") {
-		name = L"Photo";
+		VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_NAME_PHOTO", name);
+		//name = L"Photo";
 	} else if (type == L"video") {
-		name = L"Video";
+		VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_NAME_VIDEO", name);
+		//name = L"Video";
 	} else if (type == L"doc") {
-		name = L"Document";
+		VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_NAME_DOC", name);
+		//name = L"Document";
 	} else if (type == L"audio") {
-		name = L"Audio";
+		VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_NAME_AUDIO", name);
+		//name = L"Audio";
 	} else if (type == L"wall") {
-		name = L"Wall post";
+		VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_NAME_WALLPOST", name);
+		//name = L"Wall post";
 	} else {
-		name = L"Attachment";
+		VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_NAME_ATTACH", name);
+		//name = L"Attachment";
 	}
 
 	return name;
