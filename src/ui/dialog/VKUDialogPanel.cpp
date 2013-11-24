@@ -195,8 +195,15 @@ void VKUDialogPanel::SetDialogJson(JsonObject* dialogJson) {
 void VKUDialogPanel::SetUserTyping(bool typing) {
 	Label * pStatuslabel = static_cast<Label*>(_headerPanel->GetControl(IDC_DIALOG_HEADER_STATUS));
 
+	String typingText;
+	String onlineText;
+	String offlineText;
+	VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_TYPING", typingText);
+	VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_ONLINE", onlineText);
+	VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_OFFLINE", offlineText);
+
 	if (typing) {
-		pStatuslabel->SetText(L"Typing...");
+		pStatuslabel->SetText(typingText);
 	} else {
 		int online;
 
@@ -204,7 +211,7 @@ void VKUDialogPanel::SetUserTyping(bool typing) {
 		JsonParseUtils::GetObject(_dialogJson, L"user_json", userJson);
 
 		JsonParseUtils::GetInteger(*userJson, L"online", online);
-		pStatuslabel->SetText( (online == 1) ? L"Online" : L"Offline" );
+		pStatuslabel->SetText( (online == 1) ? onlineText : offlineText);
 	}
 	pStatuslabel->RequestRedraw(true);
 }

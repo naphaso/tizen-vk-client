@@ -48,6 +48,10 @@ result VKSettingsPanel::OnInitializing(void) {
 	signout->SetActionId(ACTION_ID_SIGNOUT);
 	signout->AddActionEventListener(*this);
 
+	String signoutText;
+	VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_SIGN_OUT", signoutText);
+	signout->SetText(signoutText);
+
 	VKUApi::GetInstance().CreateRequest("users.get", this)->Put(L"fields", "photo_max")->Submit(REQUEST_GET_MYSELF);
 
 	return r;

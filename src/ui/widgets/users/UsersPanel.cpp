@@ -50,7 +50,9 @@ result UsersPanel::Construct(const Tizen::Graphics::Rectangle & rect) {
 	_pSearchBar = new SearchBar();
 	_pSearchBar->Construct(Rectangle(0, 0, rect.width, 90));
 	TryCatch(r == E_SUCCESS, , "Failed _pIUserSelectedListeners->Construct");
-	_pSearchBar->SetGuideText(L"Search friends");
+	String searchFriendsText;
+	VKUApp::GetInstance()->GetAppResource()->GetString(L"IDS_SEARCH_FRIENDS", searchFriendsText);
+	_pSearchBar->SetGuideText(searchFriendsText);
 	_pSearchBar->AddSearchBarEventListener(*this);
 	_pSearchBar->AddTextEventListener(*this);
 
