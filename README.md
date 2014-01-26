@@ -17,10 +17,12 @@ Credits
 ===========
 
 Development:
+
 Igor Glotov <igor.n.glotov@gmail.com>
 Stanislav Ovsyannikov <naphaso@gmail.com>
 
 Design:
+
 Samsung Development Russia <dev.cis@partner.samsung.com>
 
 Technical project description: [Tizen Contest](https://vk.com/tizen_contest?w=page-59707777_45508025)
